@@ -12,14 +12,14 @@ import { Pagination } from "swiper/modules";
 import { useState } from "react";
 import { useEffect } from "react";
 
-const Clients = ({
+export default function Clients({
   nav,
   setNav,
   onTouchEnd,
   onTouchMove,
   onTouchStart,
   sectionRefs,
-}) => {
+}) {
   // Slides per view should be 3 if viewport is greater than 768px
   // 2 if less than 768px
 
@@ -36,7 +36,10 @@ const Clients = ({
   // }, [width]);
 
   return (
-    <section ref={sectionRefs.clients} className="px-4 py-6  border-rose-500 relative">
+    <section
+      ref={sectionRefs.clients}
+      className="px-4 py-6  border-rose-500 relative"
+    >
       <p className="mx-auto w-2/3 pb-12 text-xl uppercase leading-8 tracking-tighter ">
         Here's what our clients has shared with us
       </p>
@@ -158,6 +161,4 @@ const Clients = ({
       )}
     </section>
   );
-};
-
-export default Clients;
+}

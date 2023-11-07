@@ -1,7 +1,14 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 
-const FAQ = ({ nav, setNav, onTouchEnd, onTouchMove, onTouchStart, sectionRefs }) => {
+export default function FAQ({
+  nav,
+  setNav,
+  onTouchEnd,
+  onTouchMove,
+  onTouchStart,
+  sectionRefs,
+}) {
   const [accordion, setAccordion] = useState(false);
   const [accordionAnswerElement, setAccordionAnswerElement] = useState(null);
   const [accordionButtonElement, seAccordionButtonElement] = useState(null);
@@ -319,6 +326,4 @@ const FAQ = ({ nav, setNav, onTouchEnd, onTouchMove, onTouchStart, sectionRefs }
       )}
     </section>
   );
-};
-
-export default FAQ;
+}

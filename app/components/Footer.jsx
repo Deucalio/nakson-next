@@ -1,7 +1,13 @@
 import Image from "next/image";
 import React from "react";
 
-const Footer = ({ nav, setNav, onTouchEnd, onTouchMove, onTouchStart }) => {
+export default function Footer({
+  nav,
+  setNav,
+  onTouchEnd,
+  onTouchMove,
+  onTouchStart,
+}) {
   return (
     <footer className="pb-16 pt-4 relative">
       <p className="px-6 py-4 text-lg text-slate-200">Links</p>
@@ -33,7 +39,7 @@ const Footer = ({ nav, setNav, onTouchEnd, onTouchMove, onTouchStart }) => {
         </li>
       </ul>
 
-      <p class="flex  gap-2 px-6 py-4 text-sm text-[#e9ecef]">Socials</p>
+      <p className="flex  gap-2 px-6 py-4 text-sm text-[#e9ecef]">Socials</p>
 
       <ul className="flex flex-row px-6 gap-2 text-sm">
         <li className="h-fit w-fit cursor-pointer border-b-[1px] border-slate-500 border-opacity-0 text-[#868e96] transition-all hover:border-opacity-100">
@@ -73,6 +79,4 @@ const Footer = ({ nav, setNav, onTouchEnd, onTouchMove, onTouchStart }) => {
       )}
     </footer>
   );
-};
-
-export default Footer;
+}

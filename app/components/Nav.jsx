@@ -5,14 +5,14 @@ import { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 
-const Nav = ({
+export default function Nav({
   onTouchStart,
   onTouchMove,
   onTouchEnd,
   nav,
   setNav,
   handleClickScroll,
-}) => {
+}) {
   // animate the nav bar on scroll
   // const [nav, setNav] = useState(false);
   const navRef = useRef(null);
@@ -64,9 +64,10 @@ const Nav = ({
   // };
 
   return (
-    <nav className="flex flex-row sticky top-0 z-50">
+    <nav className="flex flex-row sm:static sticky top-0 z-50">
       <ul className="flex w-full flex-row justify-between ">
         <img
+          onClick={() => handleClickScroll("main")}
           className="h-20 w-20 cursor-pointer -mt-3"
           src="https://i.imgur.com/HkYc6sn.png"
           alt=""
@@ -318,6 +319,4 @@ const Nav = ({
       ></div> */}
     </nav>
   );
-};
-
-export default Nav;
+}

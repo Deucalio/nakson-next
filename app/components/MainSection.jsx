@@ -1,15 +1,16 @@
 import React from "react";
 import Image from "next/image";
 
-const MainSection = ({
+export default function MainSection({
   nav,
   setNav,
   onTouchEnd,
   onTouchMove,
   onTouchStart,
-}) => {
+  sectionRefs,
+}) {
   return (
-    <main className="h-fit relative">
+    <main ref={sectionRefs.main} className="h-fit relative">
       <ul className="md:grid md:grid-cols-2">
         <li className="md:hidden">
           <Image
@@ -79,6 +80,4 @@ const MainSection = ({
       )}
     </main>
   );
-};
-
-export default MainSection;
+}

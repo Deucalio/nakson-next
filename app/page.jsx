@@ -13,6 +13,7 @@ export default function Home() {
     services: useRef(null),
     clients: useRef(null),
     faq: useRef(null),
+    main: useRef(null),
   };
 
   const [nav, setNav] = useState(false);
@@ -25,8 +26,6 @@ export default function Home() {
     }
   };
 
-
-  
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
@@ -56,13 +55,60 @@ export default function Home() {
 
   return (
     <>
-      <Nav onTouchEnd={onTouchEnd} onTouchMove={onTouchMove} onTouchStart={onTouchStart} nav={nav} setNav={setNav} handleClickScroll={handleClickScroll} />
-      <MainSection onTouchEnd={onTouchEnd} onTouchMove={onTouchMove} onTouchStart={onTouchStart} nav={nav} setNav={setNav} />
-      <TeamSection onTouchEnd={onTouchEnd} onTouchMove={onTouchMove} onTouchStart={onTouchStart} nav={nav} setNav={setNav} />
-      <ServicesSection onTouchEnd={onTouchEnd} onTouchMove={onTouchMove} onTouchStart={onTouchStart} nav={nav} setNav={setNav} sectionRefs={sectionRefs} />
-      <Clients onTouchEnd={onTouchEnd} onTouchMove={onTouchMove} onTouchStart={onTouchStart} nav={nav} setNav={setNav} sectionRefs={sectionRefs} />
-      <FAQ onTouchEnd={onTouchEnd} onTouchMove={onTouchMove} onTouchStart={onTouchStart} nav={nav} setNav={setNav} sectionRefs={sectionRefs} />
-      <Footer onTouchEnd={onTouchEnd} onTouchMove={onTouchMove} onTouchStart={onTouchStart} nav={nav} setNav={setNav} />
+      <Nav
+        onTouchEnd={onTouchEnd}
+        onTouchMove={onTouchMove}
+        onTouchStart={onTouchStart}
+        nav={nav}
+        setNav={setNav}
+        handleClickScroll={handleClickScroll}
+      />
+      <MainSection
+        sectionRefs={sectionRefs}
+        onTouchEnd={onTouchEnd}
+        onTouchMove={onTouchMove}
+        onTouchStart={onTouchStart}
+        nav={nav}
+        setNav={setNav}
+      />
+      <TeamSection
+        onTouchEnd={onTouchEnd}
+        onTouchMove={onTouchMove}
+        onTouchStart={onTouchStart}
+        nav={nav}
+        setNav={setNav}
+      />
+      <ServicesSection
+        onTouchEnd={onTouchEnd}
+        onTouchMove={onTouchMove}
+        onTouchStart={onTouchStart}
+        nav={nav}
+        setNav={setNav}
+        sectionRefs={sectionRefs}
+      />
+      <Clients
+        onTouchEnd={onTouchEnd}
+        onTouchMove={onTouchMove}
+        onTouchStart={onTouchStart}
+        nav={nav}
+        setNav={setNav}
+        sectionRefs={sectionRefs}
+      />
+      <FAQ
+        onTouchEnd={onTouchEnd}
+        onTouchMove={onTouchMove}
+        onTouchStart={onTouchStart}
+        nav={nav}
+        setNav={setNav}
+        sectionRefs={sectionRefs}
+      />
+      <Footer
+        onTouchEnd={onTouchEnd}
+        onTouchMove={onTouchMove}
+        onTouchStart={onTouchStart}
+        nav={nav}
+        setNav={setNav}
+      />
 
       {/* Overlay */}
       {nav && (
