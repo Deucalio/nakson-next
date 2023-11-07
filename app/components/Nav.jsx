@@ -5,7 +5,14 @@ import { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 
-const Nav = ({onTouchStart, onTouchMove, onTouchEnd,nav, setNav, handleClickScroll }) => {
+const Nav = ({
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
+  nav,
+  setNav,
+  handleClickScroll,
+}) => {
   // animate the nav bar on scroll
   // const [nav, setNav] = useState(false);
   const navRef = useRef(null);
@@ -68,7 +75,10 @@ const Nav = ({onTouchStart, onTouchMove, onTouchEnd,nav, setNav, handleClickScro
           className=" relative left-[1.4rem] ml-auto flex w-fit 
           flex-col gap-3 px-12 py-4 pb-8 leading-3 md:hidden z-40 appearance-none"
         >
-          <div ref={openNavIcon} className="flex flex-col  gap-3 transition-all">
+          <div
+            ref={openNavIcon}
+            className="flex flex-col  gap-3 transition-all"
+          >
             <p
               ref={nav_link_1}
               onClick={() => setNav(!nav)}
@@ -273,29 +283,29 @@ const Nav = ({onTouchStart, onTouchMove, onTouchEnd,nav, setNav, handleClickScro
         </li>
 
         <li className="mx-auto my-auto hidden md:block">
-          <button className="flex w-36 flex-row items-center gap-1 rounded-xl bg-gradient-to-l from-indigo-400 to-purple-800 px-4 py-2 transition-all hover:scale-105">
-            &nbsp; &nbsp; Portfolio
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="h-3 w-3"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
-              />
-            </svg>
-          </button>
+          <Link href="/portfolio">
+            <button className="flex w-36 flex-row items-center gap-1 rounded-xl bg-gradient-to-l from-indigo-400 to-purple-800 px-4 py-2 transition-all hover:scale-105">
+              &nbsp; &nbsp; Portfolio
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="h-3 w-3"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
+                />
+              </svg>
+            </button>
+          </Link>
         </li>
       </ul>
 
       {/* overlay */}
-
-     
 
       {/* <div
         onTouchStart={onTouchStart}
