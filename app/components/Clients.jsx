@@ -12,7 +12,14 @@ import { Pagination } from "swiper/modules";
 import { useState } from "react";
 import { useEffect } from "react";
 
-const Clients = ({sectionRefs}) => {
+const Clients = ({
+  nav,
+  setNav,
+  onTouchEnd,
+  onTouchMove,
+  onTouchStart,
+  sectionRefs,
+}) => {
   // Slides per view should be 3 if viewport is greater than 768px
   // 2 if less than 768px
 
@@ -29,8 +36,8 @@ const Clients = ({sectionRefs}) => {
   // }, [width]);
 
   return (
-    <section ref={sectionRefs.clients} className="px-4 py-6  border-rose-500">
-      <p className="mx-auto w-2/3 pb-12 text-xl uppercase leading-8 tracking-tighter">
+    <section ref={sectionRefs.clients} className="px-4 py-6  border-rose-500 relative">
+      <p className="mx-auto w-2/3 pb-12 text-xl uppercase leading-8 tracking-tighter ">
         Here's what our clients has shared with us
       </p>
 
@@ -138,6 +145,17 @@ const Clients = ({sectionRefs}) => {
           </SwiperSlide>
         </Swiper>
       </div>
+      {nav && (
+        <div
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          onClick={() => setNav(false)}
+          className={`transition-all duration-150 ease-linear overlay  absolute inset-0 z-20 ${
+            nav && "backdrop-blur-sm"
+          } md:hidden `}
+        ></div>
+      )}
     </section>
   );
 };

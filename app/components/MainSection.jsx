@@ -1,9 +1,15 @@
 import React from "react";
 import Image from "next/image";
 
-const MainSection = () => {
+const MainSection = ({
+  nav,
+  setNav,
+  onTouchEnd,
+  onTouchMove,
+  onTouchStart,
+}) => {
   return (
-    <main className="h-fit">
+    <main className="h-fit relative">
       <ul className="md:grid md:grid-cols-2">
         <li className="md:hidden">
           <Image
@@ -60,6 +66,17 @@ const MainSection = () => {
           />
         </li>
       </ul>
+      {nav && (
+        <div
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          onClick={() => setNav(false)}
+          className={`transition-all duration-150 ease-linear overlay  absolute inset-0 z-20 ${
+            nav && "backdrop-blur-sm"
+          } md:hidden `}
+        ></div>
+      )}
     </main>
   );
 };

@@ -5,9 +5,9 @@ import { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 
-const Nav = ({ handleClickScroll }) => {
+const Nav = ({onTouchStart, onTouchMove, onTouchEnd,nav, setNav, handleClickScroll }) => {
   // animate the nav bar on scroll
-  const [nav, setNav] = useState(false);
+  // const [nav, setNav] = useState(false);
   const navRef = useRef(null);
   const closeNavIcon = useRef(null);
   const nav_link_1 = useRef(null);
@@ -29,46 +29,46 @@ const Nav = ({ handleClickScroll }) => {
     return () => {};
   }, [nav]);
 
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
+  // const [touchStart, setTouchStart] = useState(null);
+  // const [touchEnd, setTouchEnd] = useState(null);
 
-  // the required distance between touchStart and touchEnd to be detected as a swipe
-  const minSwipeDistance = 50;
+  // // the required distance between touchStart and touchEnd to be detected as a swipe
+  // const minSwipeDistance = 50;
 
-  const onTouchStart = (e) => {
-    setTouchEnd(null); // otherwise the swipe is fired even with usual touch events
-    setTouchStart(e.targetTouches[0].clientX);
-  };
+  // const onTouchStart = (e) => {
+  //   setTouchEnd(null); // otherwise the swipe is fired even with usual touch events
+  //   setTouchStart(e.targetTouches[0].clientX);
+  // };
 
-  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+  // const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
 
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-    // if (isLeftSwipe || isRightSwipe)
-    //   console.log("swipe", isLeftSwipe ? "left" : "right");
-    // // add your conditional logic here
+  // const onTouchEnd = () => {
+  //   if (!touchStart || !touchEnd) return;
+  //   const distance = touchStart - touchEnd;
+  //   const isLeftSwipe = distance > minSwipeDistance;
+  //   const isRightSwipe = distance < -minSwipeDistance;
+  //   // if (isLeftSwipe || isRightSwipe)
+  //   //   console.log("swipe", isLeftSwipe ? "left" : "right");
+  //   // // add your conditional logic here
 
-    if (isRightSwipe) {
-      setNav(false);
-    }
-  };
+  //   if (isRightSwipe) {
+  //     setNav(false);
+  //   }
+  // };
 
   return (
-    <nav className="flex flex-row">
+    <nav className="flex flex-row sticky top-0 z-50">
       <ul className="flex w-full flex-row justify-between ">
         <img
-          className="h-20 w-20 cursor-pointer"
+          className="h-20 w-20 cursor-pointer -mt-3"
           src="https://i.imgur.com/HkYc6sn.png"
           alt=""
         />
         <li
           className=" relative left-[1.4rem] ml-auto flex w-fit 
-          flex-col gap-3 px-12 py-6 pb-8 leading-3 md:hidden z-40 appearance-none"
+          flex-col gap-3 px-12 py-4 pb-8 leading-3 md:hidden z-40 appearance-none"
         >
-          <div ref={openNavIcon} className="flex flex-col gap-3 transition-all">
+          <div ref={openNavIcon} className="flex flex-col  gap-3 transition-all">
             <p
               ref={nav_link_1}
               onClick={() => setNav(!nav)}
@@ -147,7 +147,7 @@ const Nav = ({ handleClickScroll }) => {
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
             ref={navRef}
-            className="mobile-nav absolute -left-32 top-[0.3rem] flex h-[98vh] w-60 cursor-auto flex-col justify-between gap-4 bg-black text-xs   
+            className="mobile-nav absolute -left-32 -top-[1px] flex h-[100vh] w-60 cursor-auto flex-col justify-between gap-4 bg-black text-xs   
              transition-all ease-in translate-x-[300px]"
           >
             <ul className="flex flex-col gap-3 px-8 py-24 text-sm">
@@ -295,17 +295,7 @@ const Nav = ({ handleClickScroll }) => {
 
       {/* overlay */}
 
-      {nav && (
-        <div
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
-          onClick={() => setNav(false)}
-          className={`transition-all duration-150 ease-linear overlay  absolute inset-0 z-20 ${
-            nav && "backdrop-blur-sm"
-          } md:hidden `}
-        ></div>
-      )}
+     
 
       {/* <div
         onTouchStart={onTouchStart}

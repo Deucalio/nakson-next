@@ -1,8 +1,8 @@
 import React from "react";
 
-const Footer = () => {
+const Footer = ({ nav, setNav, onTouchEnd, onTouchMove, onTouchStart }) => {
   return (
-    <footer className="pb-16 pt-4">
+    <footer className="pb-16 pt-4 relative">
       <p className="px-6 py-4 text-lg text-slate-200">Links</p>
       <div className="border-b-2 border-slate-500 opacity-40"></div>
 
@@ -31,6 +31,17 @@ const Footer = () => {
           DeepSea Life Sciences
         </li>
       </ul>
+      {nav && (
+        <div
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          onClick={() => setNav(false)}
+          className={`transition-all duration-150 ease-linear overlay  absolute inset-0 z-30 ${
+            nav && "backdrop-blur-sm"
+          } md:hidden `}
+        ></div>
+      )}
     </footer>
   );
 };

@@ -11,9 +11,16 @@ const Service = () => {
   return <></>;
 };
 
-export default function ServicesSection({sectionRefs}) {
+export default function ServicesSection({
+  nav,
+  setNav,
+  onTouchEnd,
+  onTouchMove,
+  onTouchStart,
+  sectionRefs,
+}) {
   return (
-    <section ref={sectionRefs.services} className="py-16 md:py-36">
+    <section ref={sectionRefs.services} className="py-16 md:py-36 relative">
       <button className="mx-auto block rounded-2xl bg-rose-600 px-3 py-2 text-slate-100 transition-all hover:scale-105 hover:bg-rose-700 hover:text-slate-200">
         Select a Service
       </button>
@@ -242,6 +249,17 @@ export default function ServicesSection({sectionRefs}) {
           </SwiperSlide>
         </Swiper>
       </div>
+      {nav && (
+        <div
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          onClick={() => setNav(false)}
+          className={`transition-all duration-150 ease-linear overlay  absolute inset-0 z-20 ${
+            nav && "backdrop-blur-sm"
+          } md:hidden `}
+        ></div>
+      )}
     </section>
   );
 }

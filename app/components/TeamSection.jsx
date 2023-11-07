@@ -1,8 +1,14 @@
 import React from "react";
 
-const TeamSection = () => {
+const TeamSection = ({
+  nav,
+  setNav,
+  onTouchEnd,
+  onTouchMove,
+  onTouchStart,
+}) => {
   return (
-    <section className="px-2 py-20">
+    <section className="px-2 py-20 relative">
       <div className="h-52 px-8 py-7">
         <p className="text-center text-2xl lg:text-3xl">Our Team</p>
         <ul className="flex h-64 flex-row justify-center -space-x-2 overflow-hidden px-6 py-4">
@@ -134,6 +140,17 @@ const TeamSection = () => {
           provoding second to none solutions
         </p>
       </article>
+      {nav && (
+        <div
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          onClick={() => setNav(false)}
+          className={`transition-all duration-150 ease-linear overlay  absolute inset-0 z-20 ${
+            nav && "backdrop-blur-sm"
+          } md:hidden `}
+        ></div>
+      )}
     </section>
   );
 };

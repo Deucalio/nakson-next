@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 
-const FAQ = ({sectionRefs}) => {
+const FAQ = ({ nav, setNav, onTouchEnd, onTouchMove, onTouchStart, sectionRefs }) => {
   const [accordion, setAccordion] = useState(false);
   const [accordionAnswerElement, setAccordionAnswerElement] = useState(null);
   const [accordionButtonElement, seAccordionButtonElement] = useState(null);
@@ -24,7 +24,10 @@ const FAQ = ({sectionRefs}) => {
   // }, [accordion]);
 
   return (
-    <section ref={sectionRefs.faq} className="flex flex-col gap-6 px-6 pb-32 pt-72">
+    <section
+      ref={sectionRefs.faq}
+      className="flex flex-col gap-6 px-6 pb-32 pt-72 relative"
+    >
       <button className="mx-auto block rounded-2xl bg-rose-600 px-3 py-2 text-slate-100 transition-all hover:scale-105 hover:bg-rose-700 hover:text-slate-200">
         Have Questions ?
       </button>
@@ -303,6 +306,17 @@ const FAQ = ({sectionRefs}) => {
 
         <div className="absolute inset-0 bg-zinc-500 bg-opacity-10"></div>
       </section>
+      {nav && (
+        <div
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          onClick={() => setNav(false)}
+          className={`transition-all duration-150 ease-linear overlay  absolute inset-0 z-40 ${
+            nav && "backdrop-blur-sm"
+          } md:hidden `}
+        ></div>
+      )}
     </section>
   );
 };
