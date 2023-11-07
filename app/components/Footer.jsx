@@ -7,9 +7,10 @@ export default function Footer({
   onTouchEnd,
   onTouchMove,
   onTouchStart,
+  footer
 }) {
   return (
-    <footer className="pb-16 pt-4 relative">
+    <footer ref={footer} className="pb-16 pt-4 relative">
       <p className="px-6 py-4 text-lg text-slate-200">Links</p>
       <div className="border-b-2 border-slate-500 opacity-40"></div>
 
@@ -43,16 +44,16 @@ export default function Footer({
 
       <ul className="flex flex-row px-6 gap-2 text-sm">
         <li className="h-fit w-fit cursor-pointer border-b-[1px] border-slate-500 border-opacity-0 text-[#868e96] transition-all hover:border-opacity-100">
-          <Image src="/icon-tiktok.png" height={25} width={25} />
+          <Image alt="Tiktok Icon" src="/icon-tiktok.png" height={25} width={25} />
         </li>
         <li className="h-fit w-fit cursor-pointer border-b-[1px] border-slate-500 border-opacity-0 text-[#868e96] transition-all hover:border-opacity-100">
-          <Image src="/icon-facebook.png" height={25} width={25} />
+          <Image alt="Facebook Icon" src="/icon-facebook.png" height={25} width={25} />
         </li>
         <li className="h-fit w-fit cursor-pointer border-b-[1px] border-slate-500 border-opacity-0 text-[#868e96] transition-all hover:border-opacity-100">
-          <Image src="/icon-insta.png" height={25} width={25} />
+          <Image alt="Insta Icon" src="/icon-insta.png" height={25} width={25} />
         </li>
         <li className="h-fit w-fit cursor-pointer border-b-[1px] border-slate-500 border-opacity-0 text-[#868e96] transition-all hover:border-opacity-100">
-          <Image src="/icon-pinterest.png" height={25} width={25} />
+          <Image alt="Pinterest Icon" src="/icon-pinterest.png" height={25} width={25} />
         </li>
       </ul>
       <p className="px-6 pt-4 text-xs text-slate-100 opacity-50">
