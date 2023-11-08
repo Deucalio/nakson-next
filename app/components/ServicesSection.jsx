@@ -9,15 +9,29 @@ import "./styles.css";
 import Link from "next/link";
 
 const services = [
-  "Graphics Design",
-  "UI/UX Design",
-  "Web Development",
-  "Digital Marketing",
+  {
+    id: 1,
+    name: "Graphics Design",
+  },
+  {
+    id: 2,
+    name: "UI/UX Design",
+  },
+  {
+    id: 3,
+    name: "Web Development",
+  },
+  {
+    id: 4,
+    name: "Digital Marketing",
+  },
 ];
 
 const Service = ({ ServiceName }) => {
   // format UI/UX Design to ui-ux-design
-  const formatServiceName = ServiceName.includes("/") ? "ui-ux-design" : ServiceName.replace(/\s/g, "-").toLowerCase();
+  const formatServiceName = ServiceName.includes("/")
+    ? "ui-ux-design"
+    : ServiceName.replace(/\s/g, "-").toLowerCase();
   return (
     <article className="w-full h-full rounded-2xl bg-[#1B1C25] md:mx-auto text-sm">
       <ul className="flex h-full flex-col items-center justify-between p-8">
@@ -89,9 +103,9 @@ export default function ServicesSection({
           style={{ position: "absolute" }}
           className="mySwiper -translate-x-32 left-1/2 absolute z-10"
         >
-          {services.map((service, index) => (
-            <SwiperSlide>
-              <Service key={index} ServiceName={service} />
+          {services.map((service) => (
+            <SwiperSlide key={service.id}>
+              <Service ServiceName={service.name} />
             </SwiperSlide>
           ))}
         </Swiper>
