@@ -63,7 +63,6 @@ export default function Portfolio() {
 
   // get
 
-
   const displayText = () => {
     p2Element.current.children[0].classList.remove("text-black");
     p2Element.current.children[1].classList.remove("text-black");
@@ -167,6 +166,7 @@ export default function Portfolio() {
         duration: 1,
         delay: 1.5,
         ease: "power4.out",
+        onComplete: () => navBtnThree.current.classList.remove("pointer-events-none"),
       }
     );
 
@@ -211,7 +211,7 @@ export default function Portfolio() {
               style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0% 100%)" }}
               onClick={() => scrollToFooter()}
               ref={navBtnThree}
-              className="portfolio-btn w-18 cursor-pointer border-b-[1px]  border-slate-100 border-opacity-0 py-1 text-center transition-all duration-700 ease-in-out hover:border-opacity-95"
+              className="portfolio-btn w-18 pointer-events-none cursor-pointer border-b-[1px]  border-slate-100 border-opacity-0 py-1 text-center transition-all duration-700 ease-in-out hover:border-opacity-95"
             >
               Social Links
             </li>
