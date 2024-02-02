@@ -14,9 +14,7 @@ const Page = () => {
   const errorSpanElement = useRef(null);
   const handleLogin = async (e) => {
     e.preventDefault();
-    alert("sad")
-    return;
-
+    alert(formData.email, "passwrod: ", formData.password);
     // const user = await Login(formData);
     try {
       const res = await axios.post("http://localhost:4000/login", formData);
