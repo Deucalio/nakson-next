@@ -18,7 +18,8 @@ const Page = () => {
     // const user = await Login(formData);
     try {
       const res = await axios.post("http://localhost:4000/login", formData);
-      await signUserIn(res.data.user);
+      alert(res.data.user.email, "passwrod: ", res.data.user.password);
+      // await signUserIn(res.data.user);
       // console.log("res.data", res.data.user);
     } catch (e) {
       if (e.response.status === 400) {
