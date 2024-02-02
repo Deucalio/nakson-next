@@ -205,7 +205,10 @@ export default function Portfolio() {
               ref={navBtnTwo}
               className="portfolio-btn w-18 cursor-pointer border-b-[1px]  border-slate-100 border-opacity-0 py-1 text-center transition-all duration-700 ease-in-out hover:border-opacity-95"
             >
-              Nakson
+              <Link href="/esync">
+              eSync
+              
+              </Link>
             </li>
             <li
               style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0% 100%)" }}

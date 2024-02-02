@@ -6,6 +6,7 @@ const signUserIn = async (credential) => {
   await signIn("credentials", {
     email: credential.email,
     password: credential.password,
+    redirectTo: "/esync",
   });
 };
 

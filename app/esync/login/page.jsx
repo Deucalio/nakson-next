@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { signUserIn } from "../actions/signUserIn";
@@ -9,15 +9,32 @@ const Page = () => {
     email: "",
     password: "",
   });
+
+  const errorSpanElement = useRef(null);
   const handleLogin = async (e) => {
     e.preventDefault();
 
     // const user = await Login(formData);
     try {
       const res = await axios.post("http://localhost:4000/login", formData);
-      await signUserIn(res.data);
+      await signUserIn(res.data.user);
+      // console.log("res.data", res.data.user);
     } catch (e) {
-      console.log("error is: ", e);
+      if (e.response.status === 400) {
+        errorSpanElement.current.classList.remove("scale-0");
+        errorSpanElement.current.textContent = e.response.data.errorMessage;
+        return;
+      }
+      if (e.response.status === 401) {
+        errorSpanElement.current.classList.remove("scale-0");
+        errorSpanElement.current.textContent = e.response.data.errorMessage;
+        return;
+      }
+      if (e.response.status === 404) {
+        errorSpanElement.current.classList.remove("scale-0");
+        errorSpanElement.current.textContent = e.response.data.errorMessage;
+        return;
+      }
     }
     return;
   };
@@ -42,7 +59,7 @@ const Page = () => {
             <li>
               <form className="grid border-teal-700 text-xs mt-10" action="">
                 <ul className="">
-                  <li className="relative flex flex-col gap-6">
+                  <li className="relative flex flex-col gap-6 ">
                     <input
                       placeholder="Email"
                       className="h-10 w-56 rounded-md bg-slate-900 px-3 py-1 outline-none outline-2 transition-all placeholder:opacity-50 focus:outline-indigo-900"
@@ -55,6 +72,7 @@ const Page = () => {
                     />
                     <input
                       placeholder="Password"
+                      autoComplete="on"
                       className="h-10 w-56 rounded-md bg-slate-900 px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-900"
                       type="password"
                       name="password"
@@ -63,13 +81,16 @@ const Page = () => {
                         setFormData({ ...formData, password: e.target.value })
                       }
                     />
+                    <span
+                      ref={errorSpanElement}
+                      className="absolute bottom-12 text-xs text-red-700 scale-0 transition-all"
+                    ></span>
 
                     <button
                       onClick={handleLogin}
-                      className="relative mx-auto text-sm mt-1 w-32 rounded-md bg-gradient-to-l from-indigo-600 to-violet-700 px-3 py-2 hover:bg-indigo-800 hover:from-indigo-700 hover:to-violet-800"
+                      className="relative  mx-auto text-sm mt-4 w-32 rounded-md bg-gradient-to-l from-indigo-600 to-violet-700 px-3 py-2 hover:bg-indigo-800 hover:from-indigo-700 hover:to-violet-800"
                     >
                       Login
-                      <span className="loader absolute right-4 opacity-0"></span>
                     </button>
                   </li>
                   <li className="mt-4 ml-3">
