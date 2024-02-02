@@ -17,7 +17,7 @@ const Page = () => {
     // const user = await Login(formData);
     try {
       const res = await axios.post("http://localhost:4000/login", formData);
-      await signUserIn(res.data);
+      await signUserIn(res.data.user);
     } catch (e) {
       if (e.response.status === 400) {
         errorSpanElement.current.classList.remove("scale-0");
