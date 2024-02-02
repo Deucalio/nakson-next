@@ -14,6 +14,8 @@ const Page = () => {
   const errorSpanElement = useRef(null);
   const handleLogin = async (e) => {
     e.preventDefault();
+    alert("sad")
+    return;
 
     // const user = await Login(formData);
     try {
