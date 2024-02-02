@@ -265,9 +265,9 @@ const Register = ({
                 <p>
                   Already have an account?{" "}
                   <Link href={"/login"}>
-                    <span className="cursor-pointer font-semibold text-indigo-500 transition-all hover:text-indigo-700 hover:underline">
+                    <button className="cursor-pointer font-semibold text-indigo-500 transition-all hover:text-indigo-700 hover:underline">
                       Login
-                    </span>
+                    </button>
                   </Link>
                 </p>
               </li>
@@ -399,8 +399,16 @@ const Page = () => {
 
   return (
     <main className="register-route relative h-screen">
-      <section className="relative z-10 mx-auto grid h-5/6 translate-y-11 grid-cols-8 rounded-3xl border-indigo-950 bg-black shadow-md shadow-violet-900 md:w-2/4">
-        <div className="col-span-3 overflow-hidden rounded-lg"></div>
+      <section className="relative z-10 mx-auto grid h-5/6 translate-y-11 grid-cols-8 rounded-3xl border-indigo-950 bg-black shadow-sm border-2 border-b-violet-900 shadow-violet-900 md:w-2/4">
+        <div className="col-span-3 overflow-hidden rounded-lg">
+          <Image
+            src="https://i.imgur.com/ddnB1HA.jpeg"
+            alt="eSync Image"
+            width={500}
+            height={500}
+            className="h-full rounded-3xl bg-cover"
+          ></Image>
+        </div>
         {otp === "" && (
           <Register
             buttonDisabled={btnDisabled}

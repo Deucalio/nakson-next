@@ -53,7 +53,7 @@ const Service = ({ ServiceName }) => {
         </li>
         <li className="text-center leading-5">{ServiceName}</li>
         <li>
-          <Link href={`/${formatServiceName}`}>
+          <Link href={`/service/${formatServiceName}`}>
             <button className="flex w-40 flex-row items-center gap-1 rounded-xl bg-gradient-to-l from-indigo-400 to-purple-800 px-7 py-3 transition-all hover:scale-105">
               Get Started
               <svg
