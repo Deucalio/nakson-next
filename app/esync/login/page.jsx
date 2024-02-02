@@ -3,6 +3,7 @@ import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import axios from "axios";
+import { auth, signIn, signOut } from "../../../auth";
 import { signUserIn } from "../actions/signUserIn";
 const Page = () => {
   const [formData, setFormData] = useState({
@@ -53,8 +54,16 @@ const Page = () => {
         </div>
         <div className="col-span-5 overflow-scroll rounded-3xl border-fuchsia-400 py-8 pl-24 md:pl-8 lg:overflow-hidden">
           <ul className="mx-auto -ml-10 flex flex-col items-center gap-7 border-fuchsia-900 text-xl text-slate-200">
-            <li className="flex flex-col gap-2">
-              <p className="text-md font-semibold mt-4">Login</p>
+            <li className="flex flex-col gap-2 border-2">
+              <p
+                onClick={async () => {
+                  alert("sad");
+                  await signUserIn({ email: "sad", password: "sad" });
+                }}
+                className="text-md font-semibold mt-4 "
+              >
+                Login
+              </p>
             </li>
             <li>
               <form className="grid border-teal-700 text-xs mt-10" action="">

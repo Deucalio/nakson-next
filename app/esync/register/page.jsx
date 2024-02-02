@@ -267,7 +267,7 @@ const Register = ({
               <li className="md:mt-4 ml-4">
                 <p>
                   Already have an account?{" "}
-                  <Link href={"/login"}>
+                  <Link href={"/esync/login"}>
                     <button className="cursor-pointer font-semibold text-indigo-500 transition-all hover:text-indigo-700 hover:underline">
                       Login
                     </button>
