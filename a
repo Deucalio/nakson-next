@@ -1,0 +1,125 @@
+[33mcommit 537497223854c6805628e0f63c2df4e4931f42e1[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Fri Feb 2 23:51:53 2024 +0500
+
+    test3: login
+
+[33mcommit 559d08a089eee6644dc2e8b77f07bbfdd16e2c8b[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Fri Feb 2 23:49:27 2024 +0500
+
+    test2: login
+
+[33mcommit a4d218f7a27ea059846232c41484ad00e0ea158a[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Fri Feb 2 23:44:42 2024 +0500
+
+    test-1: login
+
+[33mcommit c9f330f8ff659e0431a122300924ba995bc6748f[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Fri Feb 2 23:41:37 2024 +0500
+
+    add sigin in login
+
+[33mcommit 497063a797a164ceffa83b0fb67376c01e3eda8f[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Fri Feb 2 23:28:07 2024 +0500
+
+    add settings route
+
+[33mcommit b9c9869eeb1c5fb7bbb8ce1d3fc63125f4c2a371[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Fri Feb 2 17:06:01 2024 +0500
+
+    add mainpage
+
+[33mcommit c438708357daf736626229fd2dffbb8adfa5dace[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Fri Feb 2 12:02:04 2024 +0500
+
+    integrate esync
+
+[33mcommit 189c0e2f34b20079e41e855670133331af075a5b[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Thu Feb 1 19:05:41 2024 +0500
+
+    moved dire
+
+[33mcommit b216d1205900d824343dcc05d97153c60f74078b[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Wed Nov 8 19:13:56 2023 +0500
+
+    fix animations
+
+[33mcommit bc9a2d775295513d64c38d9c7818f0aa1583e3ce[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Wed Nov 8 19:09:34 2023 +0500
+
+    fix key props error
+
+[33mcommit 31a292b4de7565e57cc05926bcbc98a84c56bee3[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Wed Nov 8 18:55:39 2023 +0500
+
+    add generatestaticparams function
+
+[33mcommit 614cbf540d1f429b683ea8d68049b2b11798696f[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Wed Nov 8 00:48:13 2023 +0500
+
+    disabled eslint (again x2)
+
+[33mcommit 4d73b852543530ef9eda41c50617f6c7f82add16[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Wed Nov 8 00:46:51 2023 +0500
+
+    disable eslint (again)
+
+[33mcommit fb1f2a614577d6e5873f8a5f1877460c4a1b1d59[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Wed Nov 8 00:41:20 2023 +0500
+
+    disable eslint
+
+[33mcommit 7e6c9a16d8578fd5df798cb0c616e27d6ee6a1ae[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Wed Nov 8 00:33:50 2023 +0500
+
+    fix navbar error
+
+[33mcommit 072b2781c5aafa4cde6502bdada9f587f3964d82[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Tue Nov 7 21:54:58 2023 +0500
+
+    add service page template
+
+[33mcommit 700d54d6429983bb8606dce99b790fbff29b59cb[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Tue Nov 7 19:40:36 2023 +0500
+
+    change naming convention
+
+[33mcommit 24003525277e4833269edfcdcd09f320dafc8857[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Tue Nov 7 19:25:03 2023 +0500
+
+    add icons
+
+[33mcommit 59195b56710f276d3d120dab21138f2173305743[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Tue Nov 7 18:42:33 2023 +0500
+
+    add overlay to every section so the user can see blur effect
+
+[33mcommit abc58a435f0ba4412e86f44ec63cbc0ff6889295[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Tue Nov 7 18:08:11 2023 +0500
+
+    integrate next
+
+[33mcommit a27c6c2fee0b7c726e22f0a5d7a7e457119bf786[m
+Author: Deucalio <hjamad89@gmail.com>
+Date:   Sun Nov 5 17:57:49 2023 +0500
+
+    Initial commit from Create Next App

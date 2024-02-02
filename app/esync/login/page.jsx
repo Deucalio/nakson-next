@@ -3,7 +3,6 @@ import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import axios from "axios";
-import { auth, signIn, signOut } from "../../../auth";
 import { signUserIn } from "../actions/signUserIn";
 const Page = () => {
   const [formData, setFormData] = useState({
@@ -14,13 +13,11 @@ const Page = () => {
   const errorSpanElement = useRef(null);
   const handleLogin = async (e) => {
     e.preventDefault();
-    alert(formData.email, "passwrod: ", formData.password);
+
     // const user = await Login(formData);
     try {
       const res = await axios.post("http://localhost:4000/login", formData);
-      alert(res.data.user.email, "passwrod: ", res.data.user.password);
-      // await signUserIn(res.data.user);
-      // console.log("res.data", res.data.user);
+      await signUserIn(res.data);
     } catch (e) {
       if (e.response.status === 400) {
         errorSpanElement.current.classList.remove("scale-0");
@@ -55,16 +52,8 @@ const Page = () => {
         </div>
         <div className="col-span-5 overflow-scroll rounded-3xl border-fuchsia-400 py-8 pl-24 md:pl-8 lg:overflow-hidden">
           <ul className="mx-auto -ml-10 flex flex-col items-center gap-7 border-fuchsia-900 text-xl text-slate-200">
-            <li className="flex flex-col gap-2 border-2">
-              <p
-                onClick={async () => {
-                  alert("sad");
-                  await signUserIn({ email: "sad", password: "sad" });
-                }}
-                className="text-md font-semibold mt-4 "
-              >
-                Login
-              </p>
+            <li className="flex flex-col gap-2">
+              <p className="text-md font-semibold mt-4">Login</p>
             </li>
             <li>
               <form className="grid border-teal-700 text-xs mt-10" action="">
@@ -82,7 +71,6 @@ const Page = () => {
                     />
                     <input
                       placeholder="Password"
-                      autoComplete="on"
                       className="h-10 w-56 rounded-md bg-slate-900 px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-900"
                       type="password"
                       name="password"
