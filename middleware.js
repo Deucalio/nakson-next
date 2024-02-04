@@ -5,7 +5,7 @@ export default auth((req) => {
   // req.auth
   const isLoggedIn = !!req.auth;
   // console.log("req", req.nextUrl.pathname);
-  console.log("isLoggedIn", isLoggedIn);
+  console.log("is", isLoggedIn);
 
   // If the user is not logged in, he can't visit any page except the login page or the signup page /register
 
