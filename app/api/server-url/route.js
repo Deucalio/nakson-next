@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic"; // defaults to auto
-import { PrismaClient } from "../../../generated/client";
+import { PrismaClient } from "../../../prisma/generated/client";
 
 const prisma = new PrismaClient();
 export async function GET(request) {
