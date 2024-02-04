@@ -280,9 +280,8 @@ export default function Page() {
     setShopifyToken(token);
 
     // 1. Save the Token in the User Database by sending a POST request to the server
-    const res = await axios.get("/api/server-url");
-    const { serverURL } = res.data;
-    console.log(serverURL);
+    const res = await fetch("/pages/api");
+    console.log("res", res);
 
     // const response = await axios.post(`${serverURL}/shopify/save-token`, {
     //   email: user.user.email,
