@@ -19,16 +19,7 @@ export const {
             },
         }),
     ],
-    callbacks: {
-        jwt({ token, user }) {
-            if (user) token.role = user.role
-            return token
-        },
-        session({ session, token }) {
-            session.user.role = token.role
-            return session
-        }
-    },
+
     session: {
         maxAge: 365 * 24 * 60 * 60, // 365 days
     },
