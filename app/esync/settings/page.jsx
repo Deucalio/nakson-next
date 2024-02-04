@@ -282,7 +282,10 @@ export default function Page() {
     // 1. Save the Token in the User Database by sending a POST request to the server
     // const res = await axios.post(`${process.env.}/shopify/save-token`, {
     // const res = sendRequest("sad");
-    console.log("res", process.env.NEXT_PUBLIC_SERVER_URL || "sad");
+    console.log(
+      "res",
+      process.env.NEXT_PUBLIC_SERVER_URL || process.env.SERVER_URL
+    );
   };
 
   return (
