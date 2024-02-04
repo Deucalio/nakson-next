@@ -4,8 +4,10 @@ import Nav from "../../components/esync/Nav";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import axios from "axios";
+import ImageCropper from "../actions/ImageCropper";
+import { getUser } from "../../esync/actions/getUser";
 
 const Shippers = () => {
   return (
@@ -165,16 +167,30 @@ export default function Page() {
   const sidebarItems = useRef(null);
   const pageElement = useRef(null);
   const [openSidebar, setOpenSidebar] = useState(false);
+  const [user, setUser] = useState(null);
+  const [page, setPage] = useState("configuration");
+
+  const saveUser = async () => {
+    const user = await getUser();
+    setUser(user);
+  };
+
+  useEffect(() => {
+    saveUser();
+  }, []);
 
   // Configuration for Shopify Store
   const [shopifyInfo, setShopifyInfo] = useState({
     shopName: "",
     shopLogo: "",
   });
-
-  const router = useRouter();
-
-  const [page, setPage] = useState("configuration");
+  const [showTokenModal, setShowTokenModal] = useState(false);
+  const [shopifyToken, setShopifyToken] = useState("");
+  const [displayError, setDisplayError] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [croppedImage, setCroppedImage] = useState(null);
+  const [copiedText, setCopiedText] = useState(null);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleSidebar = () => {
     setOpenSidebar(!openSidebar);
@@ -210,9 +226,74 @@ export default function Page() {
     setShopifyInfo({ ...shopifyInfo, shopLogo: file });
   };
 
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleCrop = (croppedImageData) => {
+    setCroppedImage(croppedImageData);
+  };
+
+  const randomString = (length) => {
+    const result = [];
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result.push(
+        characters.charAt(Math.floor(Math.random() * charactersLength))
+      );
+    }
+    return result.join("");
+  };
+
+  // Write a function for RSA Encryption with the public key
+  const RSA = (data, publicKey) => {
+    const encryptedData = CryptoJS.AES.encrypt(data, publicKey).toString();
+    return encryptedData;
+  };
+
+  const handleCopy = async (e) => {
+    e.preventDefault();
+    await navigator.clipboard.writeText(copiedText);
+    setIsCopied(true);
+    console.log("sad", copiedText);
+  };
+
+  const handleConnect = async (e) => {
+    e.preventDefault();
+
+    if (!shopifyInfo.shopName || !shopifyInfo.shopLogo) {
+      // alert("sad ");
+      setDisplayError(true);
+      return;
+    }
+
+    // Connect Shopify Store
+
+    setShowTokenModal(true);
+    const token = randomString(6);
+    setCopiedText(token);
+    setShopifyToken(token);
+
+    // 1. Save the Token in the User Database by sending a POST request to the server
+    const res = await axios.post("http://localhost:4000/shopify/save-token", {
+      token: token,
+      email: user.user.email,
+    });
+    console.log("res", res.data);
+  };
+
   return (
     <>
-      <section className="grid md:h-screen grid-cols-6 bg-black relative">
+      <section
+        className={`grid md:h-screen grid-cols-6 bg-black relative  transition-all duration-1000 ${
+          showTokenModal ? ["blur-3xl", "pointer-events-none"].join(" ") : ""
+        }`}
+      >
         {/* OPENED NAVBAR */}
 
         <Nav
@@ -335,17 +416,31 @@ export default function Page() {
                     width={75}
                     height={75}
                     src="
-                  https://assets.stickpng.com/images/58482ec0cef1014c0b5e4a70.png"
+                  https://i.imgur.com/MJGrMHP.png"
                     alt="Shopify Logo"
                   />
                 </li>
-                <ul className="rounded-lg  px-6 py-2">
+                <ul className="relative rounded-lg  px-6 py-2">
+                  <span
+                    className={`absolute text-xs text-red-700 -top-2 transition-all duration-500 left-32 ${
+                      displayError ? "" : "opacity-0"
+                    }`}
+                  >
+                    You can't leave any fields empty
+                  </span>
                   <li className=" flex flex-row mt-3 items-center gap-5  py-1 text-sm text-slate-500 font-semibold tracking-normal transition-all duration-200">
                     <p className="text-slate-300">Shop Name</p>
                     <input
                       placeholder="Enter Your Shop Name"
                       className="transition-all duration-300 h-10 w-44 rounded-md text-slate-300 placeholder:text-slate-400 placeholder:text-xs placeholder:text-opacity-35 placeholder:font-normal    bg-slate-900   px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-800"
                       type="text"
+                      value={shopifyInfo.shopName}
+                      onChange={(e) =>
+                        setShopifyInfo({
+                          ...shopifyInfo,
+                          shopName: e.target.value,
+                        })
+                      }
                     />
                   </li>
                   <li className=" flex flex-row gap-3  py-1 mt-3 text-sm font-semibold tracking-normal lg:flex-col transition-all duration-200  self-center"></li>
@@ -380,12 +475,17 @@ export default function Page() {
                       className="bg-blue-700 hover:bg-blue-800 transition-all duration-300 p-2 rounded-md cursor-pointer  text-xs  text-center"
                       htmlFor="img"
                     >
-                      Select Image
+                      {shopifyInfo.shopLogo
+                        ? shopifyInfo.shopLogo.name
+                        : "Upload Logo"}
                     </label>
                   </li>
 
-                  <li className=" flex flex-row -mt-1 gap-3 px-2 py-1 text-sm font-semibold tracking-normal items-center justify-center ml-[66px] w-40">
-                    <button className="rounded-md bg-violet-700 px-4 py-2 text-slate-100 hover:bg-violet-800 mt-6">
+                  <li
+                    onClick={handleConnect}
+                    className=" flex flex-row -mt-1 gap-3 px-2 py-1 text-sm font-semibold tracking-normal items-center justify-center ml-[90px] w-40"
+                  >
+                    <button className="rounded-md bg-violet-700 px-4 py-2 text-slate-100 hover:bg-violet-800 mt-8">
                       Connect Shop
                     </button>
                   </li>
@@ -491,6 +591,93 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      {/* TOKEN DIV */}
+      <div
+        className={`absolute bg-black left-1/3 top-24 z-10 h-[19rem] w-[28rem] transition-all duration-700 rounded-md border-2 border-indigo-950 ${
+          showTokenModal ? "" : ["opacity-0", "pointer-events-none"].join(" ")
+        }`}
+      >
+        <ul className="relative flex h-full flex-col items-center py-6 text-slate-100">
+          <li
+            onClick={() => {
+              setIsCopied(false);
+              setShowTokenModal(false);
+            }}
+            className="absolute right-3 top-2 text-red-700 border-2 border-red-700 rounded-2xl cursor-pointer hover:text-red-800 hover:border-red-800 transition-all"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-7 w-7"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </li>
+          <li className="">
+            <p>Your Shopify Token is</p>
+          </li>
+          <li className="my-6">
+            <div className="relative h-[1.9rem] w-52 rounded-lg border-2 border-blue-600 bg-gray-950 px-2 text-lg text-white">
+              {shopifyToken}
+              <button
+                onClick={handleCopy}
+                className="absolute right-0 overflow-hidden rounded-md bg-blue-600 px-4 text-white"
+              >
+                {isCopied ? "Copied" : "Copy"}
+              </button>
+            </div>
+          </li>
+          <li className="mt-3 text-base p-2 w-72 ml-16">
+            <p>You'll need this token on the shopify app.</p>
+          </li>
+          <li className="translate-y-6">
+            <button className="rounded-md bg-green-700 px-4 py-2 transition-all hover:bg-green-800 ml-2">
+              Proceed
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      {/* _____________ */}
+
+      <div className="absolute z-10 border-2 border-indigo-700 top-16 left-1/3 h-[28rem] w-[35rem] hidden ">
+        <div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleCrop(URL.createObjectURL(e.target.files[0]))}
+          />
+
+          {croppedImage && (
+            <button onClick={() => setCroppedImage(null)}>
+              Clear Cropped Image
+            </button>
+          )}
+          {croppedImage && (
+            <ImageCropper imageSrc={croppedImage} onCrop={handleCrop} />
+          )}
+
+          <div className="p-4">
+            {croppedImage && (
+              <div className="h-36 w-36 bg-white border-2 rounded-md">
+                <img
+                  className="h-32 w-32"
+                  src={croppedImage}
+                  alt="Cropped Image"
+                />
+              </div>
+            )}
+            {croppedImage && <p>Cropped Image Preview</p>}
+          </div>
+        </div>
+      </div>
     </>
   );
 }
