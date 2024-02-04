@@ -25,7 +25,7 @@ export async function GET(request) {
   } finally {
     await prisma.$disconnect();
   }
-  return Response.json({ serverURL: newUser });
+  return Response.json({ user: newUser });
 
   // return Response.json({ serverURL: process.env.NEXT_PUBLIC_SERVER_URL || process.env.SERVER_URL });
 }
