@@ -27,6 +27,7 @@ export default function Page() {
       headers: { email: user.user.email },
     });
     const orders = await res.data;
+    console.log("user:", user);
     setOrders(orders.orders);
   };
 

@@ -280,11 +280,9 @@ export default function Page() {
     setShopifyToken(token);
 
     // 1. Save the Token in the User Database by sending a POST request to the server
-    const res = await axios.post("http://localhost:4000/shopify/save-token", {
-      token: token,
-      email: user.user.email,
-    });
-    console.log("res", res.data);
+    // const res = await axios.post(`${process.env.}/shopify/save-token`, {
+    // const res = sendRequest("sad");
+    console.log("res", process.env.NEXT_PUBLIC_SERVER_URL || "sad");
   };
 
   return (
@@ -635,11 +633,11 @@ export default function Page() {
             </div>
           </li>
           <li className="mt-3 text-base p-2 w-72 ml-16">
-            <p>You'll need this token on the shopify app.</p>
+            <p>You'll need this token on your Shopify App.</p>
           </li>
           <li className="translate-y-6">
             <button className="rounded-md bg-green-700 px-4 py-2 transition-all hover:bg-green-800 ml-2">
-              Proceed
+              Click to Proceed
             </button>
           </li>
         </ul>

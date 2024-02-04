@@ -19,21 +19,16 @@ export const {
             },
         }),
     ],
-    // callbacks: {
-    //   async session(session, token, user) {
-    //     session.user = user;
-    //     return session;
-    //   },
-    //   async jwt(token, user) {
-    //     // If a user is signed in, expose additional fields in the JWT token
-    //     if (user) {
-    //       // token.id = user.id; // Add more fields as needed
-    //       token.firstName = user.firstName;
-    //       return user
-    //     }
-    //     return token;
-    //   },
-    // },
+    callbacks: {
+        jwt({ token, user }) {
+            if (user) token.role = user.role
+            return token
+        },
+        session({ session, token }) {
+            session.user.role = token.role
+            return session
+        }
+    },
     session: {
         maxAge: 365 * 24 * 60 * 60, // 365 days
     },
