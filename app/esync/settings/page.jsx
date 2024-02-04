@@ -289,7 +289,7 @@ export default function Page() {
     // send get request to the hello route of hello.js
     // const res = await fetch("/api/hello");
     // send post request to the hello route of hello.js
-    const res = await axios.get("/api/hello");
+    const res = await axios.get("/api/server-url");
     console.log("server URL", res.data.serverURL);
   };
 
