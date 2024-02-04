@@ -286,6 +286,10 @@ export default function Page() {
       "res",
       process.env.NEXT_PUBLIC_SERVER_URL || process.env.SERVER_URL
     );
+    // const res = await fetch("./hello")
+    // send get request to the hello route of hello.js
+    const res = await fetch("/api/hello");
+    console.log("res", res);
   };
 
   return (
