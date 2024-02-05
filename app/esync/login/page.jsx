@@ -14,13 +14,15 @@ const Page = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // const user = await Login(formData);
     try {
       const res_first = await axios.get("/api/server-url");
       const { serverURL } = res_first.data;
-      
+      console.log("serverURL: ", serverURL);
+      return;
+
       const res = await axios.post(`${serverURL}/login`, formData);
-      await signUserIn(res.data.user);
+      console.log("res.data: ", res.data.user, email, password);
+      // await signUserIn(res.data.user);
     } catch (e) {
       if (e.response.status === 400) {
         errorSpanElement.current.classList.remove("scale-0");

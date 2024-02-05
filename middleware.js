@@ -11,7 +11,7 @@ export default auth((req) => {
 
   if (!isLoggedIn) {
     // if the user is not logged in he can still visit route route / and /portfolio
-    if (req.nextUrl.pathname === "/" || req.nextUrl.pathname === "/portfolio") {
+    if (req.nextUrl.pathname === "/" || req.nextUrl.pathname === "/portfolio" || req.nextUrl.pathname === "/api/server-url") {
       return NextResponse.next();
     }
     if (req.nextUrl.pathname.includes("/service")) {
