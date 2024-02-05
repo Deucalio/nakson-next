@@ -17,12 +17,9 @@ const Page = () => {
     try {
       const res_first = await axios.get("/api/server-url");
       const { serverURL } = res_first.data;
-      console.log("serverURL: ", serverURL);
-      return;
 
       const res = await axios.post(`${serverURL}/login`, formData);
-      console.log("res.data: ", res.data.user, email, password);
-      // await signUserIn(res.data.user);
+      await signUserIn(res.data.user);
     } catch (e) {
       if (e.response.status === 400) {
         errorSpanElement.current.classList.remove("scale-0");
