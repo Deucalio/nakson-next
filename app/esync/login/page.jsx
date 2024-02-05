@@ -12,10 +12,10 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // set isLoading to false after 3 seconds
+    // set isLoading to false after 5 seconds
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+    }, 5000);
     return () => clearTimeout(timer);
   });
 

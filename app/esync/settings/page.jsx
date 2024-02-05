@@ -8,6 +8,7 @@ import { use, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import ImageCropper from "../actions/ImageCropper";
 import { getUser } from "../../esync/actions/getUser";
+import shopifyLogo from "../../../public/shopify-logo.png";
 
 const Shippers = () => {
   return (
@@ -414,12 +415,12 @@ export default function Page() {
           {page === "configuration" && (
             <div className="flex flex-col  gap-1   border-slate-700 pb-5">
               <ul className="flex flex-col  gap-2  py-2 w-[30rem]  ">
-                <li>
+                <li className="">
                   <Image
+                  className="h-[75px] w-[75px]"
                     width={75}
                     height={75}
-                    src="
-                  https://i.imgur.com/MJGrMHP.png"
+                    src={shopifyLogo}
                     alt="Shopify Logo"
                   />
                 </li>
