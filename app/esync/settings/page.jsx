@@ -287,7 +287,7 @@ export default function Page() {
       email: user.user.email,
       token: token,
     });
-    console.log("response: ",response.data);
+    console.log("response: ", response.data);
   };
 
   return (

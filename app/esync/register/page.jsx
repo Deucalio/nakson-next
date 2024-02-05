@@ -26,9 +26,11 @@ const Success = () => {
                 </p>
               </li>
               <li className="flex mt-7 justify-center">
-                <button className="bg-green-700 hover:bg-green-800 transition-all  text-white  py-3 px-6 rounded">
-                  Finish Registration
-                </button>
+                <Link href={"/esync/login"}>
+                  <button className="bg-green-700 hover:bg-green-800 transition-all  text-white  py-3 px-6 rounded">
+                    Finish Registration
+                  </button>
+                </Link>
               </li>
             </ul>
           </form>
