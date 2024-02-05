@@ -9,10 +9,21 @@ const Page = () => {
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // set isLoading to false after 3 seconds
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  });
 
   const errorSpanElement = useRef(null);
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    setIsLoading(true);
 
     try {
       const res_first = await axios.get("/api/server-url");
@@ -87,6 +98,7 @@ const Page = () => {
                     ></span>
 
                     <button
+                      disabled={isLoading}
                       onClick={handleLogin}
                       className="relative  mx-auto text-sm mt-4 w-32 rounded-md bg-gradient-to-l from-indigo-600 to-violet-700 px-3 py-2 hover:bg-indigo-800 hover:from-indigo-700 hover:to-violet-800"
                     >
