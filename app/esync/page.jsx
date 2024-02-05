@@ -22,8 +22,11 @@ export default function Page() {
   };
 
   const getData = async () => {
+    const res_first = await axios.get("/api/server-url");
+    const { serverURL } = res_first.data;
+
     // send request to backend (localhost:4000) email as a header
-    const res = await axios.get("http://localhost:4000", {
+    const res = await axios.get(`${serverURL}:4000`, {
       headers: { email: user.user.email },
     });
     const orders = await res.data;

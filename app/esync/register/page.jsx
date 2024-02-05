@@ -61,10 +61,13 @@ const OTPVerification = ({
 
   // FINAL FUNCTIONS
   const resendCode = async (e) => {
+    const res_first = await axios.get("/api/server-url");
+    const { serverURL } = res_first.data;
+
     // reset the timer
     setResendTimer(60);
     // send the otp again to the user
-    const res = await axios.post("http://localhost:4000/otp", email);
+    const res = await axios.post(`${serverURL}/otp`, email);
     setOtp(res.data);
     e.preventDefault();
   };
@@ -75,9 +78,12 @@ const OTPVerification = ({
     const OTPUserEntered = Number(codeInputElement.current.value);
 
     if (OTPUserEntered === otp) {
+      const res_first = await axios.get("/api/server-url");
+      const { serverURL } = res_first.data;
+
       // Register the User into our DB
       // Send request to backend
-      const res = await axios.post("http://localhost:4000/register", userInfo);
+      const res = await axios.post(`${serverURL}/register`, userInfo);
       setSuccess(true);
       console.log("res: ", res.data);
 
@@ -383,7 +389,10 @@ const Page = () => {
 
     // Send request to server and check if email is already registered
     try {
-      const res = await axios.post("http://localhost:4000/otp", userInfo);
+      const res_first = await axios.get("/api/server-url");
+      const { serverURL } = res_first.data;
+
+      const res = await axios.post(`${serverURL}/otp`, userInfo);
       setOtp(res.data);
     } catch (e) {
       if (e.request.status === 409) {
