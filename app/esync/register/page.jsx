@@ -61,7 +61,7 @@ const OTPVerification = ({
       setDisableBtn(false);
     }, 5000);
     return () => clearTimeout(timeout);
-  });
+  },[disableBtn]);
 
   const invalidOTPSpan = useRef(null);
 
