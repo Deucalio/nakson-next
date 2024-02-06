@@ -61,7 +61,7 @@ const OTPVerification = ({
       setDisableBtn(false);
     }, 5000);
     return () => clearTimeout(timeout);
-  },[disableBtn]);
+  }, [disableBtn]);
 
   const invalidOTPSpan = useRef(null);
 
@@ -85,6 +85,7 @@ const OTPVerification = ({
   const registerUser = async (e) => {
     e.preventDefault();
     setDisableBtn(true);
+    console.log("registering user");
 
     const OTPUserEntered = Number(codeInputElement.current.value);
 
@@ -185,7 +186,7 @@ const OTPVerification = ({
                   onClick={registerUser}
                   className={`mx-auto mt-10 w-32 px-3 py-2 rounded-md bg-gradient-to-l from-indigo-600 to-violet-700  ${[
                     "hover:bg-indigo-800, hover:from-indigo-700, hover:to-violet-800 text-sm",
-                  ].join(" ")}`}
+                  ].join(" ")} disabled:opacity-50`}
                 >
                   Register
                 </button>
