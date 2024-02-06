@@ -464,7 +464,7 @@ export default function Page() {
           {page === "configuration" && (
             <div className="flex flex-col  gap-1   border-slate-700 pb-5">
               <ul className="flex flex-col  gap-2  py-2 w-[30rem]  ">
-                <li className="">
+                <li className="flex flex-row gap-3 items-center">
                   <Image
                     className="h-[75px] w-[75px]"
                     width={75}
@@ -472,6 +472,7 @@ export default function Page() {
                     src={shopifyLogo}
                     alt="Shopify Logo"
                   />
+                  <button className="bg-green-600 hover:bg-green-700 transition-all text-xs px-2 py-2 rounded-md h-8 self-center">Show Connected Stores</button>
                 </li>
                 <ul className="relative rounded-lg  px-6 py-2">
                   <span
