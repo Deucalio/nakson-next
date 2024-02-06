@@ -171,6 +171,15 @@ export default function Page() {
   const [user, setUser] = useState(null);
   const [page, setPage] = useState("configuration");
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000); // 5 seconds
+    return () => clearTimeout(timeout);
+  }, [isLoading]);
+
   const spanRef = useRef(null);
 
   const saveUser = async () => {
@@ -275,8 +284,7 @@ export default function Page() {
       setDisplayError(true);
       return;
     }
-
-    // Connect Shopify Store
+    setIsLoading(true);
 
     // 1. Save the Token in the User Database by sending a POST request to the server
     const res = await axios.get("/api/server-url");
@@ -286,13 +294,37 @@ export default function Page() {
       const response = await axios.post(`${serverURL}/shopify/validate-name`, {
         shopName: shopifyInfo.shopName,
       });
-      console.log("response", response);
-      return;
+      setShowTokenModal(true);
+      const token = randomString(6);
+      setCopiedText(token);
+      setShopifyToken(token);
+      setDisplayError(false);
 
-      // setShowTokenModal(true);
-      // const token = randomString(6);
-      // setCopiedText(token);
-      // setShopifyToken(token);
+      // Save the Image to the Cloudinary API
+      const formData = new FormData();
+      formData.append("file", shopifyInfo.shopLogo);
+      formData.append("upload_preset", "g2yc1e2e");
+
+      const res = await axios.post(
+        "https://api.cloudinary.com/v1_1/dvksijeuj/upload",
+        formData
+      );
+      const { secure_url: imageURL, public_id: publicID } = res.data;
+
+      try {
+        const finalRes = await axios.post(`${serverURL}/shopify/save-token`, {
+          email: user.user.email,
+          token: token,
+          storeName: shopifyInfo.shopName,
+          imageURL,
+          publicID,
+        });
+        console.log("finalRes", finalRes);
+      } catch (e) {
+        console.log(e);
+        alert("ERROR ADDING TO DATABASE");
+        return;
+      }
     } catch (e) {
       if (e.response.status === 400) {
         spanRef.current.textContent = "Name Already Taken";
@@ -507,8 +539,11 @@ export default function Page() {
                     onClick={handleConnect}
                     className=" flex flex-row -mt-1 gap-3 px-2 py-1 text-sm font-semibold tracking-normal items-center justify-center ml-[90px] w-40"
                   >
-                    <button className="rounded-md bg-violet-700 px-4 py-2 text-slate-100 hover:bg-violet-800 mt-8">
-                      Connect Shop
+                    <button
+                      disabled={isLoading}
+                      className="disabled:bg-opacity-50 rounded-md bg-violet-700 px-4 py-2 text-slate-100 hover:bg-violet-800 mt-8"
+                    >
+                      {isLoading ? "Connecting..." : "Connect"}
                     </button>
                   </li>
                 </ul>
