@@ -283,13 +283,18 @@ export default function Page() {
     // 1. Save the Token in the User Database by sending a POST request to the server
     const res = await axios.get("/api/server-url");
     const { serverURL } = res.data;
-    console.log("serverURL: ", serverURL);
 
     const response = await axios.post(`${serverURL}/shopify/save-token`, {
       email: user.user.email,
       token: token,
     });
     console.log("response: ", response.data);
+
+    // Save the store name and the image data in the local storage
+    localStorage.setItem("shopName", shopifyInfo.shopName);
+    const reader = new FileReader();
+    // Save the image in local storage
+    localStorage.setItem("image", reader.result);
   };
 
   return (
@@ -418,7 +423,7 @@ export default function Page() {
               <ul className="flex flex-col  gap-2  py-2 w-[30rem]  ">
                 <li className="">
                   <Image
-                  className="h-[75px] w-[75px]"
+                    className="h-[75px] w-[75px]"
                     width={75}
                     height={75}
                     src={shopifyLogo}

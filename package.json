@@ -12,6 +12,8 @@
     "prisma:generate": "prisma generate"
   },
   "dependencies": {
+    "@cloudinary/react": "^1.12.0",
+    "@cloudinary/url-gen": "^1.16.1",
     "@headlessui/react": "^1.7.18",
     "@popperjs/core": "^2.11.8",
     "@prisma/adapter-pg": "^5.9.1",
