@@ -53,6 +53,16 @@ const OTPVerification = ({
   const inputRef = useRef(null);
   const codeInputElement = useRef(null);
 
+  const [disableBtn, setDisableBtn] = useState(false);
+
+  useEffect(() => {
+    // Enable Button after 5 seconds
+    let timeout = setTimeout(() => {
+      setDisableBtn(false);
+    }, 5000);
+    return () => clearTimeout(timeout);
+  });
+
   const invalidOTPSpan = useRef(null);
 
   const handleChangeEmail = (e) => {
@@ -74,6 +84,7 @@ const OTPVerification = ({
 
   const registerUser = async (e) => {
     e.preventDefault();
+    setDisableBtn(true);
 
     const OTPUserEntered = Number(codeInputElement.current.value);
 
@@ -170,6 +181,7 @@ const OTPVerification = ({
                 </div>
 
                 <button
+                  disabled={disableBtn}
                   onClick={registerUser}
                   className={`mx-auto mt-10 w-32 px-3 py-2 rounded-md bg-gradient-to-l from-indigo-600 to-violet-700  ${[
                     "hover:bg-indigo-800, hover:from-indigo-700, hover:to-violet-800 text-sm",

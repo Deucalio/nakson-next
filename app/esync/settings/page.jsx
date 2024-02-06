@@ -171,6 +171,8 @@ export default function Page() {
   const [user, setUser] = useState(null);
   const [page, setPage] = useState("configuration");
 
+  const spanRef = useRef(null);
+
   const saveUser = async () => {
     const user = await getUser();
     setUser(user);
@@ -269,32 +271,41 @@ export default function Page() {
 
     if (!shopifyInfo.shopName || !shopifyInfo.shopLogo) {
       // alert("sad ");
+      spanRef.current.textContent = "You can't leave any fields empty";
       setDisplayError(true);
       return;
     }
 
     // Connect Shopify Store
 
-    setShowTokenModal(true);
-    const token = randomString(6);
-    setCopiedText(token);
-    setShopifyToken(token);
-
     // 1. Save the Token in the User Database by sending a POST request to the server
     const res = await axios.get("/api/server-url");
     const { serverURL } = res.data;
 
-    const response = await axios.post(`${serverURL}/shopify/save-token`, {
-      email: user.user.email,
-      token: token,
-    });
-    console.log("response: ", response.data);
+    try {
+      const response = await axios.post(`${serverURL}/shopify/validate-name`, {
+        shopName: shopifyInfo.shopName,
+      });
+      console.log("response", response);
+      return;
 
-    // Save the store name and the image data in the local storage
-    localStorage.setItem("shopName", shopifyInfo.shopName);
-    const reader = new FileReader();
-    // Save the image in local storage
-    localStorage.setItem("image", reader.result);
+      // setShowTokenModal(true);
+      // const token = randomString(6);
+      // setCopiedText(token);
+      // setShopifyToken(token);
+    } catch (e) {
+      if (e.response.status === 400) {
+        spanRef.current.textContent = "Name Already Taken";
+        setDisplayError(true);
+      }
+      console.log(e);
+      return;
+    }
+
+    // const response = await axios.post(`${serverURL}/shopify/save-token`, {
+    //   email: user.user.email,
+    //   token: token,
+    // });
   };
 
   return (
@@ -432,6 +443,7 @@ export default function Page() {
                 </li>
                 <ul className="relative rounded-lg  px-6 py-2">
                   <span
+                    ref={spanRef}
                     className={`absolute text-xs text-red-700 -top-2 transition-all duration-500 left-32 ${
                       displayError ? "" : "opacity-0"
                     }`}
