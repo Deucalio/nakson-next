@@ -215,16 +215,12 @@ export default function Page() {
     setShowConnectedStores(!showConnectedStores);
 
     // If the stores array is empty, make a request to the server to get the stores
-    if (!stores.length) {
-      const res = await axios.get("/api/server-url");
-      const { serverURL } = res.data;
-      const response = await axios.post(`${serverURL}/shopify/get-stores`, {
-        email: user.user.email,
-      });
-      setStores(response.data.stores);
-      return;
-    }
-    console.log("stores: ", stores);
+    const res = await axios.get("/api/server-url");
+    const { serverURL } = res.data;
+    const response = await axios.post(`${serverURL}/shopify/get-stores`, {
+      email: user.user.email,
+    });
+    setStores(response.data.stores);
     return;
   };
 
@@ -731,7 +727,10 @@ export default function Page() {
                       const response = await axios.delete(
                         `${serverURL}/shopify/delete-store/${store.name}`
                       );
-                      console.log("response", response);
+                      if (response.status === 200) {
+                        // Reload the Page
+                        window.location.reload();
+                      }
                     }}
                     disabled={isLoading}
                     className={`bg-red-800 rounded-md px-2 py-2 hover:bg-red-900 transition-all disabled:bg-opacity-50 `}
