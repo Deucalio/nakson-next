@@ -209,7 +209,7 @@ export default function Page() {
   const [stores, setStores] = useState([]);
 
   const getStores = async () => {
-    if (!user.user) {
+    if (!user) {
       return;
     }
     setShowConnectedStores(!showConnectedStores);
@@ -782,14 +782,6 @@ export default function Page() {
           </li>
         </ul> */}
       </div>
-
-      <div
-        className={`inset-0 absolute bg-black bg-opacity-80  transition-all duration-300  ${
-          showConnectedStores
-            ? ""
-            : ["opacity-0", "pointer-events-none"].join(" ")
-        } `}
-      ></div>
 
       {/* TOKEN DIV */}
       <div
