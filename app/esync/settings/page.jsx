@@ -203,6 +203,30 @@ export default function Page() {
   const [croppedImage, setCroppedImage] = useState(null);
   const [copiedText, setCopiedText] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
+  const [showConnectedStores, setShowConnectedStores] = useState(false);
+
+  // Stores user added to the database
+  const [stores, setStores] = useState([]);
+
+  const getStores = async () => {
+    if (!user.user) {
+      return;
+    }
+    setShowConnectedStores(!showConnectedStores);
+
+    // If the stores array is empty, make a request to the server to get the stores
+    if (!stores.length) {
+      const res = await axios.get("/api/server-url");
+      const { serverURL } = res.data;
+      const response = await axios.post(`${serverURL}/shopify/get-stores`, {
+        email: user.user.email,
+      });
+      setStores(response.data.stores);
+      return;
+    }
+    console.log("stores: ", stores);
+    return;
+  };
 
   const handleSidebar = () => {
     setOpenSidebar(!openSidebar);
@@ -211,26 +235,6 @@ export default function Page() {
   const handlePageClick = (e) => {
     const pageToBeViewed = e.target.getAttribute("name");
     setPage(pageToBeViewed);
-  };
-
-  const toggleConfig = (e) => {
-    e.target.parentElement.classList.toggle("translate-x-20");
-
-    const ul = e.target.parentElement.parentElement.children[1];
-    e.target.classList.add("animate-ping");
-
-    e.target.classList.toggle("lg:rotate-90");
-    e.target.classList.toggle("-rotate-90");
-    setTimeout(() => {
-      e.target.classList.remove("animate-ping");
-    }, 1100);
-    console.log("a", ul);
-
-    for (let i = 0; i < ul.children.length; i++) {
-      setTimeout(() => {
-        ul.children[i].classList.toggle("scale-0");
-      }, i * 150);
-    }
   };
 
   const handleFileChange = (event) => {
@@ -260,12 +264,6 @@ export default function Page() {
       );
     }
     return result.join("");
-  };
-
-  // Write a function for RSA Encryption with the public key
-  const RSA = (data, publicKey) => {
-    const encryptedData = CryptoJS.AES.encrypt(data, publicKey).toString();
-    return encryptedData;
   };
 
   const handleCopy = async (e) => {
@@ -344,7 +342,9 @@ export default function Page() {
     <>
       <section
         className={`grid md:h-screen grid-cols-6 bg-black relative  transition-all duration-1000 ${
-          showTokenModal ? ["blur-3xl", "pointer-events-none"].join(" ") : ""
+          showTokenModal || showConnectedStores
+            ? ["blur-3xl", "pointer-events-none"].join(" ")
+            : ""
         }`}
       >
         {/* OPENED NAVBAR */}
@@ -472,7 +472,12 @@ export default function Page() {
                     src={shopifyLogo}
                     alt="Shopify Logo"
                   />
-                  <button className="bg-green-600 hover:bg-green-700 transition-all text-xs px-2 py-2 rounded-md h-8 self-center">Show Connected Stores</button>
+                  <button
+                    onClick={getStores}
+                    className="bg-green-600 hover:bg-green-700 transition-all text-xs px-2 py-2 rounded-md h-8 self-center"
+                  >
+                    Show Connected Stores
+                  </button>
                 </li>
                 <ul className="relative rounded-lg  px-6 py-2">
                   <span
@@ -649,6 +654,143 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      {/* CONNECTED STORES */}
+      <div
+        className={`absolute overflow-y-auto top-24 z-10 flex h-[21rem] w-[37rem] flex-col gap-2 rounded-md border-2 border-indigo-950 bg-black p-2 text-white transition-all duration-700 md:left-1/3 
+      md:-translate-x-11 ${
+        showConnectedStores
+          ? ""
+          : ["opacity-0", "pointer-events-none"].join(" ")
+      }   `}
+      >
+        {stores.length === 0 && (
+          <>
+            <p>No Store Connected</p>
+            <svg
+              onClick={() => setShowConnectedStores(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-9 cursor-pointer w-9 bg-black text-red-600 hover:text-red-800 transition-all absolute right-3 top-2 rounded-md "
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </>
+        )}
+
+        {stores.length !== 0 &&
+          stores.map((store, index) => (
+            <ul
+              key={store.id}
+              className="ml-10 mt-10 flex h-fit w-[30rem] flex-col gap-3 border-b border-slate-500 px-3 py-6"
+            >
+              <li
+                onClick={() => setShowConnectedStores(false)}
+                className={`
+                ${index > 0 ? "hidden" : ""}
+                absolute right-3 top-2 cursor-pointer rounded-2xl border-2 border-red-700 text-red-700 transition-all hover:border-red-800 hover:text-red-800`}
+              >
+                <svg
+                  onClick={() => setShowConnectedStores(false)}
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="h-7 w-7"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18 18 6M6 6l12 12"
+                  />
+                </svg>
+              </li>
+              <li className="flex flex-row items-center gap-3 relative">
+                <img
+                  className="h-16 rounded-md border border-gray-50 bg-gray-50"
+                  src={store.image_url}
+                />
+                <p className="ml-2">{store.name}</p>
+
+                <div className="absolute items-center flex flex-row justify-center gap-10 text-sm -top-4 -right-4  w-52 h-24  ">
+                  <button className="bg-blue-800 rounded-md px-2 py-2 hover:bg-blue-900 transition-all">
+                    Update
+                  </button>
+                  <button
+                    onClick={async () => {
+                      setIsLoading(true);
+                      // Remove the store from the database
+                      const res = await axios.get("/api/server-url");
+                      const { serverURL } = res.data;
+                      const response = await axios.delete(
+                        `${serverURL}/shopify/delete-store/${store.name}`
+                      );
+                      console.log("response", response);
+                    }}
+                    disabled={isLoading}
+                    className={`bg-red-800 rounded-md px-2 py-2 hover:bg-red-900 transition-all disabled:bg-opacity-50 `}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </li>
+              <li className="my-2 flex flex-row gap-8 border-l-2 border-slate-800 bg-slate-900 rounded-md p-2 text-sm">
+                <p>Access Token</p>
+                <p className="font-bold">
+                  {store.store_info.access_token
+                    ? store.store_info.access_token
+                    : "No Access Token, Make sure your Store is connected in our Shopify App."}
+                </p>
+              </li>
+              <li className="my-2 flex flex-row gap-[5.5rem] border-l-2 border-slate-800 bg-slate-900 rounded-md p-2 text-sm">
+                <p>Token</p>
+                <p className="font-bold ">{store.token}</p>
+              </li>
+            </ul>
+          ))}
+
+        {/* for adding second Store */}
+        {/* <ul class="ml-10 mt-10 flex h-fit w-[30rem] flex-col gap-3 border-b border-slate-500 px-3 py-6">
+          <li class="flex flex-row items-center gap-3 relative">
+            <img
+              class="h-16 rounded-md bg-gray-50"
+              src="https://res.cloudinary.com/dvksijeuj/image/upload/v1707228492/esyncStoreLogos/ujstf4bfjtp29gswbxrs"
+            />
+            <p class="ml-2">Nakson</p>
+
+            <div class="absolute items-center flex flex-row justify-center gap-10 text-sm -top-4 -right-4  w-52 h-24  ">
+              <button class="bg-blue-800 rounded-md px-2 py-2 hover:bg-blue-900 transition-all">
+                Update
+              </button>
+              <button class="bg-red-800 rounded-md px-2 py-2 hover:bg-red-900 transition-all">
+                Remove
+              </button>
+            </div>
+          </li>
+          <li class="my-2 flex flex-row gap-8 border-l-2 border-slate-800 bg-slate-900 rounded-md p-2 text-sm">
+            <p>Access Token</p>
+            <p class="font-bold">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</p>
+          </li>
+          <li class="my-2 flex flex-row gap-[5.5rem] border-l-2 border-slate-800 bg-slate-900 rounded-md p-2 text-sm">
+            <p>Token</p>
+            <p class="font-bold ">7xWus4</p>
+          </li>
+        </ul> */}
+      </div>
+
+      <div
+        className={`inset-0 absolute bg-black bg-opacity-80  transition-all duration-300  ${
+          showConnectedStores
+            ? ""
+            : ["opacity-0", "pointer-events-none"].join(" ")
+        } `}
+      ></div>
 
       {/* TOKEN DIV */}
       <div
