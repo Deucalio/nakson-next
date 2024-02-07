@@ -313,6 +313,7 @@ export default function Page() {
           imageURL,
           publicID,
         });
+        setShopifyInfo({ shopName: "", shopLogo: "" });
         console.log("finalRes", finalRes);
       } catch (e) {
         console.log(e);
@@ -742,8 +743,8 @@ export default function Page() {
               <li className="my-2 flex flex-row gap-8 border-l-2 border-slate-800 bg-slate-900 rounded-md p-2 text-sm">
                 <p>Access Token</p>
                 <p className="font-bold">
-                  {store.store_info.access_token
-                    ? store.store_info.access_token
+                  {store.store_info.accessToken
+                    ? store.store_info.accessToken
                     : "No Access Token, Make sure your Store is connected in our Shopify App."}
                 </p>
               </li>
