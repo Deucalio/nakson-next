@@ -209,7 +209,7 @@ export default function Page() {
   const [stores, setStores] = useState([]);
 
   const getStores = async () => {
-    if (!user) {
+    if (!user.user) {
       return;
     }
     setShowConnectedStores(!showConnectedStores);
@@ -313,7 +313,6 @@ export default function Page() {
           imageURL,
           publicID,
         });
-        setShopifyInfo({ shopName: "", shopLogo: "" });
         console.log("finalRes", finalRes);
       } catch (e) {
         console.log(e);
@@ -729,8 +728,7 @@ export default function Page() {
                         `${serverURL}/shopify/delete-store/${store.name}`
                       );
                       if (response.status === 200) {
-                        // Reload the Page
-                        window.location.reload();
+                        // Reload
                       }
                     }}
                     disabled={isLoading}
@@ -743,8 +741,8 @@ export default function Page() {
               <li className="my-2 flex flex-row gap-8 border-l-2 border-slate-800 bg-slate-900 rounded-md p-2 text-sm">
                 <p>Access Token</p>
                 <p className="font-bold">
-                  {store.store_info.accessToken
-                    ? store.store_info.accessToken
+                  {store.store_info.access_token
+                    ? store.store_info.access_token
                     : "No Access Token, Make sure your Store is connected in our Shopify App."}
                 </p>
               </li>
@@ -783,6 +781,14 @@ export default function Page() {
           </li>
         </ul> */}
       </div>
+
+      <div
+        className={`inset-0 absolute bg-black bg-opacity-80  transition-all duration-300  ${
+          showConnectedStores
+            ? ""
+            : ["opacity-0", "pointer-events-none"].join(" ")
+        } `}
+      ></div>
 
       {/* TOKEN DIV */}
       <div
