@@ -1,9 +1,7 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-import { usePathname } from "next/navigation";
 const Nav = ({
   pageElement,
   openSidebar,
@@ -12,16 +10,7 @@ const Nav = ({
   handleSidebar,
   sidebarItems,
 }) => {
-  // use Router to determine the current route
-  const router = useRouter();
-  const pathname = usePathname();
-  const [route, setRoute] = useState("");
-
   useEffect(() => {
-    // Get the current route
-    const currentRoute = pathname.split("/")[2];
-    setRoute(currentRoute);
-
     const sidebarElements = sidebarItems.current.children;
     if (openSidebar) {
       setTimeout(() => {
@@ -190,10 +179,8 @@ const Nav = ({
           className="mx-auto  flex w-11/12 flex-col justify-center gap-3 mt-4 gap-y-2 rounded-sm pl-2"
         >
           <li
-            className={` ${
-              route === "home" && "bg-gray-500/30"
-            } flex h-8 xl:h-10  flex-row items-center gap-1 text-xs transition-all duration-300 
-        hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25  lg:gap-4 lg:pl-8`}
+            className="flex h-8 xl:h-10  flex-row items-center gap-1 text-xs transition-all duration-300 
+        hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25  lg:gap-4 lg:pl-8"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -212,11 +199,7 @@ const Nav = ({
 
             <p className="transition-all duration-200">Home</p>
           </li>
-          <li
-            className={` ${
-              route === "products" && "bg-gray-500/30"
-            }  flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-`}
-          >
+          <li className="flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-8">
             <svg
               className="w-4 h-4 xl:h-6 xl:w-6 fill-white"
               xmlns="http://www.w3.org/2000/svg"
@@ -227,11 +210,7 @@ const Nav = ({
 
             <p className="transition-all duration-200">Products</p>
           </li>
-          <li
-            className={` ${
-              route === "orders" && "bg-gray-500/30"
-            }  flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-`}
-          >
+          <li className="flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-8">
             <svg
               className="w-4 h-4 xl:h-6 xl:w-6 fill-white"
               xmlns="http://www.w3.org/2000/svg"
@@ -242,11 +221,7 @@ const Nav = ({
 
             <p className="transition-all duration-200">Orders</p>
           </li>
-          <li
-            className={` ${
-              route === "customers" && "bg-gray-500/30"
-            }  flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-`}
-          >
+          <li className="flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-8">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -264,11 +239,7 @@ const Nav = ({
 
             <p className="transition-all duration-200">Customers</p>
           </li>
-          <li
-            className={` ${
-              route === "finance" && "bg-gray-500/30"
-            }  flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-`}
-          >
+          <li className="flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-8">
             <svg
               className="w-4 h-4 xl:h-6 xl:w-6 fill-white"
               xmlns="http://www.w3.org/2000/svg"
@@ -280,11 +251,7 @@ const Nav = ({
 
             <p className="transition-all duration-200">Finance</p>
           </li>
-          <li
-            className={` ${
-              route === "settings" && "bg-gray-500/30"
-            }  flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-`}
-          >
+          <li className="flex h-8 xl:h-10 cursor-pointer flex-row items-center gap-1 bg-gray-500  bg-opacity-25 text-xs lg:gap-4 lg:pl-8">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
