@@ -100,7 +100,7 @@ const Page = () => {
                     <button
                       disabled={isLoading}
                       onClick={handleLogin}
-                      className="relative  mx-auto text-sm mt-4 w-32 rounded-md bg-gradient-to-l from-indigo-600 to-violet-700 px-3 py-2 hover:bg-indigo-800 hover:from-indigo-700 hover:to-violet-800"
+                      className="relative disabled:pointer-events-none disabled:opacity-75  mx-auto text-sm mt-4 w-32 rounded-md bg-gradient-to-l from-indigo-600 to-violet-700 px-3 py-2 hover:bg-indigo-800 hover:from-indigo-700 hover:to-violet-800"
                     >
                       Login
                     </button>
