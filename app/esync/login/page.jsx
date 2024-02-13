@@ -4,7 +4,12 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { signUserIn } from "../actions/signUserIn";
+import { useSearchParams } from "next/navigation";
 const Page = () => {
+  const searchParams = useSearchParams();
+
+  const accesstoken = searchParams.get("accesstoken") || "";
+  const shop = searchParams.get("shop") || "";
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -30,7 +35,14 @@ const Page = () => {
       const { serverURL } = res_first.data;
 
       const res = await axios.post(`${serverURL}/login`, formData);
-      await signUserIn(res.data.user);
+      const response = await signUserIn(res.data.user);
+      if (response.success) {
+        if (accesstoken && shop) {
+          window.location.href = `/esync/settings?accesstoken=${accesstoken}&shop=${shop}`;
+          return;
+        }
+        window.location.href = `/esync`;
+      }
     } catch (e) {
       if (e.response.status === 400) {
         errorSpanElement.current.classList.remove("scale-0");
@@ -96,7 +108,7 @@ const Page = () => {
                       ref={errorSpanElement}
                       className="absolute bottom-12 text-xs text-red-700 scale-0 transition-all"
                     ></span>
-
+                    {accesstoken && shop ? null : null}
                     <button
                       disabled={isLoading}
                       onClick={handleLogin}
@@ -108,12 +120,23 @@ const Page = () => {
                   <li className="mt-4 ml-3">
                     <p>
                       Don't have an account?
-                      <Link href={"/esync/register"}>
-                        <span className="cursor-pointer font-semibold text-indigo-500 transition-all hover:text-indigo-700 hover:underline">
-                          {" "}
-                          Register{" "}
-                        </span>
-                      </Link>
+                      {accesstoken && shop ? (
+                        <Link
+                          href={`/esync/register?accesstoken=${accesstoken}&shop=${shop}`}
+                        >
+                          <span className="cursor-pointer font-semibold text-indigo-500 transition-all hover:text-indigo-700 hover:underline">
+                            {" "}
+                            Register{" "}
+                          </span>
+                        </Link>
+                      ) : (
+                        <Link href={"/esync/register"}>
+                          <span className="cursor-pointer font-semibold text-indigo-500 transition-all hover:text-indigo-700 hover:underline">
+                            {" "}
+                            Register{" "}
+                          </span>
+                        </Link>
+                      )}
                     </p>
                   </li>
                 </ul>

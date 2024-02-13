@@ -1,13 +1,14 @@
 "use server";
 import { auth, signIn, signOut } from "../../../auth";
-import axios from "axios";
 
 const signUserIn = async (credential) => {
   await signIn("credentials", {
     email: credential.email,
     password: credential.password,
-    redirectTo: "/esync/settings",
+    // redirectTo: false,
+    redirect: false,
   });
+  return { success: true };
 };
 
 export { signUserIn };

@@ -2,9 +2,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import axios from "axios";
+import { useSearchParams } from "next/navigation";
 
 const Success = () => {
+  const searchParams = useSearchParams();
+
+  const accesstoken = searchParams.get("accesstoken") || "";
+  const shop = searchParams.get("shop") || "";
   return (
     <div className="col-span-5 overflow-scroll rounded-3xl border-fuchsia-400 py-12 pl-24 md:pl-8 lg:overflow-hidden">
       <ul className="mx-auto -ml-10 flex flex-col items-center gap-4 border-fuchsia-900 text-lg text-slate-200 ">
@@ -26,11 +32,21 @@ const Success = () => {
                 </p>
               </li>
               <li className="flex mt-7 justify-center">
-                <Link href={"/esync/login"}>
-                  <button className="bg-green-700 hover:bg-green-800 transition-all  text-white  py-3 px-6 rounded">
-                    Finish Registration
-                  </button>
-                </Link>
+                {accesstoken && shop ? (
+                  <Link
+                    href={`/esync/login?accesstoken=${accesstoken}&shop=${shop}`}
+                  >
+                    <button className="bg-green-700 hover:bg-green-800 transition-all  text-white  py-3 px-6 rounded">
+                      Finish Registration
+                    </button>
+                  </Link>
+                ) : (
+                  <Link href={"/esync/login"}>
+                    <button className="bg-green-700 hover:bg-green-800 transition-all  text-white  py-3 px-6 rounded">
+                      Finish Registration
+                    </button>
+                  </Link>
+                )}
               </li>
             </ul>
           </form>
@@ -71,6 +87,8 @@ const OTPVerification = ({
 
   // FINAL FUNCTIONS
   const resendCode = async (e) => {
+    e.preventDefault();
+
     const res_first = await axios.get("/api/server-url");
     const { serverURL } = res_first.data;
 
@@ -79,7 +97,6 @@ const OTPVerification = ({
     // send the otp again to the user
     const res = await axios.post(`${serverURL}/otp`, email);
     setOtp(res.data);
-    e.preventDefault();
   };
 
   const registerUser = async (e) => {
@@ -170,6 +187,7 @@ const OTPVerification = ({
                     Invalid OTP
                   </span>
                   <button
+                    type="button"
                     disabled={resendTimer > 0}
                     onClick={resendCode}
                     className={`mt-4 h-10 w-24 rounded-md ${
@@ -200,6 +218,7 @@ const OTPVerification = ({
 };
 
 const Register = ({
+  redirectToLogin,
   buttonDisabled,
   firstNameRef,
   lastNameRef,
@@ -210,6 +229,11 @@ const Register = ({
   userInfo,
   setUserInfo,
 }) => {
+  const searchParams = useSearchParams();
+
+  const accesstoken = searchParams.get("accesstoken") || "";
+  const shop = searchParams.get("shop") || "";
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserInfo({ ...userInfo, [name]: value });
@@ -285,15 +309,25 @@ const Register = ({
                   <div className="loader absolute top-[10px] right-4 opacity-0 "></div>
                 </button>
               </li>
-              <li className="md:mt-4 ml-4">
-                <p>
-                  Already have an account?{" "}
-                  <Link href={"/esync/login"}>
-                    <button className="cursor-pointer font-semibold text-indigo-500 transition-all hover:text-indigo-700 hover:underline">
-                      Login
-                    </button>
+              <li className="md:mt-4 ml-4 flex flex-row gap-1">
+                <p>Already have an account? </p>
+                {accesstoken && shop ? (
+                  <Link
+                    href={`/esync/login?accesstoken=${accesstoken}&shop=${shop}`}
+                  >
+                    <span className="cursor-pointer font-semibold text-indigo-500 transition-all hover:text-indigo-700 hover:underline">
+                      {" "}
+                      Login{" "}
+                    </span>
                   </Link>
-                </p>
+                ) : (
+                  <Link href={"/esync/login"}>
+                    <span className="cursor-pointer font-semibold text-indigo-500 transition-all hover:text-indigo-700 hover:underline">
+                      {" "}
+                      Login{" "}
+                    </span>
+                  </Link>
+                )}
               </li>
             </ul>
           </form>
@@ -310,6 +344,14 @@ const Page = () => {
     email: "",
     password: "",
   });
+
+  const searchParams = useSearchParams();
+
+  const accesstoken = searchParams.get("accesstoken") || "";
+  const shop = searchParams.get("shop") || "";
+
+  console.log("accesstoken : ", accesstoken);
+  console.log("shop : ", shop);
 
   const [otp, setOtp] = useState("");
   const [lastErrorInput, setLastErrorInput] = useState(null);
