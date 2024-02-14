@@ -476,7 +476,15 @@ export default function Page() {
                     Show Connected Stores
                   </button>
                 </li>
-                <ul className="relative rounded-lg  px-6 py-2">
+                <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
+                  <p>
+                    To connect your store please visit our shopify app{" "}
+                    <span className="   border-opacity-25 py-2  text-blue-500 transition-all hover:text-blue-600 cursor-pointer">
+                      Click Here
+                    </span>
+                  </p>
+                </li>
+                <ul className="relative rounded-lg  px-6 py-2 hidden">
                   <span
                     ref={spanRef}
                     className={`absolute text-xs text-red-700 -top-2 transition-all duration-500 left-32 ${
