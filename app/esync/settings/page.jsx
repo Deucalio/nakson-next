@@ -3,12 +3,13 @@
 import Nav from "../../components/esync/Nav";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { use, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import ImageCropper from "../actions/ImageCropper";
 import { getUser } from "../../esync/actions/getUser";
 import shopifyLogo from "../../../public/shopify-logo.png";
+import ConnectStoreModal from "./../components/shopify/ConnectStoreModal";
 
 const Shippers = () => {
   return (
@@ -171,6 +172,8 @@ export default function Page() {
   const [user, setUser] = useState(null);
   const [page, setPage] = useState("configuration");
 
+  const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -187,11 +190,12 @@ export default function Page() {
     setUser(user);
   };
 
-  useEffect(() => {
-    saveUser();
-  }, []);
-
   // Configuration for Shopify Store
+  const searchParams = useSearchParams();
+
+  const accesstoken = searchParams.get("accesstoken") || "";
+  const shop = searchParams.get("shop") || "";
+
   const [shopifyInfo, setShopifyInfo] = useState({
     shopName: "",
     shopLogo: "",
@@ -204,9 +208,18 @@ export default function Page() {
   const [copiedText, setCopiedText] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
   const [showConnectedStores, setShowConnectedStores] = useState(false);
+  const [connectStoreModal, setConnectStoreModal] = useState(false);
 
   // Stores user added to the database
   const [stores, setStores] = useState([]);
+
+  useEffect(() => {
+    saveUser();
+
+    if (accesstoken && shop) {
+      setConnectStoreModal(true);
+    }
+  }, []);
 
   const getStores = async () => {
     if (!user) {
@@ -220,6 +233,7 @@ export default function Page() {
     const response = await axios.post(`${serverURL}/shopify/get-stores`, {
       email: user.user.email,
     });
+
     setStores(response.data.stores);
     return;
   };
@@ -288,10 +302,10 @@ export default function Page() {
       const response = await axios.post(`${serverURL}/shopify/validate-name`, {
         shopName: shopifyInfo.shopName,
       });
-      setShowTokenModal(true);
-      const token = randomString(6);
-      setCopiedText(token);
-      setShopifyToken(token);
+      // setShowTokenModal(true);
+      // const token = randomString(6);
+      // setCopiedText(token);
+      // setShopifyToken(token);
       setDisplayError(false);
 
       // Save the Image to the Cloudinary API
@@ -306,12 +320,13 @@ export default function Page() {
       const { secure_url: imageURL, public_id: publicID } = res.data;
 
       try {
-        const finalRes = await axios.post(`${serverURL}/shopify/save-token`, {
+        const finalRes = await axios.post(`${serverURL}/shopify/save-store`, {
           email: user.user.email,
-          token: token,
           storeName: shopifyInfo.shopName,
           imageURL,
           publicID,
+          accesstoken,
+          shop,
         });
         setShopifyInfo({ shopName: "", shopLogo: "" });
         console.log("finalRes", finalRes);
@@ -339,8 +354,8 @@ export default function Page() {
     <>
       <section
         className={`grid md:h-screen grid-cols-6 bg-black relative  transition-all duration-1000 ${
-          showTokenModal || showConnectedStores
-            ? ["blur-3xl", "pointer-events-none"].join(" ")
+          showTokenModal || showConnectedStores || connectStoreModal
+            ? ["blur-md", "pointer-events-none"].join(" ")
             : ""
         }`}
       >
@@ -484,7 +499,7 @@ export default function Page() {
                     </span>
                   </p>
                 </li>
-                <ul className="relative rounded-lg  px-6 py-2 hidden">
+                <ul className="relative rounded-lg  px-6 py-2 hidden ">
                   <span
                     ref={spanRef}
                     className={`absolute text-xs text-red-700 -top-2 transition-all duration-500 left-32 ${
@@ -659,10 +674,21 @@ export default function Page() {
           </div>
         </div>
       </section>
+      <ConnectStoreModal
+        spanRef={spanRef}
+        handleConnect={handleConnect}
+        isLoading={isLoading}
+        shopifyInfo={shopifyInfo}
+        setShopifyInfo={setShopifyInfo}
+        handleFileChange={handleFileChange}
+        displayError={displayError}
+        connectStoreModal={connectStoreModal}
+        setConnectStoreModal={setConnectStoreModal}
+      />
 
       {/* CONNECTED STORES */}
       <div
-        className={`absolute overflow-y-auto top-24 z-10 flex h-[21rem] w-[37rem] flex-col gap-2 rounded-md border-2 border-indigo-950 bg-black p-2 text-white transition-all duration-700 md:left-1/3 
+        className={`absolute overflow-y-auto top-24 z-10 flex h-[23rem] w-[40rem] flex-col  rounded-md border-2 border-indigo-950 bg-black p-2 text-white transition-all duration-700 md:left-1/3 
       md:-translate-x-11 ${
         showConnectedStores
           ? ""
@@ -693,7 +719,7 @@ export default function Page() {
           stores.map((store, index) => (
             <ul
               key={store.id}
-              className="ml-10 mt-10 flex h-fit w-[30rem] flex-col gap-3 border-b border-slate-500 px-3 py-6"
+              className="ml-8 mt-10 flex h-fit w-[36rem] flex-col gap-3 border-b border-slate-500 px-3 py-6"
             >
               <li
                 onClick={() => setShowConnectedStores(false)}
@@ -716,14 +742,17 @@ export default function Page() {
                   />
                 </svg>
               </li>
-              <li className="flex flex-row items-center gap-3 relative">
-                <img
-                  className="h-16 rounded-md border border-gray-50 bg-gray-50"
+              <li className="flex flex-row items-center gap-3 relative h-24">
+                <Image
+                  className=" rounded-md border border-gray-50 bg-gray-50"
                   src={store.image_url}
-                />
+                  width={100}
+                  height={100}
+                  alt="Store Logo"
+                ></Image>
                 <p className="ml-2">{store.name}</p>
 
-                <div className="absolute items-center flex flex-row justify-center gap-10 text-sm -top-4 -right-4  w-52 h-24  ">
+                <div className="absolute items-center flex flex-row justify-center gap-10 text-xs -top-1 -right-4  w-60  h-24  ">
                   <button className="bg-blue-800 rounded-md px-2 py-2 hover:bg-blue-900 transition-all">
                     Update
                   </button>
@@ -748,17 +777,15 @@ export default function Page() {
                   </button>
                 </div>
               </li>
-              <li className="my-2 flex flex-row gap-8 border-l-2 border-slate-800 bg-slate-900 rounded-md p-2 text-sm">
-                <p>Access Token</p>
-                <p className="font-bold">
-                  {store.store_info.accessToken
-                    ? store.store_info.accessToken
-                    : "No Access Token, Make sure your Store is connected in our Shopify App."}
+              <li className="my-4 grid grid-cols-7 gap-8 border-l-2 border-indigo-600 p-2 text-sm ">
+                <p className="col-span-2 text-gray-300">Access Token</p>
+                <p className="col-span-5 text-gray-500 font-bold">
+                  {store.store_info.accessToken}
                 </p>
-              </li>
-              <li className="my-2 flex flex-row gap-[5.5rem] border-l-2 border-slate-800 bg-slate-900 rounded-md p-2 text-sm">
-                <p>Token</p>
-                <p className="font-bold ">{store.token}</p>
+                <p className="col-span-2 text-gray-300">Shop Domain</p>
+                <p className="col-span-5 text-gray-500 font-bold">
+                  {store.store_info.shop}
+                </p>
               </li>
             </ul>
           ))}
@@ -844,6 +871,15 @@ export default function Page() {
           </li>
         </ul>
       </div>
+
+      {/* MODAL FOR BLACK */}
+      <div
+        className={`bg-black absolute pointer-events-none inset-0 ${
+          showTokenModal || showConnectedStores || connectStoreModal
+            ? "opacity-10"
+            : "opacity-0"
+        }`}
+      ></div>
 
       {/* _____________ */}
 
