@@ -154,7 +154,7 @@ const OTPVerification = ({
                   disabled
                   ref={inputRef}
                   placeholder={email}
-                  className="h-10 w-60 rounded-md  bg-gray-900 px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-900"
+                  className="h-10 w-60 rounded-md  bg-gray-900 px-3 py-1 outline-none outline-2 placeholder:opacity-80 focus:outline-indigo-900"
                   type="text"
                   onChange={handleChangeEmail}
                   // value={changeEmail ? email : ""}
@@ -177,7 +177,7 @@ const OTPVerification = ({
                   <input
                     ref={codeInputElement}
                     placeholder="Code"
-                    className="mt-4 h-10 w-32 rounded-md  bg-slate-900 px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-900 transition-all"
+                    className="mt-4 h-10 w-32 rounded-md  bg-slate-900 px-3 py-1 outline-none outline-2 placeholder:opacity-80 focus:outline-indigo-900 transition-all"
                     type="number"
                   />
                   <span
@@ -256,7 +256,7 @@ const Register = ({
                 <input
                   placeholder="First Name"
                   autoComplete="off"
-                  className="transition-all duration-300 h-10 w-56 rounded-md  bg-slate-900 px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-900"
+                  className="transition-all duration-300 h-10 w-56 rounded-md  bg-slate-900 px-3 py-1 outline-none outline-2 placeholder:opacity-80 focus:outline-indigo-900"
                   type="text"
                   name="firstName"
                   value={userInfo.firstName}
@@ -265,7 +265,7 @@ const Register = ({
                 />
                 <input
                   placeholder="Last Name"
-                  className="transition-all duration-300 h-10 w-56 rounded-md  bg-slate-900 px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-900"
+                  className="transition-all duration-300 h-10 w-56 rounded-md  bg-slate-900 px-3 py-1 outline-none outline-2 placeholder:opacity-80 focus:outline-indigo-900"
                   type="text"
                   name="lastName"
                   autoComplete="off"
@@ -276,7 +276,7 @@ const Register = ({
                 {/* border-2 border-rose-700  */}
                 <input
                   placeholder="Email"
-                  className="transition-all duration-300 h-10 w-56 rounded-md  bg-slate-900 px-3 py-1 outline-none outline-2  placeholder:opacity-50 focus:outline-indigo-900"
+                  className="transition-all duration-300 h-10 w-56 rounded-md  bg-slate-900 px-3 py-1 outline-none outline-2  placeholder:opacity-80 focus:outline-indigo-900"
                   type="email"
                   name="email"
                   value={userInfo.email}
@@ -285,7 +285,7 @@ const Register = ({
                 />
                 <input
                   placeholder="Password"
-                  className="transition-all duration-300 h-10 w-56 rounded-md  bg-slate-900 px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-900"
+                  className="transition-all duration-300 h-10 w-56 rounded-md  bg-slate-900 px-3 py-1 outline-none outline-2 placeholder:opacity-80 focus:outline-indigo-900"
                   type="password"
                   name="password"
                   autoComplete="on"
@@ -467,8 +467,8 @@ const Page = () => {
   };
 
   return (
-    <main className="register-route relative h-screen">
-      <section className="relative z-10 mx-auto grid h-5/6 translate-y-11 grid-cols-8 rounded-3xl border-indigo-950 bg-black shadow-sm border-2 border-b-violet-900 shadow-violet-900 md:w-2/4">
+    <main id="main-register" className="register-route relative h-screen">
+      <section className="relative z-10 mx-auto grid h-5/6 translate-y-11 grid-cols-8 rounded-3xl border-indigo-950 bg-transparent shadow-sm border-2 border-b-violet-900 shadow-violet-900 md:w-2/4">
         <div className="col-span-3 overflow-hidden rounded-lg">
           <Image
             src="https://i.imgur.com/ddnB1HA.jpeg"

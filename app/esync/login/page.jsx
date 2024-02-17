@@ -64,8 +64,8 @@ const Page = () => {
   };
 
   return (
-    <main className="register-route relative h-screen">
-      <section className="relative z-10 mx-auto grid h-5/6 translate-y-11 grid-cols-8 rounded-3xl border-indigo-950 bg-black shadow-sm border-2 border-b-violet-900 shadow-violet-900 md:w-2/4  ">
+    <main id="main-login" className=" relative h-screen ">
+      <section className="relative z-10 mx-auto grid h-5/6 translate-y-11 grid-cols-8 rounded-3xl border-indigo-950 bg-transparent shadow-sm border-2 border-b-violet-900 shadow-violet-900 md:w-2/4  ">
         <div className="col-span-3 overflow-hidden rounded-lg">
           <Image
             height={500}
@@ -86,7 +86,7 @@ const Page = () => {
                   <li className="relative flex flex-col gap-6 ">
                     <input
                       placeholder="Email"
-                      className="h-10 w-56 rounded-md bg-slate-900 px-3 py-1 outline-none outline-2 transition-all placeholder:opacity-50 focus:outline-indigo-900"
+                      className="h-10 w-56 rounded-md bg-slate-900 px-3 py-1 outline-none outline-2 transition-all placeholder:opacity-80 focus:outline-indigo-900"
                       type="email"
                       name="email"
                       value={formData.email}
@@ -96,7 +96,7 @@ const Page = () => {
                     />
                     <input
                       placeholder="Password"
-                      className="h-10 w-56 rounded-md bg-slate-900 px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-900"
+                      className="h-10 w-56 rounded-md bg-slate-900 px-3 py-1 outline-none outline-2 placeholder:opacity-80 focus:outline-indigo-900"
                       type="password"
                       name="password"
                       value={formData.password}

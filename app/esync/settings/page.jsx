@@ -9,7 +9,7 @@ import axios from "axios";
 import ImageCropper from "../actions/ImageCropper";
 import { getUser } from "../../esync/actions/getUser";
 import shopifyLogo from "../../../public/shopify-logo.png";
-import ConnectStoreModal from "./../components/shopify/ConnectStoreModal";
+import ConnectStoreModal from "./../components/shopify/ConnectStoreModal"; // Fixed the casing of the import
 
 const Shippers = () => {
   return (
@@ -330,6 +330,8 @@ export default function Page() {
         });
         setShopifyInfo({ shopName: "", shopLogo: "" });
         console.log("finalRes", finalRes);
+        // Close the modal
+        setConnectStoreModal(false);
       } catch (e) {
         console.log(e);
         alert("ERROR ADDING TO DATABASE");
@@ -766,8 +768,9 @@ export default function Page() {
                         `${serverURL}/shopify/delete-store/${store.name}`
                       );
                       if (response.status === 200) {
-                        // Reload the Page
-                        window.location.reload();
+                        // Send user to esync/settings and reload the page
+                        window.location.href = "/esync/settings";
+                        // win
                       }
                     }}
                     disabled={isLoading}

@@ -44,8 +44,8 @@ const ConnectStoreModal = ({
               className="absolute text-red-800 right-3 w-8 h-8 border-2 rounded-full cursor-pointer hover:text-red-900 hover:border-red-900 transition-all border-red-800"
             >
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 d="M6 18 18 6M6 6l12 12"
               />
             </svg>

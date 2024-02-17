@@ -4,6 +4,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Login and Register Pages */
+#main-login {
+  background-color: #130f40;
+  background-image: linear-gradient(315deg, #130f40 0%, #000000 94%);
+  font-family: "Poppins";
+}
+
+#main-register {
+  background-color: #130f40;
+  background-image: linear-gradient(315deg, #130f40 0%, #000000 94%);
+  font-family: "Poppins";
+}
+/* _________ */
+
 body {
   background-color: black;
   color: white;
