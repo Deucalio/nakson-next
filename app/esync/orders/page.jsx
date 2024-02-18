@@ -290,6 +290,7 @@ export default function Home() {
     }
   }, [openSidebar]);
 
+
   return (
     <main className="relative grid grid-cols-6 overflow-y-auto h-auto">
       <Nav

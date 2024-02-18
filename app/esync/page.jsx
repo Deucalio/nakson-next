@@ -52,6 +52,13 @@ export default function Page() {
     }
   }, [user]);
 
+  if (!user) {
+    // Display a loading spinner
+    return (
+      <span className="loader absolute left-1/2 -translate-x-48 top-40 "></span>
+    );
+  }
+
   return (
     <main className="h-screen overflow-auto grid grid-cols-6">
       <Nav

@@ -17,133 +17,142 @@ const Nav = ({
   console.log("pathname: ", pathname);
 
   useEffect(() => {
-    const sidebarElements = sidebarItems.current.children;
-    if (openSidebar) {
-      setTimeout(() => {
-        pageElement.current.classList.add("-translate-x-32");
-      }, 1500);
-
-      // Remove text from sideBar Items
-      navElement.current.classList.add("border-opacity-0");
-      navElement.current.classList.remove("h-screen");
-
-      for (let i = 0; i < sidebarElements.length; i++) {
+    if (!navElement.current) {
+      return;
+    }
+    if (navElement.current) {
+      const sidebarElements = sidebarItems.current.children;
+      if (openSidebar) {
         setTimeout(() => {
-          sidebarElements[i].children[1].classList.add(
+          pageElement.current.classList.add("-translate-x-32");
+        }, 1500);
+
+        // Remove text from sideBar Items
+        navElement.current.classList.add("border-opacity-0");
+        navElement.current.classList.remove("h-screen");
+
+        for (let i = 0; i < sidebarElements.length; i++) {
+          setTimeout(() => {
+            sidebarElements[i].children[1].classList.add(
+              "transition-all",
+              "opacity-0"
+            );
+          }, i * 50);
+        }
+
+        for (let i = 0; i < sidebarElements.length; i++) {
+          setTimeout(() => {
+            sidebarElements[i].children[1].classList.add("hidden");
+          }, 1350);
+        }
+
+        setTimeout(() => {
+          navElement.current.style.transform = "translateX(-300px)";
+        }, 800);
+
+        setTimeout(() => {
+          navElement.current.style.transform = "";
+          navElement.current.style.width = "6rem";
+          navElement.current.classList.add("top-12", "rounded-3xl", "-left-6");
+        }, 1300);
+
+        setTimeout(() => {
+          navElement.current.classList.add(
+            "bg-blue-800",
+            "bg-opacity-30",
+            "h-[70vh]"
+          );
+        }, 1500);
+
+        setTimeout(() => {
+          //   select Nakson Image
+          sidebarItems.current.parentNode.childNodes[0].classList.add(
             "transition-all",
+            "duration-500"
+          );
+          sidebarItems.current.parentNode.childNodes[0].classList.add(
             "opacity-0"
           );
-        }, i * 50);
-      }
+          arrowElement.current.classList.add("-rotate-180");
+        }, 1);
 
-      for (let i = 0; i < sidebarElements.length; i++) {
         setTimeout(() => {
-          sidebarElements[i].children[1].classList.add("hidden");
-        }, 1350);
+          sidebarItems.current.parentNode.childNodes[0].classList.add("hidden");
+        }, 1400);
+        pageElement.current.classList.add("h-screen");
       }
-
-      setTimeout(() => {
-        navElement.current.style.transform = "translateX(-300px)";
-      }, 800);
-
-      setTimeout(() => {
-        navElement.current.style.transform = "";
-        navElement.current.style.width = "6rem";
-        navElement.current.classList.add("top-12", "rounded-3xl", "-left-6");
-      }, 1300);
-
-      setTimeout(() => {
-        navElement.current.classList.add(
-          "bg-blue-800",
-          "bg-opacity-30",
-          "h-[70vh]"
-        );
-      }, 1500);
-
-      setTimeout(() => {
-        //   select Nakson Image
-        sidebarItems.current.parentNode.childNodes[0].classList.add(
-          "transition-all",
-          "duration-500"
-        );
-        sidebarItems.current.parentNode.childNodes[0].classList.add(
-          "opacity-0"
-        );
-        arrowElement.current.classList.add("-rotate-180");
-      }, 1);
-
-      setTimeout(() => {
-        sidebarItems.current.parentNode.childNodes[0].classList.add("hidden");
-      }, 1400);
-      pageElement.current.classList.add("h-screen");
-    }
-    if (!openSidebar) {
-      pageElement.current.classList.remove("h-screen");
-      setTimeout(() => {
-        pageElement.current.classList.remove("-translate-x-32");
-      }, 100);
-      for (let i = 0; i < sidebarElements.length; i++) {
+      if (!openSidebar) {
+        pageElement.current.classList.remove("h-screen");
         setTimeout(() => {
-          sidebarElements[i].children[1].classList.remove("opacity-0");
-        }, i * 200);
-      }
+          pageElement.current.classList.remove("-translate-x-32");
+        }, 100);
+        for (let i = 0; i < sidebarElements.length; i++) {
+          setTimeout(() => {
+            sidebarElements[i].children[1].classList.remove("opacity-0");
+          }, i * 200);
+        }
 
-      for (let i = 0; i < sidebarElements.length; i++) {
+        for (let i = 0; i < sidebarElements.length; i++) {
+          setTimeout(() => {
+            sidebarElements[i].children[1].classList.remove("hidden");
+          }, 1350);
+        }
+
         setTimeout(() => {
-          sidebarElements[i].children[1].classList.remove("hidden");
-        }, 1350);
+          navElement.current.style.transform = "";
+          navElement.current.style.width = "100%";
+        }, 400);
+
+        //   branch-1
+
+        setTimeout(() => {
+          navElement.current.classList.remove(
+            "top-12",
+            "rounded-3xl",
+            "-left-6"
+          );
+        }, 500);
+
+        setTimeout(() => {
+          navElement.current.classList.remove(
+            "bg-blue-800",
+            "bg-opacity-30",
+            "h-[70vh]"
+          );
+        }, 50);
+
+        setTimeout(() => {
+          //   select Nakson Image
+          // sidebarItems.current.parentNode.childNodes[0].classList.remove(
+          //   "transition-all",
+          //   "duration-500"
+          // );
+          sidebarItems.current.parentNode.childNodes[0].classList.remove(
+            "opacity-0"
+          );
+          arrowElement.current.classList.remove("-rotate-180");
+        }, 1);
+
+        setTimeout(() => {
+          sidebarItems.current.parentNode.childNodes[0].classList.add(
+            "opacity-0"
+          );
+          sidebarItems.current.parentNode.childNodes[0].classList.remove(
+            "hidden"
+          );
+        }, 100);
+
+        setTimeout(() => {
+          sidebarItems.current.parentNode.childNodes[0].classList.remove(
+            "opacity-0"
+          );
+        }, 200);
+
+        setTimeout(() => {
+          navElement.current.style.paddingLeft = "5px";
+        }, 500);
+        navElement.current.classList.remove("border-opacity-0");
       }
-
-      setTimeout(() => {
-        navElement.current.style.transform = "";
-        navElement.current.style.width = "100%";
-      }, 400);
-
-      //   branch-1
-
-      setTimeout(() => {
-        navElement.current.classList.remove("top-12", "rounded-3xl", "-left-6");
-      }, 500);
-
-      setTimeout(() => {
-        navElement.current.classList.remove(
-          "bg-blue-800",
-          "bg-opacity-30",
-          "h-[70vh]"
-        );
-      }, 50);
-
-      setTimeout(() => {
-        //   select Nakson Image
-        // sidebarItems.current.parentNode.childNodes[0].classList.remove(
-        //   "transition-all",
-        //   "duration-500"
-        // );
-        sidebarItems.current.parentNode.childNodes[0].classList.remove(
-          "opacity-0"
-        );
-        arrowElement.current.classList.remove("-rotate-180");
-      }, 1);
-
-      setTimeout(() => {
-        sidebarItems.current.parentNode.childNodes[0].classList.add(
-          "opacity-0"
-        );
-        sidebarItems.current.parentNode.childNodes[0].classList.remove(
-          "hidden"
-        );
-      }, 100);
-
-      setTimeout(() => {
-        sidebarItems.current.parentNode.childNodes[0].classList.remove(
-          "opacity-0"
-        );
-      }, 200);
-
-      setTimeout(() => {
-        navElement.current.style.paddingLeft = "5px";
-      }, 500);
-      navElement.current.classList.remove("border-opacity-0");
     }
   }, [openSidebar]);
   return (
