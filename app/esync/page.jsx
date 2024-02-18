@@ -2,10 +2,23 @@
 import { useSession } from "next-auth/react";
 import { logUserOut } from "../esync/actions/logUserOut";
 import { getUser } from "../esync/actions/getUser";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import Nav from "./components/Nav";
 
 export default function Page() {
+  // Nav Configuration
+  const navElement = useRef(null);
+  const arrowElement = useRef(null);
+  const sidebarItems = useRef(null);
+  const pageElement = useRef(null);
+  const [openSidebar, setOpenSidebar] = useState(false);
+  const handleSidebar = () => {
+    setOpenSidebar(!openSidebar);
+  };
+
+  // _________
+
   const data = useSession();
   const [user, setUser] = useState(null);
 
@@ -26,12 +39,7 @@ export default function Page() {
     const { serverURL } = res_first.data;
 
     // send request to backend (localhost:4000) email as a header
-    const res = await axios.get(`${serverURL}/login`, {
-      headers: { email: user.user.email },
-    });
-    const orders = await res.data;
     console.log("user:", user);
-    setOrders(orders.orders);
   };
 
   useEffect(() => {
@@ -41,23 +49,33 @@ export default function Page() {
   useEffect(() => {
     if (user) {
       getData();
-      console.log("user: ", user);
     }
   }, [user]);
 
   return (
-    <div className="h-screen overflow-auto">
-      <p>Dashboard</p>
-      <p onClick={handleLogout}>Sign Out</p>
-      <p>Your Email is: {user?.user?.email}</p>
-      {orders?.map((order) => {
-        return (
-          <div key={order.id}>
-            <p>{order.name}</p>
-            <p>{order.price}</p>
-          </div>
-        );
-      })}
-    </div>
+    <main className="h-screen overflow-auto grid grid-cols-6">
+      <Nav
+        pageElement={pageElement}
+        openSidebar={openSidebar}
+        navElement={navElement}
+        arrowElement={arrowElement}
+        sidebarItems={sidebarItems}
+        handleSidebar={handleSidebar}
+      />
+
+      <div ref={pageElement}>
+        <p>Dashboard</p>
+        <p onClick={handleLogout}>Sign Out</p>
+        <p>Your Email is: {user?.user?.email}</p>
+        {orders?.map((order) => {
+          return (
+            <div key={order.id}>
+              <p>{order.name}</p>
+              <p>{order.price}</p>
+            </div>
+          );
+        })}
+      </div>
+    </main>
   );
 }

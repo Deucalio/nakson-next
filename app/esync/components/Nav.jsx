@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
-
 const Nav = ({
   pageElement,
   openSidebar,
@@ -10,6 +11,11 @@ const Nav = ({
   handleSidebar,
   sidebarItems,
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  console.log("pathname: ", pathname);
+
   useEffect(() => {
     const sidebarElements = sidebarItems.current.children;
     if (openSidebar) {
@@ -179,8 +185,15 @@ const Nav = ({
           className="mx-auto  flex w-11/12 flex-col justify-center gap-3 mt-4 gap-y-2 rounded-sm pl-2"
         >
           <li
-            className="flex h-8 xl:h-10  flex-row items-center gap-1 text-xs transition-all duration-300 
-        hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25  lg:gap-4 lg:pl-8"
+            onClick={() => router.push("/esync")}
+            className={`flex
+            ${
+              pathname === "/esync"
+                ? "bg-gray-500 bg-opacity-25"
+                : "hover:bg-opacity-25 hover:bg-gray-500"
+            }
+            h-8 xl:h-10  flex-row items-center gap-1 text-xs transition-all duration-200 rounded-sm 
+            hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25  lg:gap-4 lg:pl-8`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -199,7 +212,16 @@ const Nav = ({
 
             <p className="transition-all duration-200">Home</p>
           </li>
-          <li className="flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-8">
+          <li
+            onClick={() => router.push("/esync/products")}
+            className={`
+            ${
+              pathname === "/esync/products"
+                ? "bg-gray-500 bg-opacity-25"
+                : "hover:bg-opacity-25 hover:bg-gray-500"
+            }
+            flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-200 rounded-sm hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-8`}
+          >
             <svg
               className="w-4 h-4 xl:h-6 xl:w-6 fill-white"
               xmlns="http://www.w3.org/2000/svg"
@@ -210,7 +232,16 @@ const Nav = ({
 
             <p className="transition-all duration-200">Products</p>
           </li>
-          <li className="flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-8">
+          <li
+            onClick={() => router.push("/esync/orders")}
+            className={`flex 
+            ${
+              pathname === "/esync/orders"
+                ? "bg-gray-500 bg-opacity-25"
+                : "hover:bg-opacity-25 hover:bg-gray-500"
+            }
+            h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-200 rounded-sm hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-8`}
+          >
             <svg
               className="w-4 h-4 xl:h-6 xl:w-6 fill-white"
               xmlns="http://www.w3.org/2000/svg"
@@ -221,7 +252,16 @@ const Nav = ({
 
             <p className="transition-all duration-200">Orders</p>
           </li>
-          <li className="flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-8">
+          <li
+            onClick={() => router.push("/esync/customers")}
+            className={`
+            ${
+              pathname === "/esync/customers"
+                ? "bg-gray-500 bg-opacity-25"
+                : "hover:bg-opacity-25 hover:bg-gray-500"
+            }
+            flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-200 rounded-sm hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-8`}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -239,7 +279,17 @@ const Nav = ({
 
             <p className="transition-all duration-200">Customers</p>
           </li>
-          <li className="flex h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-300 hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-8">
+          <li
+            onClick={() => router.push("/esync/finance")}
+            className={`flex
+            ${
+              pathname === "/esync/finance"
+                ? "bg-gray-500 bg-opacity-25"
+                : "hover:bg-opacity-25 hover:bg-gray-500"
+            }
+            
+            h-8 xl:h-10 flex-row items-center gap-1 text-xs transition-all duration-200 rounded-sm hover:cursor-pointer hover:bg-gray-500 hover:bg-opacity-25 lg:gap-4 lg:pl-8`}
+          >
             <svg
               className="w-4 h-4 xl:h-6 xl:w-6 fill-white"
               xmlns="http://www.w3.org/2000/svg"
@@ -251,12 +301,19 @@ const Nav = ({
 
             <p className="transition-all duration-200">Finance</p>
           </li>
-          <li className="flex h-8 xl:h-10 cursor-pointer flex-row items-center gap-1 bg-gray-500  bg-opacity-25 text-xs lg:gap-4 lg:pl-8">
+          <li
+            onClick={() => router.push("/esync/settings")}
+            className={`flex h-8 xl:h-10 cursor-pointer flex-row items-center gap-1 ${
+              pathname === "/esync/settings"
+                ? "bg-gray-500 bg-opacity-25"
+                : "hover:bg-opacity-25 hover:bg-gray-500"
+            }  transition-all duration-200 rounded-sm bg-opacity-25 text-xs lg:gap-4 lg:pl-8`}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
-              className="w-4 h-4 xl:h-6 xl:w-6 fill-white  transition-all duration-300"
+              className="w-4 h-4 xl:h-6 xl:w-6 fill-white  transition-all duration-200 rounded-sm"
             >
               <path
                 fillRule="evenodd"

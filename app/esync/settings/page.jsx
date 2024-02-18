@@ -1,6 +1,5 @@
 "use client";
 
-import Nav from "../../components/esync/Nav";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,6 +9,7 @@ import ImageCropper from "../actions/ImageCropper";
 import { getUser } from "../../esync/actions/getUser";
 import shopifyLogo from "../../../public/shopify-logo.png";
 import ConnectStoreModal from "./../components/shopify/ConnectStoreModal"; // Fixed the casing of the import
+import Nav from "../components/Nav";
 
 const Shippers = () => {
   return (
@@ -164,11 +164,18 @@ const Shippers = () => {
 };
 
 export default function Page() {
+  // Nav Configuration
   const navElement = useRef(null);
   const arrowElement = useRef(null);
   const sidebarItems = useRef(null);
   const pageElement = useRef(null);
   const [openSidebar, setOpenSidebar] = useState(false);
+
+  const handleSidebar = () => {
+    setOpenSidebar(!openSidebar);
+  };
+  // _____
+
   const [user, setUser] = useState(null);
   const [page, setPage] = useState("configuration");
 
@@ -236,10 +243,6 @@ export default function Page() {
 
     setStores(response.data.stores);
     return;
-  };
-
-  const handleSidebar = () => {
-    setOpenSidebar(!openSidebar);
   };
 
   const handlePageClick = (e) => {
