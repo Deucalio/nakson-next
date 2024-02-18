@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Nav from "../components/Nav";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-const page = () => {
+const Page = () => {
   // Nav Configuration
   const navElement = useRef(null);
   const arrowElement = useRef(null);
@@ -87,4 +87,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
