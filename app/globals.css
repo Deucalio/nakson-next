@@ -105,3 +105,38 @@ ul.MuiPagination-ul {
     transform: rotate(360deg);
   }
 }
+
+/* For Pages not done yet */
+
+* {
+  box-sizing: border-box;
+}
+
+.not-done-yet {
+  background-color: #130f40;
+  background-image: linear-gradient(315deg, #130f40 0%, #000000 74%);
+  display: grid;
+  margin: 0;
+  min-block-size: 100vh;
+  place-items: center;
+}
+
+h1 {
+  background-clip: text;
+  /* background-image: linear-gradient(to right, #09f1b8, #00a2ff, #ff00d2, #fed90f); */
+  background-image: linear-gradient(
+    to right,
+    #00a2ff,
+    #00a2ff,
+    #9409f1,
+    #9409f1
+  );
+  font-family: sans-serif;
+  color: #000119;
+  font-size: 20vmin;
+  font-weight: 700;
+  letter-spacing: calc(1em / 8);
+  padding: calc(calc(1em / 16) / 2);
+  -webkit-text-stroke-color: transparent;
+  -webkit-text-stroke-width: calc(1em / 16);
+}

@@ -159,7 +159,15 @@ const Nav = ({
     <nav
       ref={navElement}
       id="nav"
-      className={`col-span-5 md:col-span-1 relative transition-all duration-500 border-r border-slate-800 w-auto h-screen `}
+      className={`
+      ${
+        pathname.includes("products") ||
+        pathname.includes("finance") ||
+        pathname.includes("customers")
+          ? "hidden md:grid md:col-span-2"
+          : "md:col-span-1"
+      }
+        relative transition-all duration-500 border-r border-slate-800 w-auto h-screen `}
     >
       <span className="flex  text-slate-300 w-auto sm:w-9 sm:h-9 justify-center  rounded-full  items-center border-violet-900 absolute transition-all right-3 bottom-0 -translate-y-1 duration-300 hover:border-violet-800 cursor-pointer -rotate-180">
         <svg

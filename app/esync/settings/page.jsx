@@ -357,7 +357,9 @@ export default function Page() {
 
   if (!user) {
     // Display a loading spinner
-    return <span className="loader absolute left-1/2 -translate-x-48 top-40 "></span>;
+    return (
+      <span className="loader absolute left-1/2 -translate-x-48 top-40 "></span>
+    );
   }
 
   return (
