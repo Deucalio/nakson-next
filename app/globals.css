@@ -14,7 +14,6 @@
   font-style: normal;
 }
 
-
 /* Login and Register Pages */
 #main-login {
   background-color: #130f40;
@@ -152,4 +151,12 @@ h1 {
   padding: calc(calc(1em / 16) / 2);
   -webkit-text-stroke-color: transparent;
   -webkit-text-stroke-width: calc(1em / 16);
+}
+
+/* Hide Pagination Btns (next and previous) */
+button[aria-label="Go to previous page"] {
+  display: none;
+}
+button[aria-label="Go to next page"] {
+  display: none;
 }
