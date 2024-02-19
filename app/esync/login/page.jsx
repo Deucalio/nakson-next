@@ -16,13 +16,8 @@ const Page = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    // set isLoading to false after 5 seconds
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 5000);
-    return () => clearTimeout(timer);
-  });
+
+
 
   const errorSpanElement = useRef(null);
   const handleLogin = async (e) => {
@@ -37,6 +32,7 @@ const Page = () => {
       const res = await axios.post(`${serverURL}/login`, formData);
       const response = await signUserIn(res.data.user);
       if (response.success) {
+        setIsLoading(false);
         if (accesstoken && shop) {
           window.location.href = `/esync/settings?accesstoken=${accesstoken}&shop=${shop}`;
           return;
@@ -44,6 +40,7 @@ const Page = () => {
         window.location.href = `/esync`;
       }
     } catch (e) {
+      setIsLoading(false);
       if (e.response.status === 400) {
         errorSpanElement.current.classList.remove("scale-0");
         errorSpanElement.current.textContent = e.response.data.errorMessage;
@@ -112,7 +109,7 @@ const Page = () => {
                     <button
                       disabled={isLoading}
                       onClick={handleLogin}
-                      className="relative disabled:pointer-events-none disabled:opacity-75  mx-auto text-sm mt-4 w-32 rounded-md bg-gradient-to-l from-indigo-600 to-violet-700 px-3 py-2 hover:bg-indigo-800 hover:from-indigo-700 hover:to-violet-800"
+                      className="relative disabled:pointer-events-none disabled:opacity-60  mx-auto text-sm mt-4 w-32 rounded-md bg-gradient-to-l from-indigo-600 to-violet-700 px-3 py-2 hover:bg-indigo-800 hover:from-indigo-700 hover:to-violet-800"
                     >
                       Login
                     </button>
