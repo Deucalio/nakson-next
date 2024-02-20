@@ -81,8 +81,6 @@ export default function Home() {
       return { ...order, selected: false, sr_number: index + 1 };
     });
 
-    console.log("modified data:  ", data);
-
     // data = data.sort(function (a, b) {
     //   // Turn your strings into dates, and then subtract them
     //   // to get a value that is either negative, positive, or zero.
@@ -290,7 +288,6 @@ export default function Home() {
     }
   }, [openSidebar]);
 
-
   return (
     <main className="relative grid grid-cols-6 overflow-y-auto h-auto">
       <Nav
@@ -342,17 +339,15 @@ export default function Home() {
             showBookedOrdersModal ? "blur-lg" : ""
           }`}
         >
-          <div className="relative">
+          <div className="relative flex place-content-center mt-2 -translate-x-1">
             <input
+              className=" h-6 w-6 flex items-center justify-center bg-slate-600 accent-green-700 "
               onChange={selectAllOrders}
               checked={
                 filterData ? filterData.every((order) => order.selected) : false
               }
               type="checkbox"
-              id="_checkbox"
             />
-            <label htmlFor="_checkbox" />
-            <div id="tick_mark"></div>
           </div>
 
           <li className="h-9 border-r-2 border-blue-700 pt-1 text-center text-lg text-slate-500  ">

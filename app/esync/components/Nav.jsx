@@ -14,8 +14,6 @@ const Nav = ({
   const router = useRouter();
   const pathname = usePathname();
 
-  console.log("pathname: ", pathname);
-
   useEffect(() => {
     if (!navElement.current) {
       return;
