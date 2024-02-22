@@ -351,15 +351,14 @@ export default function BookedOrdersModal({
     const serverRes = await axios.get("/api/server-url");
     const { serverURL } = serverRes.data;
     setIsDisable(true);
-    console.log("downloading....");
+    // Start timer
+    const startTime = new Date();
+    console.log("Downloadiing...");
     const pdfBytes = await generateCusotmizedSlip([1, 2, 3]);
     const downloadFile = Object.values(pdfBytes);
     const blob = new Blob([new Uint8Array(downloadFile)], {
       type: "application/pdf",
     });
-    // const blob = new Blob([res.data.pdfBytes], {
-    //   type: "application/pdf",
-    // });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -370,45 +369,12 @@ export default function BookedOrdersModal({
 
     document.body.removeChild(a);
 
+    const endTime = new Date();
+    const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+    console.log("Time Taken: ", timeTaken);
+    setIsDisable(false);
+
     return;
-
-    // Start timer
-
-    const startTime = new Date();
-    console.log("Start Time: ", startTime);
-    // axios
-    //   .post(`http://localhost3000/leopards/orders`, {
-    //     orders: editedOrders.filter(
-    //       (order) => order.correct_city !== undefined
-    //     ),
-    //     email: user.user.email,
-    //   })
-    axios
-      .post("/api/generate-slip", {
-        responseType: "blob",
-      })
-      .then((res) => {
-        let pdfBytes = Object.values(res.data.pdfBytes);
-        const blob = new Blob([new Uint8Array(pdfBytes)], {
-          type: "application/pdf",
-        });
-        // const blob = new Blob([res.data.pdfBytes], {
-        //   type: "application/pdf",
-        // });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "Next-Slip.pdf"; // Set the desired file name
-        document.body.appendChild(a);
-
-        // a.click();
-
-        // document.body.removeChild(a);
-        const endTime = new Date();
-        const timeTaken = (endTime - startTime) / 1000; // Time in seconds
-        console.log("Time Taken: ", timeTaken);
-        setIsDisable(false);
-      });
 
     return 1;
 
