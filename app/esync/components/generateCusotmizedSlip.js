@@ -12,6 +12,8 @@ async function fetchPdfBytes(url) {
   return pdfBytes;
 }
 async function generateCusotmizedSlip(slipData) {
+  const serverRes = await axios.get("/api/server-url");
+  const { serverURL } = serverRes.data;
   // Current Performance:
   // 56 orders in 30 seconds
   // 14 orders in 10 seconds
@@ -1915,7 +1917,7 @@ async function generateCusotmizedSlip(slipData) {
       // );
 
       const barcodeBuffer = await fetchPdfBytes(
-        `http://localhost:4000/create-barcode/${order.track_number}`
+        `${serverURL}/create-barcode/${order.track_number}`
       );
       // let barcodeImg = "";
       // try {
