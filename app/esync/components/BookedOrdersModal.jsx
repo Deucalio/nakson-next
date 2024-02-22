@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import LEOPARDS_CITIES from "../LEOPARDS_CITIES";
 import axios from "axios";
+import { getUser } from "../actions/getUser";
 
 const EditModal = ({
   shipmentType,
@@ -164,6 +165,13 @@ export default function BookedOrdersModal({
   filterData: SelectedOrders,
   setShowBookedOrdersModal,
 }) {
+  const [user, setUser] = useState({});
+
+  const saveUser = async () => {
+    const user = await getUser();
+    setUser(user);
+  };
+
   const [bookedOrdersData, setBookedOrdersData] = useState([]);
 
   // const [shipmentType, setShipmentType] = useState({
@@ -193,6 +201,8 @@ export default function BookedOrdersModal({
 
   // First useEffect
   useEffect(() => {
+    // Fetch User
+    saveUser();
     // Add default property
     let newOrders = SelectedOrders.map((order) => {
       return {
@@ -330,30 +340,46 @@ export default function BookedOrdersModal({
   const bookOrder = async (e) => {
     e.preventDefault();
 
-    if (options.courier === "") {
+    if (bookOptions.courier_type === "") {
       alert("Select Courier");
       return;
     }
 
-    // axios.post("http://localhost:4000/cancel", [1, 2, 3]).then((res) => {
-    //   console.log("Res",res)
-    // });
-    // return;
+    axios
+      .post("http://localhost:4000/leopards/orders", {
+        orders: editedOrders.filter(
+          (order) => order.correct_city !== undefined
+        ),
+        email: user.user.email,
+      })
+      .then((res) => {
+        let pdfBytes = Object.values(res.data.pdfBytes);
+        const blob = new Blob([new Uint8Array(pdfBytes)], {
+          type: "application/pdf",
+        });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "slip.pdf"; // Set the desired file name
+        document.body.appendChild(a);
 
-    axios.post("http://localhost:4000/cancel", [1, 2, 3, 3]).then((res) => {
-      setBookedOrdersData(res.data);
-      let pdfBytes = Object.values(res.data.pdfBytes);
-      const blob = new Blob([new Uint8Array(pdfBytes)], {
-        type: "application/pdf",
+        // Start timer
+        const startTime = new Date();
+
+        // Download File
+        a.click();
+
+        // Stop timer when download completes
+        a.onload = () => {
+          // Calculate the time taken
+          const endTime = new Date();
+          const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+          console.log("Download time: ", timeTaken, " seconds");
+          document.body.removeChild(a);
+        };
+
+        document.body.removeChild(a);
       });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "generated-slip.pdf"; // Set the desired file name
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    });
 
     return 1;
 
