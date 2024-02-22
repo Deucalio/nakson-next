@@ -355,33 +355,33 @@ export default function BookedOrdersModal({
 
     const startTime = new Date();
     console.log("Start Time: ", startTime);
-    axios
-      .post(`${serverURL}/leopards/orders`, {
-        orders: editedOrders.filter(
-          (order) => order.correct_city !== undefined
-        ),
-        email: user.user.email,
-      })
-      .then((res) => {
-        let pdfBytes = Object.values(res.data.pdfBytes);
-        const blob = new Blob([new Uint8Array(pdfBytes)], {
-          type: "application/pdf",
-        });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "slip.pdf"; // Set the desired file name
-        document.body.appendChild(a);
-
-        a.click();
-
-        document.body.removeChild(a);
-        const endTime = new Date();
-        console.log("Time: ", new Date() - startTime);
-        const timeTaken = (endTime - startTime) / 1000; // Time in seconds
-        console.log("Time Taken: ", timeTaken);
-        setIsDisable(false);
+    // axios
+    //   .post(`http://localhost3000/leopards/orders`, {
+    //     orders: editedOrders.filter(
+    //       (order) => order.correct_city !== undefined
+    //     ),
+    //     email: user.user.email,
+    //   })
+    axios.get("/api/generate-slip").then((res) => {
+      let pdfBytes = Object.values(res.data.pdfBytes);
+      const blob = new Blob([new Uint8Array(pdfBytes)], {
+        type: "application/pdf",
       });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Next-Slip.pdf"; // Set the desired file name
+      document.body.appendChild(a);
+
+      a.click();
+
+      document.body.removeChild(a);
+      const endTime = new Date();
+      console.log("Time: ", new Date() - startTime);
+      const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+      console.log("Time Taken: ", timeTaken);
+      setIsDisable(false);
+    });
 
     return 1;
 
