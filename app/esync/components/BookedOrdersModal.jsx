@@ -197,6 +197,9 @@ export default function BookedOrdersModal({
     service_type: "--",
   });
 
+  // Disable the Button
+  const [isDisable, setIsDisable] = useState(false);
+
   const modal = useRef(null);
 
   // First useEffect
@@ -231,7 +234,6 @@ export default function BookedOrdersModal({
 
   // For bookOptions
   useEffect(() => {
-    console.log("BookOptions", bookOptions);
     if (bookOptions.courier_type === "" && editedOrders.length > 0) {
       const blankOrders = editedOrders.map((order) => {
         return {
@@ -241,7 +243,7 @@ export default function BookedOrdersModal({
           correct_city: undefined,
         };
       });
-      console.log("BlankOrders", blankOrders);
+
       setEditedOrders(blankOrders);
       return;
     }
@@ -259,7 +261,7 @@ export default function BookedOrdersModal({
           ),
         };
       });
-      console.log("NewOrders (Leopards) ", newOrders);
+
       setEditedOrders(newOrders);
     }
   }, [bookOptions]);
@@ -347,7 +349,12 @@ export default function BookedOrdersModal({
     // get Server URL
     const serverRes = await axios.get("/api/server-url");
     const { serverURL } = serverRes.data;
+    setIsDisable(true);
 
+    // Start timer
+
+    const startTime = new Date();
+    console.log("Start Time: ", startTime);
     axios
       .post(`${serverURL}/leopards/orders`, {
         orders: editedOrders.filter(
@@ -366,22 +373,14 @@ export default function BookedOrdersModal({
         a.download = "slip.pdf"; // Set the desired file name
         document.body.appendChild(a);
 
-        // Start timer
-        const startTime = new Date();
-
-        // Download File
         a.click();
 
-        // Stop timer when download completes
-        a.onload = () => {
-          // Calculate the time taken
-          const endTime = new Date();
-          const timeTaken = (endTime - startTime) / 1000; // Time in seconds
-          console.log("Download time: ", timeTaken, " seconds");
-          document.body.removeChild(a);
-        };
-
         document.body.removeChild(a);
+        const endTime = new Date();
+        console.log("Time: ", new Date() - startTime);
+        const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+        console.log("Time Taken: ", timeTaken);
+        setIsDisable(false);
       });
 
     return 1;
@@ -527,10 +526,11 @@ export default function BookedOrdersModal({
           </div>
 
           <button
+            disabled={isDisable}
             onClick={(e) => bookOrder(e)}
-            className="rounded-md bg-blue-800 px-4 py-2 text-slate-100 hover:bg-blue-900"
+            className="rounded-md bg-blue-800 px-4 py-2 text-slate-100 hover:bg-blue-900 disabled:opacity-50 disabled:pointer-events-none transition-all duration-700"
           >
-            Book Orders
+            {isDisable ? "Booking..." : "Book Orders"}
           </button>
         </form>
         <svg
