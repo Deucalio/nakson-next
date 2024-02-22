@@ -2,7 +2,8 @@ import { PDFDocument } from "pdf-lib";
 import { PDFFont } from "pdf-lib";
 import { StandardFonts } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
-import bwipjs from "bwip-js";
+import axios from "axios";
+import BwipJs from "bwip-js";
 // import { fontKit } from "@pdf-lib/fontkit/fontkit";
 
 async function fetchPdfBytes(url) {
@@ -1908,24 +1909,30 @@ async function generateCusotmizedSlip(slipData) {
         height: 90,
       });
 
-      // const barcodeBuffer = await bwipjs.toBuffer({
-      //   bcid: "code128", // Barcode type
-      //   text: order.track_number,
-      //   scale: 5, // 3x scaling factor
-      //   height: 6, // Bar height, in millimeters
-      //   includetext: true, // Show human-readable text
-      //   textxalign: "center", // Always good to set this
-      // });
+      // const barcode = await fetchPdfBytes(
+      //   // `https://barcode.orcascan.com/?type=code128&data=${order.amount}&text=${order.track_number}`
+      //   `https://barcodeapi.org/api/128/${order.track_number}`
+      // );
 
-      // const barcodeImg = await mergedPdfDoc.embedPng(barcodeBuffer);
+      const barcodeBuffer = await fetchPdfBytes(
+        `http://localhost:4000/create-barcode/${order.track_number}`
+      );
+      // let barcodeImg = "";
+      // try {
+      //   barcodeImg = await mergedPdfDoc.embedPng(barcode);
+      // } catch (e) {
+      //   console.log("Barcode Error: ", e);
+      // }
+
+      const barcodeImg = await mergedPdfDoc.embedPng(barcodeBuffer);
 
       // // add barcode
-      // page.drawImage(barcodeImg, {
-      //   x: (width - 270) / 2,
-      //   y: 176 + addressHeight,
-      //   width: 270,
-      //   height: 40,
-      // });
+      page.drawImage(barcodeImg, {
+        x: (width - 270) / 2,
+        y: 176 + addressHeight,
+        width: 270,
+        height: 40,
+      });
 
       // Logo Image
       const logoBytes = await fetchPdfBytes(order.shop_logo);
