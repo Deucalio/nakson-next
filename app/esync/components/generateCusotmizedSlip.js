@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-export const dynamic = "force-dynamic"; // defaults to auto
 import { PDFDocument } from "pdf-lib";
+import { PDFFont } from "pdf-lib";
 import { StandardFonts } from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit";
+import bwipjs from "bwip-js";
+// import { fontKit } from "@pdf-lib/fontkit/fontkit";
 
-// set Vercel timeout to 10 seconds (free plan)
-export const maxDuration = 10;
 async function fetchPdfBytes(url) {
   const response = await fetch(url);
   const pdfBytes = await response.arrayBuffer();
@@ -1831,42 +1831,29 @@ async function generateCusotmizedSlip(slipData) {
 
   // Fonts
 
-  //   mergedPdfDoc.registerFontkit(fontKit);
+  mergedPdfDoc.registerFontkit(fontkit);
 
   //load font and embed it to pdf documentx
 
-  //   const OpenSans =
-  //     "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-400-normal.ttf";
-  //   const OpenSansBold =
-  //     "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-600-normal.ttf";
+  const OpenSans =
+    "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-400-normal.ttf";
+  const OpenSansBold =
+    "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-600-normal.ttf";
 
-  //   const BebasNeue =
-  //     "https://cdn.jsdelivr.net/fontsource/fonts/bebas-neue@latest/latin-400-normal.ttf";
+  const BebasNeue =
+    "https://cdn.jsdelivr.net/fontsource/fonts/bebas-neue@latest/latin-400-normal.ttf";
 
-  //   const fontBytes = await fetchPdfBytes(OpenSans);
-  //   const fontBytes1 = await fetchPdfBytes(OpenSansBold);
-  //   const fontBytes2 = await fetchPdfBytes(BebasNeue);
+  const fontBytes = await fetchPdfBytes(OpenSans);
+  const fontBytes1 = await fetchPdfBytes(OpenSansBold);
+  const fontBytes2 = await fetchPdfBytes(BebasNeue);
 
-  //   const OpenSansFont = await mergedPdfDoc.embedFont(fontBytes);
-  //   const OpenSansBoldFont = await mergedPdfDoc.embedFont(fontBytes1);
-  //   const BebasNeueFont = await mergedPdfDoc.embedFont(fontBytes2);
+  const OpenSansFont = await mergedPdfDoc.embedFont(fontBytes);
+  const OpenSansBoldFont = await mergedPdfDoc.embedFont(fontBytes1);
+  const BebasNeueFont = await mergedPdfDoc.embedFont(fontBytes2);
 
-  // const fontBytes = await readFontFileFromUrl(Inter);
-
-  // const openSans = await mergedPdfDoc.embedFont(fontBytes);
-
-  // const fontBytes2 = fs.readFileSync("./fonts/open-sans-bold.ttf");
-  // const OpenSansBold = await mergedPdfDoc.embedFont(fontBytes2);
-
-  // const fontBytes3 = fs.readFileSync(
-  //   "./fonts/OpenSans-Regular.ttf"
-  // );
-  // const Open_Sans = await mergedPdfDoc.embedFont(fontBytes3);
-  const s = StandardFonts.Courier;
-
-  const fontInUse = s;
-  const fontinBoldUse = s;
-  const Impact = s;
+  const fontInUse = OpenSansFont;
+  const fontinBoldUse = OpenSansBoldFont;
+  const Impact = BebasNeueFont;
   // Calculate the height of each page
   // const height1 = mergedPdfDoc.getPage(0).getHeight();
   // const width1 = mergedPdfDoc.getPage(0).getWidth();
@@ -1882,6 +1869,7 @@ async function generateCusotmizedSlip(slipData) {
     const addressLineHeight = 10;
     const adressNumberOfLines = Math.ceil(addressWidth / addressMaxWidth);
     const addressHeight = adressNumberOfLines * addressLineHeight;
+
     // console.log("address width: ", addressWidth);
     // console.log("address height: ", addressHeight);
     const page = mergedPdfDoc.addPage([595, 305 + addressHeight - 35]);
@@ -1920,24 +1908,24 @@ async function generateCusotmizedSlip(slipData) {
         height: 90,
       });
 
-      const barcodeBuffer = await bwipjs.toBuffer({
-        bcid: "code128", // Barcode type
-        text: order.track_number,
-        scale: 5, // 3x scaling factor
-        height: 6, // Bar height, in millimeters
-        includetext: true, // Show human-readable text
-        textxalign: "center", // Always good to set this
-      });
+      // const barcodeBuffer = await bwipjs.toBuffer({
+      //   bcid: "code128", // Barcode type
+      //   text: order.track_number,
+      //   scale: 5, // 3x scaling factor
+      //   height: 6, // Bar height, in millimeters
+      //   includetext: true, // Show human-readable text
+      //   textxalign: "center", // Always good to set this
+      // });
 
-      const barcodeImg = await mergedPdfDoc.embedPng(barcodeBuffer);
+      // const barcodeImg = await mergedPdfDoc.embedPng(barcodeBuffer);
 
-      // add barcode
-      page.drawImage(barcodeImg, {
-        x: (width - 270) / 2,
-        y: 176 + addressHeight,
-        width: 270,
-        height: 40,
-      });
+      // // add barcode
+      // page.drawImage(barcodeImg, {
+      //   x: (width - 270) / 2,
+      //   y: 176 + addressHeight,
+      //   width: 270,
+      //   height: 40,
+      // });
 
       // Logo Image
       const logoBytes = await fetchPdfBytes(order.shop_logo);
@@ -2245,14 +2233,4 @@ async function generateCusotmizedSlip(slipData) {
   mergedPdfBytes = await mergedPdfDoc.save();
   return mergedPdfBytes;
 }
-export async function GET(request) {
-  let pdfBytes = await generateCusotmizedSlip([1, 2, 3]);
-  console.log("Generating Slips...");
-  return Response.set({
-    "Content-Type": "application/pdf",
-    "Content-Disposition": 'attachment; filename="Next-Slip.pdf"',
-  }).json({
-    message: "Orders have been Booked",
-    pdfBytes,
-  });
-}
+export default generateCusotmizedSlip;

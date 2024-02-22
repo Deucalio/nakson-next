@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import LEOPARDS_CITIES from "../LEOPARDS_CITIES";
 import axios from "axios";
+import generateCusotmizedSlip from "./generateCusotmizedSlip";
 import { getUser } from "../actions/getUser";
 
 const EditModal = ({
@@ -350,6 +351,26 @@ export default function BookedOrdersModal({
     const serverRes = await axios.get("/api/server-url");
     const { serverURL } = serverRes.data;
     setIsDisable(true);
+    console.log("downloading....");
+    const pdfBytes = await generateCusotmizedSlip([1, 2, 3]);
+    const downloadFile = Object.values(pdfBytes);
+    const blob = new Blob([new Uint8Array(downloadFile)], {
+      type: "application/pdf",
+    });
+    // const blob = new Blob([res.data.pdfBytes], {
+    //   type: "application/pdf",
+    // });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Next-Slip.pdf"; // Set the desired file name
+    document.body.appendChild(a);
+
+    a.click();
+
+    document.body.removeChild(a);
+
+    return;
 
     // Start timer
 
@@ -362,26 +383,32 @@ export default function BookedOrdersModal({
     //     ),
     //     email: user.user.email,
     //   })
-    axios.get("/api/generate-slip").then((res) => {
-      let pdfBytes = Object.values(res.data.pdfBytes);
-      const blob = new Blob([new Uint8Array(pdfBytes)], {
-        type: "application/pdf",
+    axios
+      .post("/api/generate-slip", {
+        responseType: "blob",
+      })
+      .then((res) => {
+        let pdfBytes = Object.values(res.data.pdfBytes);
+        const blob = new Blob([new Uint8Array(pdfBytes)], {
+          type: "application/pdf",
+        });
+        // const blob = new Blob([res.data.pdfBytes], {
+        //   type: "application/pdf",
+        // });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "Next-Slip.pdf"; // Set the desired file name
+        document.body.appendChild(a);
+
+        // a.click();
+
+        // document.body.removeChild(a);
+        const endTime = new Date();
+        const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+        console.log("Time Taken: ", timeTaken);
+        setIsDisable(false);
       });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "Next-Slip.pdf"; // Set the desired file name
-      document.body.appendChild(a);
-
-      a.click();
-
-      document.body.removeChild(a);
-      const endTime = new Date();
-      console.log("Time: ", new Date() - startTime);
-      const timeTaken = (endTime - startTime) / 1000; // Time in seconds
-      console.log("Time Taken: ", timeTaken);
-      setIsDisable(false);
-    });
 
     return 1;
 
