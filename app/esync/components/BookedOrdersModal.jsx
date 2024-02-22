@@ -344,9 +344,12 @@ export default function BookedOrdersModal({
       alert("Select Courier");
       return;
     }
+    // get Server URL
+    const serverRes = await axios.get("/api/server-url");
+    const { serverURL } = serverRes.data;
 
     axios
-      .post("http://localhost:4000/leopards/orders", {
+      .post(`${serverURL}/leopards/orders`, {
         orders: editedOrders.filter(
           (order) => order.correct_city !== undefined
         ),
