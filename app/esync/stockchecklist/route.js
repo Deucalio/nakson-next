@@ -30,6 +30,9 @@ export async function GET(request) {
     console.log("orders: ", orders.length);
     orders.forEach((order, index) => {
       for (const product of order.line_items) {
+        if (product.sku === "" || product.sku === null) {
+          continue;
+        }
         skus.forEach((sku) => {
           if (sku[product.sku]) {
             sku[product.sku] += product.quantity;
@@ -40,8 +43,19 @@ export async function GET(request) {
       }
     });
   }
+  let Skus = Object.keys(skus[0]);
+  let Count = Object.values(skus[0]);
+
+  console.log("Skus: ", Skus);
+  console.log("Count: ", Count);
+
+  let d = [];
+  for (let i = 0; i < 37; i++) {
+    d.push(`${Skus[i]},${Count[i]}`);
+  }
+
   return Response.json({
-    data: skus,
-    
+    data: d.join("/"),
+    skus: skus,
   });
 }
