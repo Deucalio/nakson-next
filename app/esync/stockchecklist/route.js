@@ -50,7 +50,7 @@ export async function GET(request) {
   console.log("Count: ", Count);
 
   let d = [];
-  for (let i = 0; i < 37; i++) {
+  for (let i = 0; i < Skus.length; i++) {
     d.push(`${Skus[i]},${Count[i]}`);
   }
 
