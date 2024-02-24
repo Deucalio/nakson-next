@@ -58,7 +58,7 @@ export async function GET(request) {
   return new Response(
     `
     
-    <p>${d.join("/")}</p>
+    ${d.join("/")}
     `,
     { status: 410, headers: { "content-type": "text/html" } }
   );
