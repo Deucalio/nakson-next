@@ -6,9 +6,12 @@ import { PrismaClient } from "../../../prisma/generated/client";
 export async function GET(request) {
   const shopInfo = [{}];
   // Get the user's shopify store
-  const res = await axios.post("http://localhost:4000/shopify/get-stores", {
-    email: "subhankhanyz@gmail.com",
-  });
+  const res = await axios.post(
+    "https://esync-backend.vercel.app/shopify/get-stores",
+    {
+      email: "subhankhanyz@gmail.com",
+    }
+  );
 
   const stores = await res.data.stores;
   const skus = [{}];
