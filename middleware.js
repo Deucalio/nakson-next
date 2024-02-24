@@ -7,9 +7,8 @@ export default auth((req) => {
   // console.log("req", req.nextUrl.pathname);
   console.log("is", isLoggedIn);
 
-
   // If the route is /esync/checklist, let the user in
-  if (req.nextUrl.pathname === "/esync/checklist") {
+  if (req.nextUrl.pathname === "/esync/stockchecklist") {
     return NextResponse.next();
   }
 
