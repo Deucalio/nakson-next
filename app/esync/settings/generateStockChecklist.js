@@ -22775,27 +22775,193 @@ async function fetchPdfBytes(url) {
 const generateStockChecklist = async (orders = null) => {
   orders = ORDERS;
 
+
+  const numberOfOrders = orders.length;
+
   let mergedPdfDoc = "";
   let mergedPdfBytes = "";
   mergedPdfDoc = await PDFDocument.create();
   mergedPdfDoc.registerFontkit(fontkit);
 
+  const serverRes = await axios.get("/api/server-url");
+  const { serverURL } = serverRes.data;
+
   const PoppinsBold =
-    "https://cdn.shopify.com/s/files/1/0600/2573/3318/files/Poppins-Bold.ttf?v=1708777010";
+    "https://cdn.jsdelivr.net/fontsource/fonts/poppins@latest/latin-700-normal.ttf";
+
+  const Poppins =
+    "https://cdn.jsdelivr.net/fontsource/fonts/poppins@latest/latin-500-normal.ttf";
 
   const fontBytes = await fetchPdfBytes(PoppinsBold);
+  const fontBytes1 = await fetchPdfBytes(Poppins);
 
   const PoppinsBoldFont = await mergedPdfDoc.embedFont(fontBytes);
-
-  // (19,774)
-
-  // Create a Page
+  const PoppinsFont = await mergedPdfDoc.embedFont(fontBytes1);
 
   const page = mergedPdfDoc.addPage([595, 842]);
-  
 
+  page.drawText("Stock Checklist", {
+    font: PoppinsBoldFont,
+    size: 62,
+    x: 19,
+    y: 774,
+  });
 
+  page.drawText(`For (${numberOfOrders}) orders`, {
+    font: PoppinsFont,
+    size: 15,
+    x: 19,
+    y: 740,
+  });
 
+  // new Date().toLocaleDateString() 24/02/2024
+  // DD/MM/Year
+  const date = `Printed On: ${new Date().toLocaleDateString()}`;
+  const dateWidth = PoppinsFont.widthOfTextAtSize(date, 15);
+
+  page.drawText(`${date}`, {
+    font: PoppinsFont,
+    size: 15,
+    x: 579 - dateWidth,
+    y: 740,
+  });
+
+  page.drawLine({
+    start: { x: 17, y: 728 },
+    end: { x: 578, y: 728 },
+    thickness: 1,
+  });
+
+  page.drawRectangle({
+    x: 17,
+    y: 17,
+    width: 562,
+    height: 687,
+    borderWidth: 1,
+    opacity: 0,
+    borderOpacity: 0.8,
+  });
+
+  page.drawLine({
+    start: { x: 17, y: 676 },
+    end: { x: 579, y: 676 },
+    thickness: 0.8,
+  });
+
+  page.drawLine({
+    start: { x: 315, y: 704 },
+    end: { x: 315, y: 676 },
+    thickness: 0.8,
+  });
+
+  page.drawLine({
+    start: { x: 473, y: 704 },
+    end: { x: 473, y: 676 },
+    thickness: 0.8,
+  });
+
+  page.drawLine({
+    start: { x: 51, y: 704 },
+    end: { x: 51, y: 17 },
+    thickness: 0.8,
+  });
+
+  page.drawText(`Sr.`, {
+    font: PoppinsFont,
+    size: 16.25,
+    x: 25,
+    y: 683,
+  });
+
+  page.drawText(`Stock keeping unit (Sku)`, {
+    font: PoppinsFont,
+    size: 16.25,
+    x: 84,
+    y: 683,
+  });
+
+  page.drawText(`Barcode`, {
+    font: PoppinsFont,
+    size: 16.25,
+    x: 361,
+    y: 683,
+  });
+
+  page.drawText(`Quantity`, {
+    font: PoppinsFont,
+    size: 16.25,
+    x: 491,
+    y: 683,
+  });
+
+  // Sr. , Sku, barcode, quantity
+
+  const number = `1`;
+  const numberWidth = PoppinsFont.widthOfTextAtSize(number, 16.25);
+  page.drawText(number, {
+    font: PoppinsFont,
+    size: 16.25,
+    x: 17 + (34 - numberWidth) / 2,
+    y: 648,
+  });
+
+  page.drawText("rh-188", {
+    font: PoppinsBoldFont,
+    size: 20,
+    x: 63,
+    y: 646,
+  });
+
+  const barcodeBuffer = await fetchPdfBytes(
+    `${serverURL}/create-barcode-stockchecklist/rh-188,100`
+  );
+
+  const barcodeImg = await mergedPdfDoc.embedPng(barcodeBuffer);
+
+  // // add barcode
+  page.drawImage(barcodeImg, {
+    x: 321,
+    y: 637,
+  });
+
+  const quantity = "100";
+  const quantityWidth = PoppinsBoldFont.widthOfTextAtSize(quantity, 20);
+
+  page.drawText(quantity, {
+    font: PoppinsBoldFont,
+    size: 20,
+    x: 472 + (106 - quantityWidth) / 2,
+    y: 646,
+  });
+
+  // Ending Line
+  page.drawLine({
+    start: { x: 19, y: 632 },
+    end: { x: 575, y: 632 },
+    thickness: 0.8,
+  });
+
+  // 2nd One
+
+  page.drawText("2", {
+    font: PoppinsFont,
+    size: 16.25,
+    x: 17 + (34 - numberWidth) / 2,
+    y: 648 - 44,
+  });
+
+  page.drawText("bath_gloves", {
+    font: PoppinsBoldFont,
+    size: 20,
+    x: 63,
+    y: 646 - 44,
+  });
+
+  page.drawLine({
+    start: { x: 19, y: 632 - 44 },
+    end: { x: 575, y: 632 - 44 },
+    thickness: 0.8,
+  });
 
   const pdfDataUri = await mergedPdfDoc.saveAsBase64({ dataUri: true });
   const p = document.createElement("a");

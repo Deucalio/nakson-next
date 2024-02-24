@@ -12,6 +12,37 @@ async function fetchPdfBytes(url) {
   return pdfBytes;
 }
 async function generateCusotmizedSlip(slipData) {
+  slipData = [
+    {
+      shop_name: "Nakson",
+      shop_logo:
+        "https://nakson.pk/cdn/shop/files/nakson_12.png?v=1671209093&width=300",
+      service_type: "OVERNIGHT",
+      courier: "Leopards",
+      consignee_info: {
+        name: "Hamad Jani",
+        address: "Lorem Ipsum is simply dumeMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+        phone: "03124124124",
+      },
+      shipper_info: {
+        name: "Nakson",
+        address: "172-D Nakson Office, Unit# 5 Latifabad, Hyderabad.",
+        phone: "03481273957",
+      },
+      destination: {
+        "name": "Washington DC",
+      },
+      shipping_instructions: "Call the consignee before delivery",
+      date: new Date().toLocaleString().split(",")[0],
+      pieces: "200",
+      weight: "100",
+      amount: "1000",
+      track_number: "HD1232131231123",
+      booked_packet_order_name: "Nvidia101",
+      collectType: "COD Parcel",
+    },
+  ];
+
   const serverRes = await axios.get("/api/server-url");
   const { serverURL } = serverRes.data;
   // Current Performance:
