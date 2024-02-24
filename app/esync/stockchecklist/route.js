@@ -14,40 +14,41 @@ export async function GET(request) {
   );
 
   const stores = await res.data.stores;
-  const skus = [{}];
+
+  const orders = [];
+
+  const skus = {};
 
   for (const store of stores) {
     const response = await axios.get(
-      `https://${store.store_info.shop}/admin/api/2023-10/orders.json?status=any&limit=50`,
+      `https://${store.store_info.shop}/admin/api/2023-10/orders.json?status=any&limit=50
+      `,
       {
         headers: {
           "X-Shopify-Access-Token": store.store_info.accessToken,
         },
       }
     );
-
-    const orders = response.data.orders;
-    console.log("orders: ", orders.length);
-    orders.forEach((order, index) => {
-      for (const product of order.line_items) {
-        if (product.sku === "" || product.sku === null) {
-          continue;
-        }
-        skus.forEach((sku) => {
-          if (sku[product.sku]) {
-            sku[product.sku] += product.quantity;
-          } else {
-            sku[product.sku] = product.quantity;
-          }
-        });
-      }
-    });
+    orders.push(...response.data.orders);
   }
-  let Skus = Object.keys(skus[0]);
-  let Count = Object.values(skus[0]);
 
-  console.log("Skus: ", Skus);
-  console.log("Count: ", Count);
+  for (const order of orders) {
+    for (const product of order.line_items) {
+      if (product.sku === "" || product.sku === null) {
+        continue;
+      }
+      if (skus[product.sku]) {
+        skus[product.sku] += product.quantity;
+      } else {
+        skus[product.sku] = product.quantity;
+      }
+    }
+  }
+
+  console.log("skus: ", skus);
+
+  let Skus = Object.keys(skus);
+  let Count = Object.values(skus);
 
   let d = [];
   for (let i = 0; i < Skus.length; i++) {
@@ -57,10 +58,9 @@ export async function GET(request) {
   // return Response.send(d.join("/"));
   return new Response(
     `
-    
     ${d.join("/")}
     `,
-    { status: 410, headers: { "content-type": "text/html" } }
+    { status: 200, headers: { "content-type": "text/html" } }
   );
 
   // return Response.json({
