@@ -7,6 +7,12 @@ export default auth((req) => {
   // console.log("req", req.nextUrl.pathname);
   console.log("is", isLoggedIn);
 
+
+  // If the route is /esync/checklist, let the user in
+  if (req.nextUrl.pathname === "/esync/checklist") {
+    return NextResponse.next();
+  }
+
   // Check query params
   const searchParams = new URLSearchParams(req.nextUrl.search);
   const accesstoken = searchParams.get("accesstoken") || "";
