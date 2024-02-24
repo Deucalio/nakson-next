@@ -54,8 +54,17 @@ export async function GET(request) {
     d.push(`${Skus[i]},${Count[i]}`);
   }
 
-  return Response.json({
-    data: d.join("/"),
-    skus: skus,
-  });
+  // return Response.send(d.join("/"));
+  return new Response(
+    `
+    
+    <p>${d.join("/")}</p>
+    `,
+    { status: 410, headers: { "content-type": "text/html" } }
+  );
+
+  // return Response.json({
+  //   data: d.join("/"),
+  //   skus: skus,
+  // });
 }
