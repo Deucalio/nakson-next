@@ -10,6 +10,7 @@ import { getUser } from "../../esync/actions/getUser";
 import shopifyLogo from "../../../public/shopify-logo.png";
 import ConnectStoreModal from "./../components/shopify/ConnectStoreModal"; // Fixed the casing of the import
 import Nav from "../components/Nav";
+import { generateStockChecklist } from "./generateStockChecklist";
 
 const Shippers = () => {
   return (
@@ -502,6 +503,17 @@ export default function Page() {
                   >
                     Show Connected Stores
                   </button>
+
+
+
+                  <button
+                    onClick={generateStockChecklist}
+                    className="bg-indigo-600 hover:bg-green-800 transition-all text-xs px-2 py-2 rounded-md h-8 self-center"
+                  >
+                    Show Connected Stores
+                  </button>
+
+
                 </li>
                 <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
                   <p>

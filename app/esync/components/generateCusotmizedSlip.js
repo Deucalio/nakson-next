@@ -20,12 +20,10 @@ async function generateCusotmizedSlip(slipData) {
   // 112 orders in 1 minute
   // 200 orders in 2 minute 30 seconds
 
-
   console.log("HERE ", slipData.length, "Orders");
   let mergedPdfDoc = "";
   let mergedPdfBytes = "";
   mergedPdfDoc = await PDFDocument.create();
-
   // Fonts
 
   mergedPdfDoc.registerFontkit(fontkit);

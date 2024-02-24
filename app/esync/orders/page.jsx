@@ -60,6 +60,7 @@ export default function Home() {
     console.log("user: ", user.user.email);
     const serverRes = await axios.get("/api/server-url");
     const { serverURL } = serverRes.data;
+    console.log("serverURL: ", serverURL);
     const res = axios.post(`${serverURL}/shopify/orders`, {
       email: user.user.email,
     });
@@ -315,17 +316,7 @@ export default function Home() {
           Book Order
         </button>
 
-
-
-        <button
-          onClick={bookOrder}
-          className={` ${
-            showBookedOrdersModal ? "pointer-events-none" : ""
-          } bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded `}
-        >
-        Generate Stock Checklist
-        </button>
-
+    
         <span>
           {filterData && filterData.filter((order) => order.selected).length}{" "}
           Selected
