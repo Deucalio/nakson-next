@@ -314,6 +314,18 @@ export default function Home() {
         >
           Book Order
         </button>
+
+
+
+        <button
+          onClick={bookOrder}
+          className={` ${
+            showBookedOrdersModal ? "pointer-events-none" : ""
+          } bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded `}
+        >
+        Generate Stock Checklist
+        </button>
+
         <span>
           {filterData && filterData.filter((order) => order.selected).length}{" "}
           Selected

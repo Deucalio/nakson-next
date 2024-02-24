@@ -354,7 +354,14 @@ export default function BookedOrdersModal({
     // Start timer
     const startTime = new Date();
     console.log("Downloadiing...");
-    const pdfBytes = await generateCusotmizedSlip([1, 2, 3]);
+
+    const responseOne = await axios.post(`${serverURL}/leopards/orders`, {
+      orders: editedOrders,
+    });
+
+    const pdfBytes = await generateCusotmizedSlip([
+      responseOne.data.booked_orders,
+    ]);
     const downloadFile = Object.values(pdfBytes);
     const blob = new Blob([new Uint8Array(downloadFile)], {
       type: "application/pdf",
@@ -676,7 +683,7 @@ export default function BookedOrdersModal({
                     order.customer.last_name.slice(1)}
                 </li>
                 <li className="flex items-center justify-center transition-all text-sm">
-                  {order.shipping_address.phone
+                  {order.shipping_address?.phone
                     ? order.shipping_address.phone
                     : "No Phone"}
                   {/* 22 */}
