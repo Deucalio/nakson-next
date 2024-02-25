@@ -17,6 +17,11 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
+    // If the route is /Setting/darazcallback, let the user in
+    if (req.nextUrl.pathname === "/Setting/darazcallback") {
+      return NextResponse.next();
+    }
+
   // Check query params
   const searchParams = new URLSearchParams(req.nextUrl.search);
   const accesstoken = searchParams.get("accesstoken") || "";
