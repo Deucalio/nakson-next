@@ -12,6 +12,11 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
+  // If the route is /api/daraz-auth, let the user in
+  if (req.nextUrl.pathname === "/api/daraz-auth") {
+    return NextResponse.next();
+  }
+
   // Check query params
   const searchParams = new URLSearchParams(req.nextUrl.search);
   const accesstoken = searchParams.get("accesstoken") || "";
