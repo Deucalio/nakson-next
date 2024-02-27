@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic"; // defaults to auto
 const axios = require("axios");
+import { cookies } from "next/headers";
 
 function getTimeStamp() {
   const localDate = new Date();
@@ -22,9 +23,9 @@ async function getSignature(code, timeStamp, params) {
 export async function GET(request) {
   // Get the query string
   // const code = request.url.split("?")[1].slice(5);
-  console.log("cookie:" , request.headers.cookie);
+  console.log("cookie:", request);
+  console.log("COOKIES: ", cookies().get("userInfo"));
 
- 
   // const code = "4_501634_RQi2t4NkGOosxhvfKtWEay9l65";
   // const timeStamp = getTimeStamp();
   // const signature = getSignature();
