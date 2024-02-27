@@ -12,9 +12,9 @@ function getTimeStamp() {
 }
 
 async function getSignature(secret, api, params) {
-  const res = await axios.post("https://esync-backend.vercel.app/api/sign", {
-    secret: "sad",
-    api: "/auth/token/create",
+  const res = await axios.post("https://esync-backend.vercel.app/daraz/sign", {
+    secret,
+    api,
     parameters: params,
   });
   return res.data;
