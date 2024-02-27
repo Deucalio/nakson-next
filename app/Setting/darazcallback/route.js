@@ -33,6 +33,7 @@ async function getAccessToken(
       userEmail: currentUserEmail,
     }
   );
+  console.log("Res: ",res)
 
   if (res.status !== 200) {
     return {
