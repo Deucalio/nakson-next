@@ -18,19 +18,18 @@ async function getAccessToken(
   timeStamp,
   app_key,
   name,
-  email
+  email,
+  currentUserEmail
 ) {
-  const res = await axios.post(
-    "http://localhost:4000/daraz/access-token",
-    {
-      signature,
-      code,
-      timeStamp,
-      app_key,
-      name,
-      email,
-    }
-  );
+  const res = await axios.post("http://localhost:4000/daraz/access-token", {
+    signature,
+    code,
+    timeStamp,
+    app_key,
+    name,
+    email,
+    userEmail: currentUserEmail,
+  });
   return res.data;
 }
 
