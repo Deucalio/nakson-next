@@ -45,17 +45,12 @@ async function getSignature(secret, api, params) {
 export async function GET(request) {
   // Get the query string
   const code = request.url.split("?")[1].slice(5);
-  const { name, email } = JSON.parse(cookies().get("userInfo").value);
+  // const { name, email } = JSON.parse(cookies().get("userInfo").value);
   const app_key = "501634";
   const app_secret = "X1BBDAi3EuamELmOZi400PLT1xxhxrOw";
   const correntUser = await getUser();
 
-  if (!correntUser) {
-    // return Response.redirect("/login");
-    return Response.json({
-      message: "You are not Logged In! Please Login to continue.",
-    });
-  }
+
 
   const timeStamp = getTimeStamp();
   const signature = await getSignature(app_secret, "/auth/token/create", {
@@ -76,6 +71,6 @@ export async function GET(request) {
   );
 
   return Response.json({
-    message: darazRes.data.message,
+    message: darazRes.message,
   });
 }
