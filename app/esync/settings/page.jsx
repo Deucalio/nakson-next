@@ -392,7 +392,7 @@ export default function Page() {
       return;
     }
 
-    if (storesDaraz) {
+    if (storesDaraz.length !== 0) {
       return;
     }
 
