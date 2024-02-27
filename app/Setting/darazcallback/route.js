@@ -37,7 +37,6 @@ export async function GET(request) {
     }
   );
 
-  console.log(name, email, signature);
 
   // const accessTokenUrl = `https://api.daraz.pk/rest/auth/token/create?code=${code}&app_key=501634&sign_method=sha256&timestamp=${timeStamp}&sign=E4C3B3D46B8FB7023D687BDCC7423B0953DE2287E2FD0C6E0A9435B09A325501`;
   // const res = await axios.post(accessTokenUrl);
@@ -47,5 +46,8 @@ export async function GET(request) {
   return Response.json({
     message: "Hello from the API!",
     signature: signature,
+    timeStamp: timeStamp,
+    name,
+    email
   });
 }
