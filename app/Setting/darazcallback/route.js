@@ -23,8 +23,8 @@ async function getSignature(code, timeStamp, params) {
 export async function GET(request) {
   // Get the query string
   // const code = request.url.split("?")[1].slice(5);
-  console.log("cookie:", request);
-  console.log("COOKIES: ", cookies().get("userInfo"));
+  const { name, email } = JSON.parse(cookies().get("userInfo").value);
+  console.log(name, email);
 
   // const code = "4_501634_RQi2t4NkGOosxhvfKtWEay9l65";
   // const timeStamp = getTimeStamp();
@@ -38,5 +38,7 @@ export async function GET(request) {
 
   return Response.json({
     message: "Hello from the API!",
+    name,
+    email,
   });
 }
