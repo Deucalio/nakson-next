@@ -33,6 +33,14 @@ async function getAccessToken(
       userEmail: currentUserEmail,
     }
   );
+
+  if (res.status !== 200) {
+    return {
+      MESSAGE: res.data,
+      message: "Failed to get access token",
+    };
+  }
+
   return res.data;
 }
 
