@@ -21,7 +21,7 @@ async function getAccessToken(
   email,
   currentUserEmail
 ) {
-  const res = await axios.post("http://localhost:4000/daraz/access-token", {
+  const res = await axios.post("https://esync-backend.vercel.app/daraz/access-token", {
     signature,
     code,
     timeStamp,
@@ -34,7 +34,7 @@ async function getAccessToken(
 }
 
 async function getSignature(secret, api, params) {
-  const res = await axios.post("http://localhost:4000/daraz/sign", {
+  const res = await axios.post("https://esync-backend.vercel.app/daraz/sign", {
     secret,
     api,
     parameters: params,
