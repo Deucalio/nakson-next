@@ -167,6 +167,9 @@ const Shippers = () => {
 };
 
 export default function Page() {
+  // waiting for api Call
+  const [waiting, setWaiting] = useState(true);
+
   // Nav Configuration
   const navElement = useRef(null);
   const arrowElement = useRef(null);
@@ -221,7 +224,7 @@ export default function Page() {
   const [connectStoreModal, setConnectStoreModal] = useState(false);
 
   // Stores user added to the database
-  const [stores, setStores] = useState([]);
+  const [stores, setStores] = useState(null);
 
   // Daraz States
   const [userInfo, setUserInfo] = useState({
@@ -229,6 +232,9 @@ export default function Page() {
     email: "",
   });
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showConnectedStoresDaraz, setShowConnectedStoresDaraz] =
+    useState(false);
+  const [storesDaraz, setStoresDaraz] = useState(null);
 
   useEffect(() => {
     saveUser();
@@ -239,20 +245,31 @@ export default function Page() {
   }, []);
 
   const getStores = async () => {
+    console.log("stores: ", stores);
+
     if (!user) {
       return;
     }
     setShowConnectedStores(!showConnectedStores);
 
-    // If the stores array is empty, make a request to the server to get the stores
-    const res = await axios.get("/api/server-url");
-    const { serverURL } = res.data;
-    const response = await axios.post(`${serverURL}/shopify/get-stores`, {
-      email: user.user.email,
-    });
+    if (stores) {
+      return;
+    }
 
-    setStores(response.data.stores);
-    return;
+    setWaiting(true);
+
+    // If the stores array is empty, make a request to the server to get the stores
+    try {
+      const res = await axios.get("/api/server-url");
+      const { serverURL } = res.data;
+      const response = await axios.post(`${serverURL}/shopify/get-stores`, {
+        email: user.user.email,
+      });
+      setStores(response.data.stores);
+    } catch {
+      alert("Error Fetching Stores");
+    }
+    setWaiting(false);
   };
 
   const handlePageClick = (e) => {
@@ -274,19 +291,6 @@ export default function Page() {
 
   const handleCrop = (croppedImageData) => {
     setCroppedImage(croppedImageData);
-  };
-
-  const randomString = (length) => {
-    const result = [];
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-      result.push(
-        characters.charAt(Math.floor(Math.random() * charactersLength))
-      );
-    }
-    return result.join("");
   };
 
   const handleCopy = async (e) => {
@@ -366,8 +370,6 @@ export default function Page() {
   };
 
   const connectDarazStore = async () => {
-    console.log("userInfo: ", userInfo);
-
     const url = `https://api.daraz.pk/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://nakson.services/Setting/darazcallback&client_id=501634`;
 
     // Save the userInfo inside cookies
@@ -375,7 +377,39 @@ export default function Page() {
 
     // Redirect to the daraz store
     window.open(url, "_blank");
-    // window.location.href(url);
+
+    // Close the Daraz Modal
+    setShowEmailModal(false);
+    setUserInfo({ name: "", email: "" });
+    console.log("False:");
+  };
+
+  const getStoresDaraz = async () => {
+    console.log("DarazStore: ", storesDaraz)
+
+    setShowConnectedStoresDaraz(!showConnectedStoresDaraz);
+    if (!user) {
+      return;
+    }
+
+    if (storesDaraz) {
+      return;
+    }
+
+    setWaiting(true);
+
+    // If the stores array is empty, make a request to the server to get the stores
+    try {
+      const res = await axios.get("/api/server-url");
+      const { serverURL } = res.data;
+      const response = await axios.post(`${serverURL}/daraz/get-stores`, {
+        email: user.user.email,
+      });
+      setStoresDaraz(response.data.stores);
+    } catch {
+      alert("Error Fetching Stores");
+    }
+    setWaiting(false);
   };
 
   if (!user) {
@@ -392,7 +426,8 @@ export default function Page() {
           showTokenModal ||
           showConnectedStores ||
           connectStoreModal ||
-          showEmailModal
+          showEmailModal ||
+          showConnectedStoresDaraz
             ? ["blur-md", "pointer-events-none"].join(" ")
             : ""
         }`}
@@ -633,7 +668,7 @@ export default function Page() {
                       alt="Shopify Logo"
                     />
                     <button
-                      onClick={() => alert("sad")}
+                      onClick={getStoresDaraz}
                       className="bg-orange-700 hover:bg-orange-800 transition-all text-xs px-2 py-2 rounded-md h-8 self-center"
                     >
                       Show Connected Stores
@@ -906,16 +941,21 @@ export default function Page() {
 
       {/* ______ */}
 
-      {/* CONNECTED STORES */}
+      {/* CONNECTED STORES SHOPIFY */}
+
       <div
-        className={`absolute overflow-y-auto top-24 z-10 flex h-[23rem] w-[40rem] flex-col  rounded-md border-2 border-indigo-950 bg-black p-2 text-white transition-all duration-700 md:left-1/3 
+        className={`absolute overflow-y-auto overflow-x-hidden top-24 z-10 flex h-[23rem] w-[40rem] flex-col border border-green-900 bg-black p-2 text-white transition-all duration-700 md:left-1/3 
       md:-translate-x-11 ${
         showConnectedStores
           ? ""
           : ["opacity-0", "pointer-events-none"].join(" ")
       }   `}
       >
-        {stores.length === 0 && (
+        {waiting && (
+          <span className="loader absolute left-1/2 -translate-x-48 top-40 "></span>
+        )}
+
+        {stores?.length === 0 && (
           <>
             <p>No Store Connected</p>
             <svg
@@ -935,8 +975,8 @@ export default function Page() {
           </>
         )}
 
-        {stores.length !== 0 &&
-          stores.map((store, index) => (
+        {stores?.length !== 0 &&
+          stores?.map((store, index) => (
             <ul
               key={store.id}
               className="ml-8 mt-10 flex h-fit w-[36rem] flex-col gap-3 border-b border-slate-500 px-3 py-6"
@@ -1039,6 +1079,123 @@ export default function Page() {
           </li>
         </ul> */}
       </div>
+
+      {/* CONNECTED STORES DARAZ */}
+
+      <div
+        className={`absolute overflow-y-auto overflow-x-hidden top-24 z-10 flex h-[23rem] w-[40rem] flex-col  rounded-md border-2 border-orange-950 bg-black p-2 text-white transition-all duration-700 md:left-1/3 
+      md:-translate-x-11 ${
+        showConnectedStoresDaraz
+          ? ""
+          : ["opacity-0", "pointer-events-none"].join(" ")
+      }   `}
+      >
+        {waiting && (
+          <span className="loader absolute left-1/2 -translate-x-48 top-40 "></span>
+        )}
+
+        {storesDaraz?.length === 0 && (
+          <>
+            <p>No Store Connected</p>
+            <svg
+              onClick={() => setShowConnectedStores(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-9 cursor-pointer w-9 bg-black text-red-600 hover:text-red-800 transition-all absolute right-3 top-2 rounded-md "
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </>
+        )}
+
+        {storesDaraz?.length !== 0 &&
+          storesDaraz?.map((store, index) => (
+            <ul
+              key={store.id}
+              className="ml-8 mt-10 flex h-fit w-[36rem] flex-col gap-3 border-b border-slate-500 px-3 py-6"
+            >
+              <li
+                onClick={() => setShowConnectedStoresDaraz(false)}
+                className={`
+                ${index > 0 ? "hidden" : ""}
+                absolute right-3 top-2 cursor-pointer rounded-2xl border-2 border-red-700 text-red-700 transition-all hover:border-red-800 hover:text-red-800`}
+              >
+                <svg
+                  onClick={() => setShowConnectedStoresDaraz(false)}
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="h-7 w-7"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18 18 6M6 6l12 12"
+                  />
+                </svg>
+              </li>
+              <li className="flex flex-row items-center gap-3 relative h-24">
+                <Image
+                  className=" rounded-md border border-gray-50 bg-gray-50"
+                  src={
+                    store.image_url !== "none"
+                      ? store.image_url
+                      : "https://i.imgur.com/bK6ZSYI.png"
+                  }
+                  width={100}
+                  height={100}
+                  alt="Store Logo"
+                ></Image>
+                <p className="ml-2">{store.name}</p>
+
+                <div className="absolute items-center flex flex-row justify-center gap-10 text-xs -top-1 -right-4  w-60  h-24  ">
+                  <button className="bg-blue-800 rounded-md px-2 py-2 hover:bg-blue-900 transition-all">
+                    Update
+                  </button>
+                  <button
+                    onClick={async () => {
+                      setIsLoading(true);
+                      // Remove the store from the database
+                      const res = await axios.get("/api/server-url");
+                      const { serverURL } = res.data;
+                      const response = await axios.delete(
+                        `${serverURL}/daraz/delete-store/${store.name}`
+                      );
+                      if (response.status === 200) {
+                        // Send user to esync/settings and reload the page
+                        window.location.href = "/esync/settings";
+                        // win
+                      }
+                    }}
+                    disabled={isLoading}
+                    className={`bg-red-800 rounded-md px-2 py-2 hover:bg-red-900 transition-all disabled:bg-opacity-50 `}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </li>
+              <li className="my-4 grid grid-cols-7 gap-8 border-l-2 border-indigo-600 p-2 text-sm ">
+                <p className="col-span-2 text-gray-300">Access Token</p>
+                <p className="col-span-5 text-gray-500 font-bold">
+                  {store.store_info.access_token}
+                </p>
+                <p className="col-span-2 text-gray-300">Account</p>
+                <p className="col-span-5 text-gray-500 font-bold">
+                  {store.store_info.account}
+                </p>
+              </li>
+            </ul>
+          ))}
+      </div>
+
+      {/* _______________ */}
 
       {/* TOKEN DIV */}
       <div
