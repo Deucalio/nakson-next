@@ -21,7 +21,6 @@ async function getAccessToken(signature, code, timeStamp, app_key) {
       app_key,
     }
   );
-  console.log("Response: ", res.data);
   return res.data;
 }
 
@@ -55,6 +54,8 @@ export async function GET(request) {
   // const res = await axios.post(accessTokenUrl);
   // console.log("accessTokenUrl: ", accessTokenUrl);
   // console.log("Response: ", res);
+
+  console.log(name,email, accessToken)
 
   return Response.json({
     message: "Hello from the API!",
