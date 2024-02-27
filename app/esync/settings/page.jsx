@@ -9,8 +9,10 @@ import ImageCropper from "../actions/ImageCropper";
 import { getUser } from "../../esync/actions/getUser";
 import shopifyLogo from "../../../public/shopify-logo.png";
 import ConnectStoreModal from "./../components/shopify/ConnectStoreModal"; // Fixed the casing of the import
+
 import Nav from "../components/Nav";
 import { generateStockChecklist } from "./generateStockChecklist";
+import { saveInsideCookies } from "./saveInsideCookies";
 
 const Shippers = () => {
   return (
@@ -364,9 +366,12 @@ export default function Page() {
   };
 
   const connectDarazStore = async () => {
-    console.log("userInfo: ",userInfo)
+    console.log("userInfo: ", userInfo);
 
     const url = `https://api.daraz.pk/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://nakson.services/Setting/darazcallback&client_id=501634`;
+
+    // Save the userInfo inside cookies
+    saveInsideCookies(userInfo);
 
     // Redirect to the daraz store
     window.open(url, "_blank");
@@ -887,6 +892,14 @@ export default function Page() {
             >
               Authorize
             </button>
+            <span
+              ref={spanRef}
+              className={`absolute text-xs text-red-700 -top-2 transition-all duration-500 left-32 ${
+                displayError ? "" : "opacity-0"
+              }`}
+            >
+              You can't leave any fields empty
+            </span>
           </li>
         </ul>
       </div>
