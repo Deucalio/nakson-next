@@ -33,7 +33,6 @@ async function getAccessToken(
       userEmail: currentUserEmail,
     }
   );
-  console.log("Res: ",res)
 
   if (res.status !== 200) {
     return {
@@ -89,8 +88,6 @@ export async function GET(request) {
     email,
     correntUser.user.email
   );
-
-  console.log("DarazRes: ", darazRes);
 
   return Response.json({
     message: darazRes.message,
