@@ -21,15 +21,18 @@ async function getAccessToken(
   email,
   currentUserEmail
 ) {
-  const res = await axios.post("https://esync-backend.vercel.app/daraz/access-token", {
-    signature,
-    code,
-    timeStamp,
-    app_key,
-    name,
-    email,
-    userEmail: currentUserEmail,
-  });
+  const res = await axios.post(
+    "https://esync-backend.vercel.app/daraz/access-token",
+    {
+      signature,
+      code,
+      timeStamp,
+      app_key,
+      name,
+      email,
+      userEmail: currentUserEmail,
+    }
+  );
   return res.data;
 }
 
@@ -45,12 +48,10 @@ async function getSignature(secret, api, params) {
 export async function GET(request) {
   // Get the query string
   const code = request.url.split("?")[1].slice(5);
-  // const { name, email } = JSON.parse(cookies().get("userInfo").value);
+  const { name, email } = JSON.parse(cookies().get("userInfo").value);
   const app_key = "501634";
   const app_secret = "X1BBDAi3EuamELmOZi400PLT1xxhxrOw";
   const correntUser = await getUser();
-
-
 
   const timeStamp = getTimeStamp();
   const signature = await getSignature(app_secret, "/auth/token/create", {
