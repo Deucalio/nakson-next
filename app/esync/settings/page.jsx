@@ -262,7 +262,7 @@ export default function Page() {
     try {
       const res = await axios.get("/api/server-url");
       const { serverURL } = res.data;
-      const response = await axios.post(`${serverURL}/get-stores`, {
+      const response = await axios.post(`${serverURL}/shopify/get-stores`, {
         email: user.user.email,
       });
       setStores(response.data.stores);
