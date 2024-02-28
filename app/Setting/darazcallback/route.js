@@ -69,16 +69,6 @@ export async function GET(request) {
     timestamp: timeStamp,
   });
 
-  console.log({
-    code,
-    timeStamp,
-    signature,
-    app_key,
-    name,
-    email,
-    correntUser: correntUser.user.email,
-  });
-
   const darazRes = await getAccessToken(
     signature,
     code,

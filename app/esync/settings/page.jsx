@@ -381,12 +381,9 @@ export default function Page() {
     // Close the Daraz Modal
     setShowEmailModal(false);
     setUserInfo({ name: "", email: "" });
-    console.log("False:");
   };
 
   const getStoresDaraz = async () => {
-    console.log("DarazStore: ", storesDaraz);
-
     setShowConnectedStoresDaraz(!showConnectedStoresDaraz);
     if (!user) {
       return;
