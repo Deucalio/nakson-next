@@ -60,7 +60,6 @@ export default function Home() {
     console.log("user: ", user.user.email);
     const serverRes = await axios.get("/api/server-url");
     const { serverURL } = serverRes.data;
-    console.log("serverURL: ", serverURL);
     const res = axios.post(`${serverURL}/shopify/orders`, {
       email: user.user.email,
     });
@@ -316,7 +315,6 @@ export default function Home() {
           Book Order
         </button>
 
-    
         <span>
           {filterData && filterData.filter((order) => order.selected).length}{" "}
           Selected
