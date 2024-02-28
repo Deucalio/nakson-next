@@ -57,10 +57,9 @@ export default function Home() {
 
   const fetchOrders = async () => {
     if (!user) return;
-    console.log("user: ", user.user.email);
     const serverRes = await axios.get("/api/server-url");
     const { serverURL } = serverRes.data;
-    const res = axios.post(`${serverURL}/shopify/orders`, {
+    const res = axios.post(`${serverURL}/orders`, {
       email: user.user.email,
     });
     let { data } = await res;
@@ -69,13 +68,15 @@ export default function Home() {
     // some orders have their name as null
     // so we will set first and last name to empty string
     data = data.map((order, index) => {
-      if (order.customer === null) {
-        order.customer = { ...order.customer, first_name: "", last_name: "" };
-      } else if (order.customer) {
-        if (order.customer.first_name === null) {
-          order.customer.first_name = "";
-        } else if (order.customer.last_name === null) {
-          order.customer.last_name = "";
+      if (order.platform === "shopify") {
+        if (order.customer === null) {
+          order.customer = { ...order.customer, first_name: "", last_name: "" };
+        } else if (order.customer) {
+          if (order.customer.first_name === null) {
+            order.customer.first_name = "";
+          } else if (order.customer.last_name === null) {
+            order.customer.last_name = "";
+          }
         }
       }
       return { ...order, selected: false, sr_number: index + 1 };
@@ -92,11 +93,18 @@ export default function Home() {
     setOrders(data);
   };
 
-  const selectOrder = (id) => {
+  const selectOrder = (id, platform) => {
     const newOrders = orders.map((order) => {
-      if (order.id === id) {
-        order.selected = !order.selected;
+      if (platform === "shopify") {
+        if (order.id === id) {
+          order.selected = !order.selected;
+        }
+      } else if (platform === "daraz") {
+        if (order.order_id === id) {
+          order.selected = !order.selected;
+        }
       }
+
       return order;
     });
     setOrders(newOrders);
@@ -307,10 +315,15 @@ export default function Home() {
         }`}
       >
         <button
+          disabled={
+            filterData &&
+            filterData.filter((order) => order.selected && order.store_info.platform === "daraz")
+              .length !== 0
+          }
           onClick={bookOrder}
           className={` ${
             showBookedOrdersModal ? "pointer-events-none" : ""
-          } bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded `}
+          } bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-60 `}
         >
           Book Order
         </button>
@@ -396,57 +409,114 @@ export default function Home() {
 
         {filterData &&
           filterData.map((order, index) => {
-            return (
-              <ul
-                key={order.id}
-                className={`md:mx-auto grid w-[63rem] text-white mt-4 cursor-pointer grid-cols-12 rounded-sm transition-all duration-500 hover:bg-zinc-900
-                ${order.selected ? "bg-zinc-900" : ""} ${
-                  showBookedOrdersModal ? "blur-lg" : ""
-                }   text-sm`}
-              >
-                <input
-                  onChange={() => selectOrder(order.id)}
-                  type="checkbox"
-                  checked={order.selected}
-                  className="h-5 w-5 mt-3 ml-7   accent-blue-700"
-                />
-                <li className="bg-opacity-30 py-2 text-center ">
-                  {order.name}
-                </li>
+            if (order.store_info.platform === "shopify") {
+              return (
+                <ul
+                  key={order.id}
+                  className={`md:mx-auto grid w-[63rem] text-white mt-4 cursor-pointer grid-cols-12 rounded-sm transition-all duration-500 hover:bg-zinc-900
+                  ${order.selected ? "bg-zinc-900" : ""} ${
+                    showBookedOrdersModal ? "blur-lg" : ""
+                  }   text-sm`}
+                >
+                  <input
+                    onChange={() => selectOrder(order.id, "shopify")}
+                    type="checkbox"
+                    checked={order.selected}
+                    className="h-5 w-5 mt-3 ml-7   accent-blue-700"
+                  />
+                  <li className="bg-opacity-30 py-2 text-center ">
+                    {order.name}
+                  </li>
 
-                <li className="col-span-2 bg-opacity-30 py-2 text-center ">
-                  {order.customer.first_name.charAt(0).toUpperCase() +
-                    order.customer.first_name.slice(1)}{" "}
-                  {order.customer.last_name.charAt(0).toUpperCase() +
-                    order.customer.last_name.slice(1)}
-                </li>
+                  <li className="col-span-2 bg-opacity-30 py-2 text-center ">
+                    {order.customer.first_name.charAt(0).toUpperCase() +
+                      order.customer.first_name.slice(1)}{" "}
+                    {order.customer.last_name.charAt(0).toUpperCase() +
+                      order.customer.last_name.slice(1)}
+                  </li>
 
-                <li className="bg-opacity-30 py-2 text-center ">
-                  {order.fulfillment_status ? order.fulfillment_status : "Null"}
-                </li>
-                <li className="col-span-2 bg-opacity-30 py-2 text-center ">
-                  {order.financial_status}
-                </li>
-                <li className="bg-opacity-30 py-2 text-center ">N/A</li>
-                <li className="bg-opacity-30 py-2 text-center ">
-                  {
-                    // dd/mm/yy
-                    // new Date(order.created_at).getDay() +
-                    //   "/" +
-                    //   new Date(order.created_at).getMonth() +
-                    //   "/" +
-                    //   new Date(order.created_at).getFullYear()
-                    new Date(order.created_at).toLocaleDateString()
-                  }
-                </li>
-                <li className="bg-opacity-30 py-2 text-center ">
-                  Rs {order.total_price}
-                </li>
-                <li className="bg-opacity-30 py-2 text-center col-span-2 ">
-                  {order.tags}
-                </li>
-              </ul>
-            );
+                  <li className="bg-opacity-30 py-2 text-center ">
+                    {order.fulfillment_status
+                      ? order.fulfillment_status
+                      : "Null"}
+                  </li>
+                  <li className="col-span-2 bg-opacity-30 py-2 text-center ">
+                    {order.financial_status}
+                  </li>
+                  <li className="bg-opacity-30 py-2 text-center ">N/A</li>
+                  <li className="bg-opacity-30 py-2 text-center ">
+                    {
+                      // dd/mm/yy
+                      // new Date(order.created_at).getDay() +
+                      //   "/" +
+                      //   new Date(order.created_at).getMonth() +
+                      //   "/" +
+                      //   new Date(order.created_at).getFullYear()
+                      new Date(order.created_at).toLocaleDateString()
+                    }
+                  </li>
+                  <li className="bg-opacity-30 py-2 text-center ">
+                    Rs {order.total_price}
+                  </li>
+                  <li className="bg-opacity-30 py-2 text-center col-span-2 ">
+                    {order.tags}
+                  </li>
+                </ul>
+              );
+            } else if (order.store_info.platform === "daraz") {
+              return (
+                <ul
+                  key={order.order_id}
+                  className={`md:mx-auto grid w-[63rem] text-white mt-4 cursor-pointer grid-cols-12 rounded-sm transition-all duration-500 hover:bg-zinc-900
+                  ${order.selected ? "bg-zinc-900" : ""} ${
+                    showBookedOrdersModal ? "blur-lg" : ""
+                  }   text-sm`}
+                >
+                  <input
+                    onChange={() => selectOrder(order.order_id, "daraz")}
+                    type="checkbox"
+                    checked={order.selected}
+                    className="h-5 w-5 mt-3 ml-7   accent-blue-700"
+                  />
+                  <li className="bg-opacity-30 py-2 text-center ">
+                    #Daraz{String(order.order_number).slice(0, 6)}
+                  </li>
+
+                  <li className="col-span-2 bg-opacity-30 py-2 text-center ">
+                    {order.address_shipping.first_name.charAt(0).toUpperCase() +
+                      order.address_shipping.first_name.slice(1)}{" "}
+                    {order.address_shipping.last_name.charAt(0).toUpperCase() +
+                      order.address_shipping.last_name.slice(1)}
+                  </li>
+
+                  <li className="bg-opacity-30 py-2 text-center ">
+                    {order.statuses[0]}
+                  </li>
+                  <li className="col-span-2 bg-opacity-30 py-2 text-center ">
+                    {/* {order.financial_status} */}
+                    pending
+                  </li>
+                  <li className="bg-opacity-30 py-2 text-center ">N/A</li>
+                  <li className="bg-opacity-30 py-2 text-center ">
+                    {
+                      // dd/mm/yy
+                      // new Date(order.created_at).getDay() +
+                      //   "/" +
+                      //   new Date(order.created_at).getMonth() +
+                      //   "/" +
+                      //   new Date(order.created_at).getFullYear()
+                      new Date(order.created_at).toLocaleDateString()
+                    }
+                  </li>
+                  <li className="bg-opacity-30 py-2 text-center ">
+                    Rs {order.price}
+                  </li>
+                  <li className="bg-opacity-30 py-2 text-center col-span-2 ">
+                    {order.remarks}
+                  </li>
+                </ul>
+              );
+            }
           })}
 
         <div
