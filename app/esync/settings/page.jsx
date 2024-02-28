@@ -425,7 +425,7 @@ export default function Page() {
           connectStoreModal ||
           showEmailModal ||
           showConnectedStoresDaraz
-            ? ["blur-md", "pointer-events-none"].join(" ")
+            ? ["blur-sm", "pointer-events-none"].join(" ")
             : ""
         }`}
       >
@@ -1080,7 +1080,7 @@ export default function Page() {
       {/* CONNECTED STORES DARAZ */}
 
       <div
-        className={`absolute overflow-y-auto  top-24 z-10 flex h-[33rem] w-[40rem] flex-col  rounded-md border-2 border-orange-950 bg-black p-2 text-white transition-all duration-700 md:left-1/3 
+        className={`absolute overflow-y-auto  top-24 z-10 flex h-[23rem] w-[40rem] flex-col  rounded-md border-2 border-orange-950 bg-black p-2 text-white transition-all duration-700 md:left-1/3 
       md:-translate-x-11 ${
         showConnectedStoresDaraz
           ? ""
