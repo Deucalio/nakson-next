@@ -216,7 +216,6 @@ export default function BookedOrdersModal({
         correct_city: undefined,
       };
     });
-    console.log("NewOrders <33", newOrders);
     setEditedOrders(newOrders);
     // use fading animation
     const modalNode = modal.current;
@@ -250,7 +249,8 @@ export default function BookedOrdersModal({
     }
 
     if (bookOptions.courier_type === "Leopards") {
-      const newOrders = editedOrders.map((order) => {
+      console.log("bookOptions: ", bookOptions);
+      let newOrders = editedOrders.map((order) => {
         return {
           ...order,
           courier_type: bookOptions.courier_type,
@@ -263,6 +263,18 @@ export default function BookedOrdersModal({
         };
       });
 
+      newOrders = newOrders.map((order) => {
+        return {
+          ...order,
+          service_type: order.correct_city.shipment_type.find(
+            (type) => type.toLowerCase() === order.service_type.toLowerCase()
+          )
+            ? order.service_type
+            : order.correct_city.shipment_type[0],
+        };
+      });
+
+      console.log("New Orders: ", newOrders);
       setEditedOrders(newOrders);
     }
   }, [bookOptions]);
@@ -328,7 +340,6 @@ export default function BookedOrdersModal({
     const svg = e.target;
     const li = svg.parentElement;
     const ul = li.parentElement;
-    console.log(ul, li);
 
     ul.classList.add("opacity-0");
     ul.classList.add("h-[1px]");
@@ -794,7 +805,6 @@ export default function BookedOrdersModal({
                             return ord;
                           }
                         });
-                        console.log("Service Type: ", newOrders);
                         setEditedOrders(newOrders);
                       }}
                       // value={bookOptions.service_type.toLowerCase()}
