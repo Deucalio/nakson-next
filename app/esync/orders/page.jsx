@@ -419,10 +419,9 @@ export default function Home() {
                       const lastUl = e.target.children[9];
                       e.target.classList.toggle("bg-zinc-900");
                       lastUl.classList.toggle("max-h-32");
-                      lastUl.classList.toggle("m-4")
-                      lastUl.classList.toggle("p-8")
-                      lastUl.classList.toggle("border")
-                      
+                      lastUl.classList.toggle("m-4");
+                      lastUl.classList.toggle("p-16");
+                      lastUl.classList.toggle("border");
                     }}
                     key={order.id}
                     className={`md:mx-auto grid w-[63rem]  text-white mt-4 cursor-pointer grid-cols-12 max-h-full items-center rounded-sm transition-all duration-500 hover:bg-zinc-900
@@ -476,7 +475,7 @@ export default function Home() {
                       {order.tags}
                     </li>
 
-                    <ul className="transition-all ease-in-out overflow-hidden max-h-0 col-span-12 duration-500   border-gray-800 w-11/12 mx-auto  "></ul>
+                    <ul className="transition-all ease-in-out overflow-hidden max-h-0 col-span-12 duration-300   border-gray-700 shadow-sm shadow-gray-600 w-11/12 mx-auto  "></ul>
                   </ul>
                 </>
               );

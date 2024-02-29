@@ -442,7 +442,7 @@ export default function Page() {
 
         <div
           ref={pageElement}
-          className={`col-span-5 border-sky-500 px-20 text-white transition-all duration-1000 `}
+          className={`col-span-5  px-20 text-white transition-all duration-1000 `}
         >
           <ul className="mx-auto my-8 flex h-12 flex-row items-center justify-center gap-12 rounded-3xl text-xs">
             <li
@@ -545,223 +545,273 @@ export default function Page() {
 
           {page === "configuration" && (
             <>
-              <div className="flex flex-col  gap-1   border-slate-700 pb-5">
-                <ul className="flex flex-col  gap-2  py-2 w-[30rem]  ">
-                  <li className="flex flex-row gap-3 items-center">
-                    <Image
-                      className="h-[75px] w-[75px]"
-                      width={75}
-                      height={75}
-                      src={shopifyLogo}
-                      alt="Shopify Logo"
-                    />
-                    <button
-                      onClick={getStores}
-                      className="bg-green-600 hover:bg-green-700 transition-all text-xs px-2 py-2 rounded-md h-8 self-center"
-                    >
-                      Show Connected Stores
-                    </button>
-
-                    <button
-                      onClick={generateStockChecklist}
-                      className="bg-indigo-600 hover:bg-green-800 transition-all text-xs px-2 py-2 rounded-md h-8 self-center pointer-events-none opacity-30"
-                    >
-                      Generate Stockchecklist
-                    </button>
-                  </li>
-                  <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
-                    <p>
-                      To connect your store please visit our shopify app{" "}
-                      <span className="   border-opacity-25 py-2  text-green-500 transition-all hover:text-green-600 cursor-pointer">
-                        Click Here
-                      </span>
-                    </p>
-                  </li>
-                  <ul className="relative rounded-lg  px-6 py-2 hidden ">
-                    <span
-                      ref={spanRef}
-                      className={`absolute text-xs text-red-700 -top-2 transition-all duration-500 left-32 ${
-                        displayError ? "" : "opacity-0"
-                      }`}
-                    >
-                      You can't leave any fields empty
-                    </span>
-                    <li className=" flex flex-row mt-3 items-center gap-5  py-1 text-sm text-slate-500 font-semibold tracking-normal transition-all duration-200">
-                      <p className="text-slate-300">Shop Name</p>
-                      <input
-                        placeholder="Enter Your Shop Name"
-                        className="transition-all duration-300 h-10 w-44 rounded-md text-slate-300 placeholder:text-slate-400 placeholder:text-xs placeholder:text-opacity-35 placeholder:font-normal    bg-slate-900   px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-800"
-                        type="text"
-                        value={shopifyInfo.shopName}
-                        onChange={(e) =>
-                          setShopifyInfo({
-                            ...shopifyInfo,
-                            shopName: e.target.value,
-                          })
-                        }
+              <section className="grid grid-cols-8 gap-8  ">
+                <div className="col-span-4 flex flex-col  gap-1   border-slate-700 pb-5">
+                  <ul className="flex flex-col  gap-2  py-2 w-full  ">
+                    <li className="flex flex-row gap-3 items-center">
+                      <Image
+                        className="h-[75px] w-[75px]"
+                        width={75}
+                        height={75}
+                        src={shopifyLogo}
+                        alt="Shopify Logo"
                       />
-                    </li>
-                    <li className=" flex flex-row gap-3  py-1 mt-3 text-sm font-semibold tracking-normal lg:flex-col transition-all duration-200  self-center"></li>
-                    <li className=" relative flex flex-row gap-8 items-center first-letter:rounded-md ">
-                      <p className="text-sm">Shop Logo</p>
-                      <div
-                        className={`border-2 border-blue-500 rounded-sm h-[130px] w-[130px] ${
-                          shopifyInfo.shopLogo ? "bg-white" : "bg-black"
-                        }`}
-                      >
-                        {" "}
-                        {shopifyInfo.shopLogo && (
-                          <Image
-                            width={130}
-                            height={130}
-                            className="w-24 rounded-sm bg-cover bg-center"
-                            src={URL.createObjectURL(shopifyInfo.shopLogo)}
-                            alt="Uploaded Preview"
-                          ></Image>
-                        )}
-                        <button>
-                          <input
-                            onChange={handleFileChange}
-                            accept="image/*"
-                            type="file"
-                            id="img"
-                            className="hidden"
-                          />
-                        </button>
-                      </div>
-                      <label
-                        className="bg-blue-700 hover:bg-blue-800 transition-all duration-300 p-2 rounded-md cursor-pointer  text-xs  text-center"
-                        htmlFor="img"
-                      >
-                        {shopifyInfo.shopLogo
-                          ? shopifyInfo.shopLogo.name
-                          : "Upload Logo"}
-                      </label>
-                    </li>
-
-                    <li
-                      onClick={handleConnect}
-                      className=" flex flex-row -mt-1 gap-3 px-2 py-1 text-sm font-semibold tracking-normal items-center justify-center ml-[90px] w-40"
-                    >
                       <button
-                        disabled={isLoading}
-                        className="disabled:bg-opacity-50 rounded-md bg-violet-700 px-4 py-2 text-slate-100 hover:bg-violet-800 mt-8"
+                        onClick={getStores}
+                        className="bg-green-600 hover:bg-green-700 transition-all text-xs px-2 py-2 rounded-md h-8 self-center"
                       >
-                        {isLoading ? "Connecting..." : "Connect"}
+                        Show Connected Stores
+                      </button>
+
+                      <button
+                        onClick={generateStockChecklist}
+                        className="bg-indigo-600 hover:bg-green-800 transition-all text-xs px-2 py-2 rounded-md h-8 self-center pointer-events-none opacity-30"
+                      >
+                        Generate Stockchecklist
                       </button>
                     </li>
-                  </ul>
-                </ul>
-              </div>
-
-              <div className="flex flex-col  gap-1   border-slate-700 py-5">
-                <ul className="flex flex-col  gap-2  py-2 w-[35rem]  ">
-                  <li className="flex flex-row gap-3 items-center">
-                    <Image
-                      className="h-full"
-                      width={105}
-                      height={110}
-                      src="https://i.imgur.com/bK6ZSYI.png"
-                      alt="Shopify Logo"
-                    />
-                    <button
-                      onClick={getStoresDaraz}
-                      className="bg-orange-700 hover:bg-orange-800 transition-all text-xs px-2 py-2 rounded-md h-8 self-center"
-                    >
-                      Show Connected Stores
-                    </button>
-                  </li>
-                  <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
-                    <p>
-                      To connect your Daraz store, log in to your seller center
-                      account then{" "}
+                    <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
+                      <p>
+                        To connect your store please visit our shopify app{" "}
+                        <span className="   border-opacity-25 py-2  text-green-500 transition-all hover:text-green-600 cursor-pointer">
+                          Click Here
+                        </span>
+                      </p>
+                    </li>
+                    <ul className="relative rounded-lg py-2 hidden ">
                       <span
-                        onClick={() => setShowEmailModal(true)}
-                        className="   border-opacity-25 py-2  text-orange-500 transition-all hover:text-orange-600 cursor-pointer"
-                      >
-                        Click Here
-                      </span>
-                    </p>
-                  </li>
-                  <ul className="relative rounded-lg  px-6 py-2 hidden ">
-                    <span
-                      ref={spanRef}
-                      className={`absolute text-xs text-red-700 -top-2 transition-all duration-500 left-32 ${
-                        displayError ? "" : "opacity-0"
-                      }`}
-                    >
-                      You can't leave any fields empty
-                    </span>
-                    <li className=" flex flex-row mt-3 items-center gap-5  py-1 text-sm text-slate-500 font-semibold tracking-normal transition-all duration-200">
-                      <p className="text-slate-300">Shop Name</p>
-                      <input
-                        placeholder="Enter Your Shop Name"
-                        className="transition-all duration-300 h-10 w-44 rounded-md text-slate-300 placeholder:text-slate-400 placeholder:text-xs placeholder:text-opacity-35 placeholder:font-normal    bg-slate-900   px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-800"
-                        type="text"
-                        value={shopifyInfo.shopName}
-                        onChange={(e) =>
-                          setShopifyInfo({
-                            ...shopifyInfo,
-                            shopName: e.target.value,
-                          })
-                        }
-                      />
-                    </li>
-                    <li className=" flex flex-row gap-3  py-1 mt-3 text-sm font-semibold tracking-normal lg:flex-col transition-all duration-200  self-center"></li>
-                    <li className=" relative flex flex-row gap-8 items-center first-letter:rounded-md ">
-                      <p className="text-sm">Shop Logo</p>
-                      <div
-                        className={`border-2 border-blue-500 rounded-sm h-[130px] w-[130px] ${
-                          shopifyInfo.shopLogo ? "bg-white" : "bg-black"
+                        ref={spanRef}
+                        className={`absolute text-xs text-red-700 -top-2 transition-all duration-500 left-32 ${
+                          displayError ? "" : "opacity-0"
                         }`}
                       >
-                        {" "}
-                        {shopifyInfo.shopLogo && (
-                          <Image
-                            width={130}
-                            height={130}
-                            className="w-24 rounded-sm bg-cover bg-center"
-                            src={URL.createObjectURL(shopifyInfo.shopLogo)}
-                            alt="Uploaded Preview"
-                          ></Image>
-                        )}
-                        <button>
-                          <input
-                            onChange={handleFileChange}
-                            accept="image/*"
-                            type="file"
-                            id="img"
-                            className="hidden"
-                          />
-                        </button>
-                      </div>
-                      <label
-                        className="bg-blue-700 hover:bg-blue-800 transition-all duration-300 p-2 rounded-md cursor-pointer  text-xs  text-center"
-                        htmlFor="img"
-                      >
-                        {shopifyInfo.shopLogo
-                          ? shopifyInfo.shopLogo.name
-                          : "Upload Logo"}
-                      </label>
-                    </li>
+                        You can't leave any fields empty
+                      </span>
+                      <li className=" flex flex-row mt-3 items-center gap-5  py-1 text-sm text-slate-500 font-semibold tracking-normal transition-all duration-200">
+                        <p className="text-slate-300">Shop Name</p>
+                        <input
+                          placeholder="Enter Your Shop Name"
+                          className="transition-all duration-300 h-10 w-44 rounded-md text-slate-300 placeholder:text-slate-400 placeholder:text-xs placeholder:text-opacity-35 placeholder:font-normal    bg-slate-900   px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-800"
+                          type="text"
+                          value={shopifyInfo.shopName}
+                          onChange={(e) =>
+                            setShopifyInfo({
+                              ...shopifyInfo,
+                              shopName: e.target.value,
+                            })
+                          }
+                        />
+                      </li>
+                      <li className=" flex flex-row gap-3  py-1 mt-3 text-sm font-semibold tracking-normal lg:flex-col transition-all duration-200  self-center"></li>
+                      <li className=" relative flex flex-row gap-8 items-center first-letter:rounded-md ">
+                        <p className="text-sm">Shop Logo</p>
+                        <div
+                          className={`border-2 border-blue-500 rounded-sm h-[130px] w-[130px] ${
+                            shopifyInfo.shopLogo ? "bg-white" : "bg-black"
+                          }`}
+                        >
+                          {" "}
+                          {shopifyInfo.shopLogo && (
+                            <Image
+                              width={130}
+                              height={130}
+                              className="w-24 rounded-sm bg-cover bg-center"
+                              src={URL.createObjectURL(shopifyInfo.shopLogo)}
+                              alt="Uploaded Preview"
+                            ></Image>
+                          )}
+                          <button>
+                            <input
+                              onChange={handleFileChange}
+                              accept="image/*"
+                              type="file"
+                              id="img"
+                              className="hidden"
+                            />
+                          </button>
+                        </div>
+                        <label
+                          className="bg-blue-700 hover:bg-blue-800 transition-all duration-300 p-2 rounded-md cursor-pointer  text-xs  text-center"
+                          htmlFor="img"
+                        >
+                          {shopifyInfo.shopLogo
+                            ? shopifyInfo.shopLogo.name
+                            : "Upload Logo"}
+                        </label>
+                      </li>
 
-                    <li
-                      onClick={handleConnect}
-                      className=" flex flex-row -mt-1 gap-3 px-2 py-1 text-sm font-semibold tracking-normal items-center justify-center ml-[90px] w-40"
-                    >
-                      <button
-                        disabled={isLoading}
-                        className="disabled:bg-opacity-50 rounded-md bg-violet-700 px-4 py-2 text-slate-100 hover:bg-violet-800 mt-8"
+                      <li
+                        onClick={handleConnect}
+                        className=" flex flex-row -mt-1 gap-3 px-2 py-1 text-sm font-semibold tracking-normal items-center justify-center ml-[90px] w-40"
                       >
-                        {isLoading ? "Connecting..." : "Connect"}
+                        <button
+                          disabled={isLoading}
+                          className="disabled:bg-opacity-50 rounded-md bg-violet-700 px-4 py-2 text-slate-100 hover:bg-violet-800 mt-8"
+                        >
+                          {isLoading ? "Connecting..." : "Connect"}
+                        </button>
+                      </li>
+                    </ul>
+                  </ul>
+                  <ul className="flex flex-col  gap-2  py-2  ">
+                    <li className="flex flex-row gap-3 items-center">
+                      <Image
+                        className="h-full"
+                        width={105}
+                        height={110}
+                        src="https://i.imgur.com/bK6ZSYI.png"
+                        alt="Shopify Logo"
+                      />
+                      <button
+                        onClick={getStoresDaraz}
+                        className="bg-orange-700 hover:bg-orange-800 transition-all text-xs px-2 py-2 rounded-md h-8 self-center"
+                      >
+                        Show Connected Stores
                       </button>
                     </li>
-                  </ul>
-                </ul>
-              </div>
-            </>
+                    <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
+                      <p>
+                        To connect your Daraz store, log in to your seller
+                        center account then{" "}
+                        <span
+                          onClick={() => setShowEmailModal(true)}
+                          className="   border-opacity-25 py-2  text-orange-500 transition-all hover:text-orange-600 cursor-pointer"
+                        >
+                          Click Here
+                        </span>
+                      </p>
+                    </li>
+                    <ul className="relative rounded-lg  px-6 py-2 hidden ">
+                      <span
+                        ref={spanRef}
+                        className={`absolute text-xs text-red-700 -top-2 transition-all duration-500 left-32 ${
+                          displayError ? "" : "opacity-0"
+                        }`}
+                      >
+                        You can't leave any fields empty
+                      </span>
+                      <li className=" flex flex-row mt-3 items-center gap-5  py-1 text-sm text-slate-500 font-semibold tracking-normal transition-all duration-200">
+                        <p className="text-slate-300">Shop Name</p>
+                        <input
+                          placeholder="Enter Your Shop Name"
+                          className="transition-all duration-300 h-10 w-44 rounded-md text-slate-300 placeholder:text-slate-400 placeholder:text-xs placeholder:text-opacity-35 placeholder:font-normal    bg-slate-900   px-3 py-1 outline-none outline-2 placeholder:opacity-50 focus:outline-indigo-800"
+                          type="text"
+                          value={shopifyInfo.shopName}
+                          onChange={(e) =>
+                            setShopifyInfo({
+                              ...shopifyInfo,
+                              shopName: e.target.value,
+                            })
+                          }
+                        />
+                      </li>
+                      <li className=" flex flex-row gap-3  py-1 mt-3 text-sm font-semibold tracking-normal lg:flex-col transition-all duration-200  self-center"></li>
+                      <li className=" relative flex flex-row gap-8 items-center first-letter:rounded-md ">
+                        <p className="text-sm">Shop Logo</p>
+                        <div
+                          className={`border-2 border-blue-500 rounded-sm h-[130px] w-[130px] ${
+                            shopifyInfo.shopLogo ? "bg-white" : "bg-black"
+                          }`}
+                        >
+                          {" "}
+                          {shopifyInfo.shopLogo && (
+                            <Image
+                              width={130}
+                              height={130}
+                              className="w-24 rounded-sm bg-cover bg-center"
+                              src={URL.createObjectURL(shopifyInfo.shopLogo)}
+                              alt="Uploaded Preview"
+                            ></Image>
+                          )}
+                          <button>
+                            <input
+                              onChange={handleFileChange}
+                              accept="image/*"
+                              type="file"
+                              id="img"
+                              className="hidden"
+                            />
+                          </button>
+                        </div>
+                        <label
+                          className="bg-blue-700 hover:bg-blue-800 transition-all duration-300 p-2 rounded-md cursor-pointer  text-xs  text-center"
+                          htmlFor="img"
+                        >
+                          {shopifyInfo.shopLogo
+                            ? shopifyInfo.shopLogo.name
+                            : "Upload Logo"}
+                        </label>
+                      </li>
 
-            // https://i.imgur.com/bK6ZSYI.png
+                      <li
+                        onClick={handleConnect}
+                        className=" flex flex-row -mt-1 gap-3 px-2 py-1 text-sm font-semibold tracking-normal items-center justify-center ml-[90px] w-40"
+                      >
+                        <button
+                          disabled={isLoading}
+                          className="disabled:bg-opacity-50 rounded-md bg-violet-700 px-4 py-2 text-slate-100 hover:bg-violet-800 mt-8"
+                        >
+                          {isLoading ? "Connecting..." : "Connect"}
+                        </button>
+                      </li>
+                    </ul>
+                  </ul>
+                </div>
+
+                <div className=" p-4 border-gray-700 bg-slate-900 rounded-2xl col-span-4">
+                  <ul className="flex flex-col  gap-2  py-2 w-full items-center ">
+                    <li className="flex flex-row gap-3 items-center">
+                      <Image
+                        className="h-full rounded-lg"
+                        width={75}
+                        height={75}
+                        src={"https://i.imgur.com/m0coPha.jpeg"}
+                        alt="Shopify Logo"
+                      />
+                      <button
+                        onClick={getStores}
+                        className="bg-amber-400 hover:bg-amber-500 transition-all text-xs p-2 rounded-md h-8 self-center text-black font-semibold"
+                      >
+                        Show Connected Accounts
+                      </button>
+                    </li>
+                    <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
+                      <p>
+                        To connect your Leopards Account,{" "}
+                        <span className="   border-opacity-25 py-2  text-amber-500 transition-all hover:text-amber-600 cursor-pointer">
+                          Click Here
+                        </span>
+                      </p>
+                    </li>
+                  </ul>
+                  <ul className="flex flex-col  gap-2  py-2 w-full items-center ">
+                    <li className="flex flex-row gap-3 items-center">
+                      <Image
+                        className="h-full rounded-lg"
+                        width={75}
+                        height={75}
+                        src={"https://i.imgur.com/ph59e96.png"}
+                        alt="Shopify Logo"
+                      />
+                      <button
+                        onClick={getStores}
+                        className="bg-red-700 hover:bg-red-800 transition-all text-xs p-2 rounded-md h-8 self-center  font-semibold"
+                      >
+                        Show Connected Accounts
+                      </button>
+                    </li>
+                    <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
+                      <p>
+                        To connect your Leopards Account,{" "}
+                        <span className="   border-opacity-25 py-2  text-red-700 transition-all hover:text-red-800 cursor-pointer">
+                          Click Here
+                        </span>
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+              </section>
+            </>
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2">
