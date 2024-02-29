@@ -14,6 +14,7 @@ import Stack from "@mui/material/Stack";
 
 import { getUser } from "../actions/getUser";
 import Nav from "../components/Nav";
+import { last } from "pdf-lib";
 function Loading() {
   // You can add any UI inside Loading, including a Skeleton.
   // Animate spin using TailwindCSS classes.
@@ -317,8 +318,9 @@ export default function Home() {
         <button
           disabled={
             filterData &&
-            filterData.filter((order) => order.selected && order.store_info.platform === "daraz")
-              .length !== 0
+            filterData.filter(
+              (order) => order.selected && order.store_info.platform === "daraz"
+            ).length !== 0
           }
           onClick={bookOrder}
           className={` ${
@@ -411,57 +413,72 @@ export default function Home() {
           filterData.map((order, index) => {
             if (order.store_info.platform === "shopify") {
               return (
-                <ul
-                  key={order.id}
-                  className={`md:mx-auto grid w-[63rem] text-white mt-4 cursor-pointer grid-cols-12 rounded-sm transition-all duration-500 hover:bg-zinc-900
+                <>
+                  <ul
+                    onClick={(e) => {
+                      const lastUl = e.target.children[9];
+                      e.target.classList.toggle("bg-zinc-900");
+                      lastUl.classList.toggle("max-h-32");
+                      lastUl.classList.toggle("m-4")
+                      lastUl.classList.toggle("p-8")
+                      lastUl.classList.toggle("border")
+                      
+                    }}
+                    key={order.id}
+                    className={`md:mx-auto grid w-[63rem]  text-white mt-4 cursor-pointer grid-cols-12 max-h-full items-center rounded-sm transition-all duration-500 hover:bg-zinc-900
                   ${order.selected ? "bg-zinc-900" : ""} ${
-                    showBookedOrdersModal ? "blur-lg" : ""
-                  }   text-sm`}
-                >
-                  <input
-                    onChange={() => selectOrder(order.id, "shopify")}
-                    type="checkbox"
-                    checked={order.selected}
-                    className="h-5 w-5 mt-3 ml-7   accent-blue-700"
-                  />
-                  <li className="bg-opacity-30 py-2 text-center ">
-                    {order.name}
-                  </li>
+                      showBookedOrdersModal ? "blur-lg" : ""
+                    }   text-sm`}
+                  >
+                    <input
+                      onChange={() => selectOrder(order.id, "shopify")}
+                      type="checkbox"
+                      checked={order.selected}
+                      className="h-5 w-5 mt-3 ml-7   accent-blue-700"
+                    />
+                    <li className="pointer-events-none bg-opacity-30 py-2 text-center ">
+                      {order.name}
+                    </li>
 
-                  <li className="col-span-2 bg-opacity-30 py-2 text-center ">
-                    {order.customer.first_name.charAt(0).toUpperCase() +
-                      order.customer.first_name.slice(1)}{" "}
-                    {order.customer.last_name.charAt(0).toUpperCase() +
-                      order.customer.last_name.slice(1)}
-                  </li>
+                    <li className="pointer-events-none col-span-2 bg-opacity-30 py-2 text-center ">
+                      {order.customer.first_name.charAt(0).toUpperCase() +
+                        order.customer.first_name.slice(1)}{" "}
+                      {order.customer.last_name.charAt(0).toUpperCase() +
+                        order.customer.last_name.slice(1)}
+                    </li>
 
-                  <li className="bg-opacity-30 py-2 text-center ">
-                    {order.fulfillment_status
-                      ? order.fulfillment_status
-                      : "Null"}
-                  </li>
-                  <li className="col-span-2 bg-opacity-30 py-2 text-center ">
-                    {order.financial_status}
-                  </li>
-                  <li className="bg-opacity-30 py-2 text-center ">N/A</li>
-                  <li className="bg-opacity-30 py-2 text-center ">
-                    {
-                      // dd/mm/yy
-                      // new Date(order.created_at).getDay() +
-                      //   "/" +
-                      //   new Date(order.created_at).getMonth() +
-                      //   "/" +
-                      //   new Date(order.created_at).getFullYear()
-                      new Date(order.created_at).toLocaleDateString()
-                    }
-                  </li>
-                  <li className="bg-opacity-30 py-2 text-center ">
-                    Rs {order.total_price}
-                  </li>
-                  <li className="bg-opacity-30 py-2 text-center col-span-2 ">
-                    {order.tags}
-                  </li>
-                </ul>
+                    <li className="pointer-events-none bg-opacity-30 py-2 text-center ">
+                      {order.fulfillment_status
+                        ? order.fulfillment_status
+                        : "Null"}
+                    </li>
+                    <li className="pointer-events-none col-span-2 bg-opacity-30 py-2 text-center ">
+                      {order.financial_status}
+                    </li>
+                    <li className="pointer-events-none bg-opacity-30 py-2 text-center ">
+                      N/A
+                    </li>
+                    <li className="pointer-events-none bg-opacity-30 py-2 text-center ">
+                      {
+                        // dd/mm/yy
+                        // new Date(order.created_at).getDay() +
+                        //   "/" +
+                        //   new Date(order.created_at).getMonth() +
+                        //   "/" +
+                        //   new Date(order.created_at).getFullYear()
+                        new Date(order.created_at).toLocaleDateString()
+                      }
+                    </li>
+                    <li className="pointer-events-none bg-opacity-30 py-2 text-center ">
+                      Rs {order.total_price}
+                    </li>
+                    <li className="pointer-events-none bg-opacity-30 py-2 text-center col-span-2 ">
+                      {order.tags}
+                    </li>
+
+                    <ul className="transition-all ease-in-out overflow-hidden max-h-0 col-span-12 duration-500   border-gray-800 w-11/12 mx-auto  "></ul>
+                  </ul>
+                </>
               );
             } else if (order.store_info.platform === "daraz") {
               return (
