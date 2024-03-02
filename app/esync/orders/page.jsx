@@ -416,6 +416,7 @@ export default function Home() {
                 <>
                   <ul
                     onClick={(e) => {
+                      console.log("filterData: ", filterData);
                       const lastUl = e.target.children[9];
                       e.target.classList.toggle("bg-zinc-900");
                       lastUl.classList.toggle("max-h-32");

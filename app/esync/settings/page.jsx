@@ -167,6 +167,16 @@ const Shippers = () => {
 };
 
 export default function Page() {
+  // Show Notification
+  const [showNotification, setShowNotification] = useState(false);
+
+  useEffect(() => {
+    let timeout = setTimeout(() => {
+      setShowNotification(false);
+    }, 6000); // 6 seconds
+    return () => clearTimeout(timeout);
+  }, [showNotification]);
+
   // waiting for api Call
   const [waiting, setWaiting] = useState(true);
 
@@ -202,6 +212,21 @@ export default function Page() {
     const user = await getUser();
     setUser(user);
   };
+
+  // Leopards State and Refs
+  const [openLeopardsModal, setOpenLeopardsModal] = useState(false);
+  const [leopardsInfo, setLeopardsInfo] = useState({
+    apiKey: "",
+    password: "",
+  });
+  const [showConnectedLeopardsAccount, setShowConnectedLeopardsAccount] =
+    useState(false);
+
+  const [leopardsAccounts, setLeopardsAccounts] = useState(null);
+
+  const leopardsSpanRef = useRef(null);
+
+  // ______
 
   // Configuration for Shopify Store
   const searchParams = useSearchParams();
@@ -409,6 +434,77 @@ export default function Page() {
     setWaiting(false);
   };
 
+  const showLeopardsModal = async () => {
+    setOpenLeopardsModal(true);
+    return 1;
+  };
+
+  const connectLeopardsAccount = async () => {
+    console.log("info: ", leopardsInfo);
+    if (!leopardsInfo.apiKey || !leopardsInfo.password) {
+      showError("Incorrect Field", leopardsSpanRef);
+      return;
+    }
+
+    setIsLoading(true);
+
+    // Send response to the server
+    const res = await axios.get("/api/server-url");
+    const { serverURL } = res.data;
+
+    try {
+      const response = await axios.post(`${serverURL}/leopards/add-account`, {
+        ...leopardsInfo,
+        email: user.user.email,
+      });
+
+      setIsLoading(false);
+
+      setLeopardsInfo({
+        apiKey: "",
+        password: "",
+      });
+      setOpenLeopardsModal(false);
+      setShowNotification(true);
+    } catch (e) {
+      showError(e.response.data.message, leopardsSpanRef);
+      return;
+    }
+  };
+
+  const getLeopardsAccount = async () => {
+    setShowConnectedLeopardsAccount(!showConnectedLeopardsAccount);
+    setLeopardsAccounts(null);
+    if (!user) {
+      return;
+    }
+
+    setWaiting(true);
+
+    // If the stores array is empty, make a request to the server to get the stores
+    try {
+      const res = await axios.get("/api/server-url");
+      const { serverURL } = res.data;
+      const response = await axios.post(`${serverURL}/leopards/get-accounts`, {
+        email: user.user.email,
+      });
+      console.log("response: ", response);
+
+      setLeopardsAccounts(response.data.accounts);
+    } catch (e) {
+      if (e.response.status === 409) {
+        console.log("e:", e);
+
+        alert("Error Fetching Stores");
+      }
+    }
+    setWaiting(false);
+  };
+
+  async function showError(text, spanRef) {
+    spanRef.current.textContent = text;
+  }
+
   if (!user) {
     // Display a loading spinner
     return (
@@ -424,7 +520,9 @@ export default function Page() {
           showConnectedStores ||
           connectStoreModal ||
           showEmailModal ||
-          showConnectedStoresDaraz
+          showConnectedStoresDaraz ||
+          openLeopardsModal ||
+          showConnectedLeopardsAccount
             ? ["blur-sm", "pointer-events-none"].join(" ")
             : ""
         }`}
@@ -766,10 +864,10 @@ export default function Page() {
                         width={75}
                         height={75}
                         src={"https://i.imgur.com/m0coPha.jpeg"}
-                        alt="Shopify Logo"
+                        alt="Leopards Logo"
                       />
                       <button
-                        onClick={getStores}
+                        onClick={() => getLeopardsAccount()}
                         className="bg-amber-400 hover:bg-amber-500 transition-all text-xs p-2 rounded-md h-8 self-center text-black font-semibold"
                       >
                         Show Connected Accounts
@@ -778,7 +876,10 @@ export default function Page() {
                     <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
                       <p>
                         To connect your Leopards Account,{" "}
-                        <span className="   border-opacity-25 py-2  text-amber-500 transition-all hover:text-amber-600 cursor-pointer">
+                        <span
+                          onClick={() => showLeopardsModal()}
+                          className="   border-opacity-25 py-2  text-amber-500 transition-all hover:text-amber-600 cursor-pointer"
+                        >
                           Click Here
                         </span>
                       </p>
@@ -790,11 +891,12 @@ export default function Page() {
                         className="h-full rounded-lg"
                         width={75}
                         height={75}
-                        src={"https://i.imgur.com/ph59e96.png"}
-                        alt="Shopify Logo"
+                        src="https://i.imgur.com/ph59e96.png"
+                        alt="TCS Logo"
                       />
+
                       <button
-                        onClick={getStores}
+                        onClick={() => alert("TSC")}
                         className="bg-red-700 hover:bg-red-800 transition-all text-xs p-2 rounded-md h-8 self-center  font-semibold"
                       >
                         Show Connected Accounts
@@ -802,7 +904,7 @@ export default function Page() {
                     </li>
                     <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
                       <p>
-                        To connect your Leopards Account,{" "}
+                        To connect your TCS Account,{" "}
                         <span className="   border-opacity-25 py-2  text-red-700 transition-all hover:text-red-800 cursor-pointer">
                           Click Here
                         </span>
@@ -923,6 +1025,72 @@ export default function Page() {
         setConnectStoreModal={setConnectStoreModal}
       />
 
+      {/* LEOPARDS MODAL */}
+      <div
+        className={`absolute overflow-y-auto top-24 z-10 flex h-[23rem] items-center w-[40rem] flex-col  rounded-md border border-amber-300 border-opacity-40 bg-black p-2 text-white transition-all duration-300 md:left-1/3 
+      md:-translate-x-11 ${
+        openLeopardsModal ? "" : ["opacity-0", "pointer-events-none"].join(" ")
+      }   `}
+      >
+        <svg
+          onClick={() => {
+            setDisplayError(false);
+            showError("", leopardsSpanRef);
+            setLeopardsInfo({ apiKey: "", password: "" });
+            setOpenLeopardsModal(false);
+          }}
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          className={`h-9 ${isLoading && "pointer-events-none"} 
+           cursor-pointer w-9 bg-black text-red-600 hover:text-red-800 transition-all absolute right-3 top-2 rounded-md`}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18 18 6M6 6l12 12"
+          />
+        </svg>
+        <ul className="mx-auto mt-10 flex h-fit w-[36rem] flex-col gap-3 px-3 py-6">
+          <li className="my-4 gap-8 p-2 text-sm flex flex-col items-center ">
+            <input
+              className="w-2/4 bg-black text-slate-200 py-2 border-amber-300 border-opacity-40 border px-3 rounded-md outline-none outline placeholder:opacity-50 focus:outline-0"
+              placeholder="API Key: "
+              type="text"
+              name="key"
+              value={leopardsInfo.apiKey}
+              onChange={(e) =>
+                setLeopardsInfo({ ...leopardsInfo, apiKey: e.target.value })
+              }
+            />
+            <input
+              name="password"
+              value={leopardsInfo.password}
+              onChange={(e) =>
+                setLeopardsInfo({ ...leopardsInfo, password: e.target.value })
+              }
+              className="w-2/4 bg-black text-slate-200 py-2 border-amber-300 border-opacity-40 border px-3 rounded-md outline-none outline placeholder:opacity-50 focus:outline-0"
+              placeholder="API Password: "
+              type="password"
+            />
+
+            <button
+              disabled={isLoading}
+              onClick={connectLeopardsAccount}
+              className="py-3 px-8 disabled:opacity-50 disabled:pointer-events-none rounded-lg bg-amber-600 transition-all hover:bg-amber-800"
+            >
+              {isLoading ? "Adding your Account..." : "Add Account"}
+            </button>
+            <span
+              ref={leopardsSpanRef}
+              className={`absolute text-sm text-red-700 bottom-8 transition-all duration-500 left-52"
+              }`}
+            ></span>
+          </li>
+        </ul>
+      </div>
+
       {/* DARAZ EMAIL MODAL */}
 
       <div
@@ -974,14 +1142,6 @@ export default function Page() {
             >
               Authorize
             </button>
-            <span
-              ref={spanRef}
-              className={`absolute text-xs text-red-700 -top-2 transition-all duration-500 left-32 ${
-                displayError ? "" : "opacity-0"
-              }`}
-            >
-              You can't leave any fields empty
-            </span>
           </li>
         </ul>
       </div>
@@ -999,7 +1159,23 @@ export default function Page() {
       }   `}
       >
         {waiting && (
-          <span className="loader absolute left-1/2 -translate-x-48 top-40 "></span>
+          <>
+            <svg
+              onClick={() => setShowConnectedStores(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-9 cursor-pointer w-9 bg-black text-red-600 hover:text-red-800 transition-all absolute right-3 top-2 rounded-md "
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+            <span className="loader absolute left-1/2 -translate-x-48 top-40 "></span>
+          </>
         )}
 
         {stores?.length === 0 && (
@@ -1138,7 +1314,23 @@ export default function Page() {
       }   `}
       >
         {waiting && (
-          <span className="loader absolute left-1/2 -translate-x-48 top-40 "></span>
+          <>
+            <svg
+              onClick={() => setShowConnectedStoresDaraz(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-9 cursor-pointer w-9 bg-black text-red-600 hover:text-red-800 transition-all absolute right-3 top-2 rounded-md "
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+            <span className="loader absolute left-1/2 -translate-x-48 top-40 "></span>
+          </>
         )}
 
         {storesDaraz?.length === 0 && (
@@ -1242,6 +1434,131 @@ export default function Page() {
           ))}
       </div>
 
+      {/* CONNECTED LEOPARDS ACCOUNT */}
+
+      <div
+        className={`absolute overflow-y-auto  top-24 z-10 flex h-[23rem] w-[40rem] flex-col  rounded-md border-2 border-yellow-800 bg-black p-2 text-white transition-all duration-700 md:left-1/3 
+      md:-translate-x-11 ${
+        showConnectedLeopardsAccount
+          ? ""
+          : ["opacity-0", "pointer-events-none"].join(" ")
+      }   `}
+      >
+        {waiting && (
+          <>
+            <svg
+              onClick={() => setShowConnectedLeopardsAccount(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-9 cursor-pointer w-9 bg-black text-red-600 hover:text-red-800 transition-all absolute right-3 top-2 rounded-md "
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+            <span className="loader absolute left-1/2 -translate-x-48 top-40 "></span>
+          </>
+        )}
+
+        {leopardsAccounts?.length === 0 && (
+          <>
+            <p>No Accounts Connected</p>
+            <svg
+              onClick={() => setShowConnectedLeopardsAccount(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-9 cursor-pointer w-9 bg-black text-red-600 hover:text-red-800 transition-all absolute right-3 top-2 rounded-md "
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </>
+        )}
+
+        {leopardsAccounts?.length !== 0 &&
+          leopardsAccounts?.map((account, index) => (
+            <ul
+              key={account.id}
+              className="ml-8 mt-10 flex h-fit w-[36rem] flex-col gap-3 border-b border-slate-500 px-3 py-6"
+            >
+              <li
+                onClick={() => setShowConnectedLeopardsAccount(false)}
+                className={`
+                ${index > 0 ? "hidden" : ""}
+                absolute right-3 top-2 cursor-pointer rounded-2xl border-2 border-red-700 text-red-700 transition-all hover:border-red-800 hover:text-red-800`}
+              >
+                <svg
+                  onClick={() => setShowConnectedLeopardsAccount(false)}
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="h-7 w-7"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18 18 6M6 6l12 12"
+                  />
+                </svg>
+              </li>
+              <li className="flex flex-row items-center gap-3 relative h-24">
+                <Image
+                  className="rounded-lg"
+                  src={"https://i.imgur.com/m0coPha.jpeg"}
+                  alt="Leopards Logo"
+                  width={100}
+                  height={100}
+                ></Image>
+                <p className="ml-2">{account.name}</p>
+
+                <div className="absolute items-center flex flex-row justify-center gap-10 text-xs -top-1 -right-4  w-60  h-24  ">
+                  <button
+                    onClick={async () => {
+                      console.log("id: ", account.id);
+                      setIsLoading(true);
+                      // Remove the store from the database
+                      const res = await axios.get("/api/server-url");
+                      const { serverURL } = res.data;
+                      const response = await axios.delete(
+                        `${serverURL}/leopards/delete-account/${account.id}`
+                      );
+                      if (response.status === 200) {
+                        // Send user to esync/settings and reload the page
+                        window.location.href = "/esync/settings";
+                        // win
+                      }
+                    }}
+                    disabled={isLoading}
+                    className={`bg-red-800 rounded-md px-2 py-2 hover:bg-red-900 transition-all disabled:bg-opacity-50 `}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </li>
+              <li className="my-4 grid grid-cols-7 gap-8 border-l-2 border-indigo-600 p-2 text-sm ">
+                <p className="col-span-2 text-gray-300">API Key</p>
+                <p className="col-span-5 text-gray-500 font-bold">
+                  {account.data.apiKey}
+                </p>
+                <p className="col-span-2 text-gray-300">API Password</p>
+                <p className="col-span-5 text-gray-500 font-bold">
+                  {account.data.password}
+                </p>
+              </li>
+            </ul>
+          ))}
+      </div>
+
       {/* _______________ */}
 
       {/* TOKEN DIV */}
@@ -1338,6 +1655,29 @@ export default function Page() {
             {croppedImage && <p>Cropped Image Preview</p>}
           </div>
         </div>
+      </div>
+
+      {/* Display Notification */}
+      <div
+        className={`text-green-500 transition-all duration-500 text-lg border-2 border-green-700 font-semibold absolute flex flex-row items-center gap-2 bottom-12  right-4 py-2 px-6 rounded-lg pointer-events-none
+        ${showNotification ? "opacity-1" : "opacity-0"}
+      `}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth="1.5"
+          stroke="currentColor"
+          class="w-7 h-7"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+          />
+        </svg>
+        <p className="">Success</p>
       </div>
     </>
   );
