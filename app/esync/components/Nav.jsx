@@ -317,7 +317,7 @@ const Nav = ({
             <p className="transition-all duration-200">Finance</p>
           </li>
           <li
-            onClick={() => router.push("/esync/settings")}
+            onClick={() => router.push("/esync/settings/configuration")}
             className={`flex h-8 xl:h-10 cursor-pointer flex-row items-center gap-1 ${
               pathname === "/esync/settings"
                 ? "bg-gray-500 bg-opacity-25"
