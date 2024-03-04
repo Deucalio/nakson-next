@@ -1288,7 +1288,12 @@ export default function Page() {
                   </button>
                 </div>
               </li>
-              <li className="my-4 grid grid-cols-7 gap-8 border-l-2 border-indigo-600 p-2 text-sm ">
+              <li className="my-4 grid grid-cols-7 gap-6 border-l-2 border-indigo-600 px-2 text-sm ">
+              <p className="col-span-2 text-gray-300">Account ID</p>
+                <p className="col-span-5 text-gray-500 font-bold">
+                  {account.id}
+                </p>
+
                 <p className="col-span-2 text-gray-300">API Key</p>
                 <p className="col-span-5 text-gray-500 font-bold">
                   {account.data.apiKey}
