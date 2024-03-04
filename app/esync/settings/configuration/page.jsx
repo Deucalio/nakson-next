@@ -1306,35 +1306,56 @@ export default function Page() {
 
                 <p className="col-span-2 text-gray-300">Shippers</p>
                 {account.shippers !== "null" && (
-                  <div className="col-span-5 text-gray-500 font-bold overflow-y-auto h-32  border-slate-500 border-2 border-opacity-50 p-2 text-xs">
+                  <div className="col-span-5 text-gray-500 font-bold overflow-y-auto h-32  border-slate-500 border-2 border-opacity-50 pb-2 text-xs">
                     {account.shippers.map((shipper) => (
                       <ul
                         key={shipper.id}
-                        className="grid grid-cols-5 items-center justify-center gap-4 border-b-2 border-slate-700 border-opacity-60 p-2"
+                        className="grid grid-cols-5 items-center justify-center gap-2 border-b-2 border-slate-700 border-opacity-60 p-2 relative"
                       >
-                        <li className="flex flex-row gap-2 col-span-2">
+                        <button
+                          disabled={isLoading}
+                          onClick={async () => {
+                            // Only deletes the shipper from database not from LEOPARDS PORATL !!
+                            setIsLoading(true);
+                            const res = await axios.get("/api/server-url");
+                            const { serverURL } = res.data;
+
+                            const response = await axios.delete(
+                              `${serverURL}/delete-shipper/${shipper.id}?accountID=${account.id}`
+                            );
+                            if (response.status === 200) {
+                              // Reload the page
+                              window.location.href =
+                                "/esync/settings/configuration";
+                            }
+                          }}
+                          className="bg-red-800 transition-all disabled:bg-opacity-40 hover:bg-red-900 rounded-md p-2 top-2  text-white font-normal absolute right-4"
+                        >
+                          Delete
+                        </button>
+                        <li className="flex flex-row gap-2 col-span-5">
                           <p className=" text-gray-600">Shop:</p>
                           <p key={shipper.id}>{shipper.shop}</p>
                         </li>
-                        <li className="flex flex-row gap-2 col-span-3">
+                        <li className="flex flex-row gap-2 col-span-5">
                           <p className=" text-gray-600">
                             Special Instructions:
                           </p>
-                          <p key={shipper.id}>{shipper.shop}</p>
+                          <p key={shipper.id}>{shipper.specialInstructions}</p>
                         </li>
 
-                        <li className="flex flex-row gap-2 col-span-2">
+                        <li className="flex flex-row gap-2 col-span-5">
                           <p className=" text-gray-600">Name:</p>
                           <p key={shipper.id}>
                             {shipper.response.shipment_name}
                           </p>
                         </li>
-                        <li className="flex flex-row gap-2 col-span-3">
+                        <li className="flex flex-row gap-2 col-span-5">
                           <p className=" text-gray-600">Shipper ID:</p>
                           <p key={shipper.id}>{shipper.response.shipment_id}</p>
                         </li>
 
-                        <li className="flex flex-row gap-2 col-span-2">
+                        <li className="flex flex-row gap-2 col-span-5">
                           <p className=" text-gray-600">City:</p>
                           <p key={shipper.id}>
                             {
@@ -1345,7 +1366,7 @@ export default function Page() {
                             }
                           </p>
                         </li>
-                        <li className="flex flex-row gap-2 col-span-3">
+                        <li className="flex flex-row gap-2 col-span-5">
                           <p className=" text-gray-600">Phone:</p>
                           <p key={shipper.id}>
                             {shipper.response.shipment_phone}
