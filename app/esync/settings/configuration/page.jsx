@@ -14,10 +14,12 @@ import Nav from "../../components/Nav";
 import { generateStockChecklist } from "../generateStockChecklist";
 import { saveInsideCookies } from "../saveInsideCookies";
 import LEOPARDS_CITIES from "../../LEOPARDS_CITIES";
+import Notification from "../../components/Notification";
 
 export default function Page() {
   // Show Notification
-  const [showNotification, setShowNotification] = useState(false);
+  const [showNotification, setShowNotification] = useState("");
+  const [label, setLabel] = useState("");
 
   useEffect(() => {
     let timeout = setTimeout(() => {
@@ -61,6 +63,17 @@ export default function Page() {
     const user = await getUser();
     setUser(user);
   };
+
+  // TCS State and Refs
+  const [openTCSModal, setOpenTCSModal] = useState(false);
+  const [tcsInfo, setTCSInfo] = useState({
+    userName: "",
+    password: "",
+    accountNumber: "",
+  });
+
+  const [showConnectedTCSAccount, setShowConnectedTCSAccount] = useState(false);
+  const [tcsAccounts, setTCSAccounts] = useState(null);
 
   // Leopards State and Refs
   const [openLeopardsModal, setOpenLeopardsModal] = useState(false);
@@ -292,7 +305,8 @@ export default function Page() {
   const connectLeopardsAccount = async () => {
     console.log("info: ", leopardsInfo);
     if (!leopardsInfo.apiKey || !leopardsInfo.password) {
-      showError("Incorrect Field", leopardsSpanRef);
+      setShowNotification("Incorrect Field");
+      setLabel("Error");
       return;
     }
 
@@ -315,11 +329,78 @@ export default function Page() {
         password: "",
       });
       setOpenLeopardsModal(false);
-      setShowNotification(true);
+      setShowNotification("Success");
+      setLabel("Success");
     } catch (e) {
-      showError(e.response.data.message, leopardsSpanRef);
+      // showError(e.response.data.message, leopardsSpanRef);
+      setShowNotification(e.response.data.message);
+      setLabel("Error");
       return;
     }
+  };
+
+  const connectTCSAccount = async () => {
+    if (!tcsInfo.userName || !tcsInfo.password || !tcsInfo.accountNumber) {
+      setShowNotification("Incorrect Field");
+      setLabel("Error");
+      return;
+    }
+    setIsLoading(true);
+    console.log("tcsAccounts: ", tcsInfo);
+
+    const res = await axios.get("/api/server-url");
+    const { serverURL } = res.data;
+
+    try {
+      const tcsRes = await axios.post(`${serverURL}/tcs/add-account`, {
+        ...tcsInfo,
+        email: user.user.email,
+      });
+      console.log("tcsRes: ", tcsRes.data);
+      setIsLoading(false);
+      setTCSInfo({
+        userName: "",
+        password: "",
+        accountNumber: "",
+      });
+      setShowNotification("TCS Account Added");
+      setLabel("Success");
+      setOpenTCSModal(false);
+    } catch (e) {
+      console.log("Error adding TCS Account: ", e);
+      setShowNotification(e.response.data.message);
+      setLabel("Error");
+    }
+  };
+
+  const getTCSAccounts = async () => {
+    setShowConnectedTCSAccount(true);
+    setTCSAccounts(null);
+    if (!user) {
+      return;
+    }
+
+    setWaiting(true);
+
+    // If the stores array is empty, make a request to the server to get the stores
+    try {
+      const res = await axios.get("/api/server-url");
+      const { serverURL } = res.data;
+      const response = await axios.post(`${serverURL}/tcs/get-accounts`, {
+        email: user.user.email,
+      });
+      console.log("response: ", response);
+      setTCSAccounts(
+        response.data.accounts.filter((acc) => acc.name === "TCS")
+      );
+    } catch (e) {
+      if (e.response.status === 409) {
+        console.log("e:", e);
+
+        alert("Error Fetching Stores");
+      }
+    }
+    setWaiting(false);
   };
 
   const getLeopardsAccount = async () => {
@@ -372,7 +453,9 @@ export default function Page() {
           showEmailModal ||
           showConnectedStoresDaraz ||
           openLeopardsModal ||
-          showConnectedLeopardsAccount
+          showConnectedLeopardsAccount ||
+          openTCSModal ||
+          showConnectedTCSAccount
             ? ["blur-sm", "pointer-events-none"].join(" ")
             : ""
         }`}
@@ -711,8 +794,8 @@ export default function Page() {
                       />
 
                       <button
-                        onClick={() => alert("TSC")}
-                        className="bg-red-700 hover:bg-red-800 transition-all text-xs p-2 rounded-md h-8 self-center  font-semibold"
+                        onClick={() => getTCSAccounts()}
+                        className="bg-red-700 hover:bg-red-800 transition-all text-xs p-2 rounded-md h-8 self-center  "
                       >
                         Show Connected Accounts
                       </button>
@@ -720,7 +803,12 @@ export default function Page() {
                     <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
                       <p>
                         To connect your TCS Account,{" "}
-                        <span className="   border-opacity-25 py-2  text-red-700 transition-all hover:text-red-800 cursor-pointer">
+                        <span
+                          onClick={() => {
+                            setOpenTCSModal(true);
+                          }}
+                          className="   border-opacity-25 py-2  text-red-700 transition-all hover:text-red-800 cursor-pointer"
+                        >
                           Click Here
                         </span>
                       </p>
@@ -834,6 +922,77 @@ export default function Page() {
           </li>
         </ul>
       </div>
+
+      {/* TCS MODAL */}
+      <div
+        className={`absolute overflow-y-auto top-24 z-10 flex h-[26rem] items-center w-[40rem] flex-col  rounded-md border border-red-700 border-opacity-40 bg-black p-2 text-white transition-all duration-300 md:left-1/3 
+      md:-translate-x-11 ${
+        openTCSModal ? "" : ["opacity-0", "pointer-events-none"].join(" ")
+      }   `}
+      >
+        <svg
+          onClick={() => {
+            setTCSInfo({ userName: "", password: "", accountNumber: "" });
+            setOpenTCSModal(false);
+          }}
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          className={`h-9 ${isLoading && "pointer-events-none"} 
+           cursor-pointer w-9 bg-black text-red-600 hover:text-red-800 transition-all absolute right-3 top-2 rounded-md`}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18 18 6M6 6l12 12"
+          />
+        </svg>
+        <ul className="mx-auto mt-10 flex h-fit w-[36rem] flex-col gap-2 px-3 py-6">
+          <li className="my-4 gap-8 p-2 text-sm flex flex-col items-center ">
+            <input
+              className="w-2/4 bg-black text-slate-200 py-2 border-red-800 border-opacity-40 border px-3 rounded-md outline-none outline placeholder:opacity-60 focus:outline-0"
+              placeholder="Username: "
+              type="text"
+              name="userName"
+              value={tcsInfo.userName}
+              onChange={(e) =>
+                setTCSInfo({ ...tcsInfo, userName: e.target.value })
+              }
+            />
+            <input
+              className="w-2/4 bg-black text-slate-200 py-2 border-red-800 border-opacity-40 border px-3 rounded-md outline-none outline placeholder:opacity-60 focus:outline-0"
+              placeholder="Accout Number: "
+              type="text"
+              name="accountNumber"
+              value={tcsInfo.accountNumber}
+              onChange={(e) =>
+                setTCSInfo({ ...tcsInfo, accountNumber: e.target.value })
+              }
+            />
+
+            <input
+              name="password"
+              value={tcsInfo.password}
+              onChange={(e) =>
+                setTCSInfo({ ...tcsInfo, password: e.target.value })
+              }
+              className="w-2/4 bg-black text-slate-200 py-2 border-red-800 border-opacity-40 border px-3 rounded-md outline-none outline placeholder:opacity-60 focus:outline-0"
+              placeholder="Password: "
+              type="password"
+            />
+            <button
+              disabled={isLoading}
+              onClick={connectTCSAccount}
+              className="py-3 px-8 disabled:opacity-50 disabled:pointer-events-none rounded-lg bg-rose-700 transition-all hover:bg-rose-800"
+            >
+              {isLoading ? "Adding your Account..." : "Add Account"}
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      {/* ____________ */}
 
       {/* DARAZ EMAIL MODAL */}
 
@@ -1383,6 +1542,209 @@ export default function Page() {
 
       {/* _______________ */}
 
+      {/* CONNECTED TCS ACCOUNT */}
+
+      <div
+        className={`absolute overflow-y-auto  top-24 z-10 flex h-[23rem] w-[40rem] flex-col  rounded-md border-2 border-rose-800 bg-black p-2 text-white transition-all duration-700 md:left-1/3 
+      md:-translate-x-11 ${
+        showConnectedTCSAccount
+          ? ""
+          : ["opacity-0", "pointer-events-none"].join(" ")
+      }   `}
+      >
+        {waiting && (
+          <>
+            <svg
+              onClick={() => setShowConnectedTCSAccount(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-9 cursor-pointer w-9 bg-black text-red-600 hover:text-red-800 transition-all absolute right-3 top-2 rounded-md "
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+            <span className="loader absolute left-1/2 -translate-x-48 top-40 "></span>
+          </>
+        )}
+
+        {tcsAccounts?.length === 0 && (
+          <>
+            <p>No Accounts Connected</p>
+            <svg
+              onClick={() => setShowConnectedTCSAccount(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-9 cursor-pointer w-9 bg-black text-red-600 hover:text-red-800 transition-all absolute right-3 top-2 rounded-md "
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </>
+        )}
+
+        {tcsAccounts?.length !== 0 &&
+          tcsAccounts?.map((account, index) => (
+            <ul
+              key={account.id}
+              className="ml-8 mt-10 flex h-fit w-[36rem] flex-col gap-3 border-b border-slate-500 px-3 py-6"
+            >
+              <li
+                onClick={() => setShowConnectedTCSAccount(false)}
+                className={`
+                ${index > 0 ? "hidden" : ""}
+                absolute right-3 top-2 cursor-pointer rounded-2xl border-2 border-red-700 text-red-700 transition-all hover:border-red-800 hover:text-red-800`}
+              >
+                <svg
+                  onClick={() => setShowConnectedTCSAccount(false)}
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="h-7 w-7"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18 18 6M6 6l12 12"
+                  />
+                </svg>
+              </li>
+              <li className="flex flex-row items-center gap-3 relative h-24">
+                <Image
+                  className="rounded-lg"
+                  src={"https://i.imgur.com/ph59e96.png"}
+                  alt="TSC Logo"
+                  width={100}
+                  height={100}
+                ></Image>
+                <p className="ml-2">{account.name}</p>
+
+                <div className="absolute items-center flex flex-row justify-center gap-10 text-xs -top-1 -right-4  w-60  h-24  ">
+                  <button
+                    onClick={async () => {
+                      console.log("id: ", account.id);
+                      setIsLoading(true);
+                      // Remove the store from the database
+                      const res = await axios.get("/api/server-url");
+                      const { serverURL } = res.data;
+                      const response = await axios.delete(
+                        `${serverURL}/tcs/delete-account/${account.id}`
+                      );
+                      if (response.status === 200) {
+                        // Send user to esync/settings and reload the page
+                        window.location.href = "/esync/settings/configuration";
+                        // win
+                      }
+                    }}
+                    disabled={isLoading}
+                    className={`bg-red-800 rounded-md px-2 py-2 hover:bg-red-900 transition-all disabled:bg-opacity-50 `}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </li>
+              <li className="my-4 grid grid-cols-7 gap-6 border-l-2 border-indigo-600 px-2 text-sm ">
+                <p className="col-span-2 text-gray-300">Account Number</p>
+                <p className="col-span-5 text-gray-500 font-bold">
+                  {account.data.accountNumber}
+                </p>
+
+                <p className="col-span-2 text-gray-300">Username</p>
+                <p className="col-span-5 text-gray-500 font-bold">
+                  {account.data.userName}
+                </p>
+                <p className="col-span-2 text-gray-300">Password</p>
+                <p className="col-span-5 text-gray-500 font-bold">
+                  {account.data.password}
+                </p>
+
+                <p className="col-span-2 text-gray-300">Cost Centers</p>
+                {account.shippers !== "null" && (
+                  <div className="col-span-5 text-gray-500 font-bold overflow-y-auto h-32  border-slate-500 border-2 border-opacity-50 pb-2 text-xs">
+                    {account.shippers.map((shipper) => (
+                      <ul
+                        key={shipper.id}
+                        className="grid grid-cols-5 items-center justify-center gap-2 border-b-2 border-slate-700 border-opacity-60 p-2 relative"
+                      >
+                        <button
+                          disabled={isLoading}
+                          onClick={async () => {
+                            // Only deletes the shipper from database not from LEOPARDS PORATL !!
+                            setIsLoading(true);
+                            const res = await axios.get("/api/server-url");
+                            const { serverURL } = res.data;
+
+                            const response = await axios.delete(
+                              `${serverURL}/delete-shipper/${shipper.id}?accountID=${account.id}`
+                            );
+                            if (response.status === 200) {
+                              // Reload the page
+                              window.location.href =
+                                "/esync/settings/configuration";
+                            }
+                          }}
+                          className="bg-red-800 transition-all disabled:bg-opacity-40 hover:bg-red-900 rounded-md p-2 top-2  text-white font-normal absolute right-4"
+                        >
+                          Delete
+                        </button>
+                        <li className="flex flex-row gap-2 col-span-5">
+                          <p className=" text-gray-600">Shop:</p>
+                          <p key={shipper.id}>{shipper.shop}</p>
+                        </li>
+                        <li className="flex flex-row gap-2 col-span-5">
+                          <p className=" text-gray-600">
+                            Special Instructions:
+                          </p>
+                          <p key={shipper.id}>{shipper.specialInstructions}</p>
+                        </li>
+
+                        <li className="flex flex-row gap-2 col-span-5">
+                          <p className=" text-gray-600">Name:</p>
+                          <p key={shipper.id}>
+                            {shipper.response.shipment_name}
+                          </p>
+                        </li>
+                        <li className="flex flex-row gap-2 col-span-5">
+                          <p className=" text-gray-600">Shipper ID:</p>
+                          <p key={shipper.id}>{shipper.response.shipment_id}</p>
+                        </li>
+
+                        <li className="flex flex-row gap-2 col-span-5">
+                          <p className=" text-gray-600">City:</p>
+                          <p key={shipper.id}>
+                            {
+                              LEOPARDS_CITIES.find(
+                                (city) =>
+                                  city.id === String(shipper.response.city_id)
+                              ).name
+                            }
+                          </p>
+                        </li>
+                        <li className="flex flex-row gap-2 col-span-5">
+                          <p className=" text-gray-600">Phone:</p>
+                          <p key={shipper.id}>
+                            {shipper.response.shipment_phone}
+                          </p>
+                        </li>
+                      </ul>
+                    ))}
+                  </div>
+                )}
+              </li>
+            </ul>
+          ))}
+      </div>
+
       {/* TOKEN DIV */}
       <div
         className={`absolute bg-black left-1/3 top-24 z-10 h-[19rem] w-[28rem] transition-all duration-700 rounded-md border-2 border-indigo-950 ${
@@ -1479,28 +1841,13 @@ export default function Page() {
         </div>
       </div>
 
+      <Notification
+        label={label}
+        showNotification={showNotification}
+        setShowNotification={setShowNotification}
+      />
+
       {/* Display Notification */}
-      <div
-        className={`text-green-500 transition-all duration-500 text-lg border-2 border-green-700 font-semibold absolute flex flex-row items-center gap-2 bottom-12  right-4 py-2 px-6 rounded-lg pointer-events-none
-        ${showNotification ? "opacity-1" : "opacity-0"}
-      `}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          class="w-7 h-7"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
-        <p className="">Success</p>
-      </div>
     </>
   );
 }
