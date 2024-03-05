@@ -421,7 +421,9 @@ export default function Page() {
       });
       console.log("response: ", response);
 
-      setLeopardsAccounts(response.data.accounts);
+      setLeopardsAccounts(
+        response.data.accounts.filter((acc) => acc.name === "Leopards")
+      );
     } catch (e) {
       if (e.response.status === 409) {
         console.log("e:", e);
