@@ -155,7 +155,6 @@ export default function Page() {
       return;
     }
 
-    console.log(shipperInfo);
     const selectedCourierAccount = user.Courier.find(
       (account) => account.id === Number(shipperInfo.courierAccount)
     );

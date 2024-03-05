@@ -234,6 +234,7 @@ export default function BookedOrdersModal({
 
   // For bookOptions
   useEffect(() => {
+    console.log("orders: ", editedOrders);
     if (bookOptions.courier_type === "" && editedOrders.length > 0) {
       const blankOrders = editedOrders.map((order) => {
         return {
@@ -250,6 +251,7 @@ export default function BookedOrdersModal({
 
     if (bookOptions.courier_type === "Leopards") {
       console.log("bookOptions: ", bookOptions);
+
       let newOrders = editedOrders.map((order) => {
         return {
           ...order,
@@ -263,20 +265,25 @@ export default function BookedOrdersModal({
         };
       });
 
-      newOrders = newOrders.map((order) => {
-        return {
-          ...order,
-          service_type:
-            order.correct_city &&
-            order.correct_city.shipment_type.find(
-              (type) => type.toLowerCase() === order.service_type.toLowerCase()
-            )
-              ? order.service_type
-              : order.correct_city.shipment_type[0],
-        };
-      });
+      const correctCities = [];
+      newOrders.filter((order) => correctCities.push(order.correct_city));
 
+      // newOrders = newOrders.map((order) => {
+      //   return {
+      //     ...order,
+      //     service_type:
+      //       order.correct_city !== undefined &&
+      //       order.correct_city.shipment_type.find(
+      //         (type) => type.toLowerCase() === order.service_type.toLowerCase()
+      //       )
+      //         ? order.service_type[0]
+      //         : order.correct_city !== undefined
+      //         ? order.correct_city.shipment_type[0]
+      //         : "",
+      //   };
+      // });
       console.log("New Orders: ", newOrders);
+
       setEditedOrders(newOrders);
     }
   }, [bookOptions]);
@@ -360,6 +367,11 @@ export default function BookedOrdersModal({
       alert("Select Courier");
       return;
     }
+
+    let ordersToBeBooked = editedOrders.filter(
+      (order) => order.correct_city !== undefined
+    );
+
     // get Server URL
     const serverRes = await axios.get("/api/server-url");
     const { serverURL } = serverRes.data;
@@ -368,10 +380,12 @@ export default function BookedOrdersModal({
     const startTime = new Date();
     console.log("Downloadiing...");
 
-    const responseOne = await axios.post(`${serverURL}/leopards/orders`, {
-      orders: editedOrders,
+    const responseOne = await axios.post(`${serverURL}/leopards/book`, {
+      email: user.user.email,
+      orders: ordersToBeBooked,
     });
-
+    console.log("Response One: ", responseOne.data);
+    return;
     const pdfBytes = await generateCusotmizedSlip([
       responseOne.data.booked_orders,
     ]);
