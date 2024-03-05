@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { getUser } from "../../actions/getUser";
 import axios from "axios";
 import LEOPARDS_CITIES from "../../LEOPARDS_CITIES";
+import TCS_CITIES from "../../TCS_CITIES";
 import Notification from "../../components/Notification";
 
 export default function Page() {
@@ -40,6 +41,7 @@ export default function Page() {
     specialInstructions: "sku,quantity",
     shop: "",
     courierServices: [],
+    returnAddress: "",
   });
 
   const inputRef = useRef(null);
@@ -56,6 +58,7 @@ export default function Page() {
       email: user.user.email,
     });
 
+    console.log("user:", userRes.data);
     setUser(userRes.data);
   };
 
@@ -68,7 +71,38 @@ export default function Page() {
     setShipperInfo({ ...shipperInfo, [name]: value });
   };
 
+  useEffect(() => {
+    // User can't select multiple courier services (checkboxes) at the same time
+    if (user) {
+      if (shipperInfo.courierAccount === "") {
+        console.log(
+          "test: ",
+          user.Courier.find(
+            (acc) => acc.name === shipperInfo.courierServices[0]
+          )
+        );
+        setShipperInfo({
+          ...shipperInfo,
+          courierAccount: user.Courier[0].id,
+        });
+      }
+    }
+
+    if (shipperInfo.courierServices.length > 1) {
+      const courierServices = shipperInfo.courierServices.filter(
+        (service) => service !== shipperInfo.courierServices[0]
+      );
+
+      setShipperInfo({
+        ...shipperInfo,
+        courierServices,
+        courierAccount: user.Courier.find((courier) => courier.name === "TCS"),
+      });
+    }
+  }, [shipperInfo]);
+
   const addShipper = async () => {
+    console.log(shipperInfo);
     if (
       !shipperInfo.courierAccount ||
       !shipperInfo.name ||
@@ -85,6 +119,41 @@ export default function Page() {
       return;
     }
     setIsWaiting(true);
+
+    if (shipperInfo.courierServices.includes("TCS")) {
+      console.log(shipperInfo, "TCS");
+      if (!shipperInfo.returnAddress) {
+        setShowNotification("Please enter return address");
+        setLabel("Error");
+        setIsWaiting(false);
+        return;
+      }
+
+      try {
+        const courier = user.Courier.find(
+          (courier) =>
+            courier.data.accountNumber === Number(shipperInfo.courierAccount)
+        );
+        console.log(courier);
+
+        return;
+        const response = await axios.post(`${serverURL}/tcs/add-cost-center`, {
+          userEmail: user.email,
+          ...shipperInfo,
+        });
+        console.log("res", response.data);
+        if (response.status === 200) {
+          setShowNotification("Shipper Added Successfully");
+          setLabel("Success");
+        }
+      } catch (e) {
+        console.log(e);
+        setShowNotification(e.response.data.message);
+        setLabel("Error");
+      }
+      setIsWaiting(false);
+      return;
+    }
 
     console.log(shipperInfo);
     const selectedCourierAccount = user.Courier.find(
@@ -251,6 +320,141 @@ export default function Page() {
                 />
               </svg>{" "}
             </li>
+
+            <li
+              className={`flex w-96 flex-row gap-3 items-center px-2 py-1 lg:w-96
+            ${openShipperForm ? "" : "scale-0"} transition-all duration-300
+            `}
+            >
+              <p>Select Courier Services</p>
+            </li>
+            <li
+              className={`flex flex-row items-center   gap-4 -mt-6 text-base w-96
+                        ${
+                          openShipperForm ? "" : "scale-0"
+                        } transition-all duration-300
+            `}
+            >
+              <input
+                onChange={(e) => {
+                  if (!e.target.checked) {
+                    const courierServices = shipperInfo.courierServices.filter(
+                      (service) => service !== e.target.value
+                    );
+                    setShipperInfo({
+                      ...shipperInfo,
+                      courierServices,
+                      courierAccount: "",
+                    });
+                  } else {
+                    setShipperInfo({
+                      ...shipperInfo,
+                      courierServices: [
+                        ...shipperInfo.courierServices,
+                        e.target.value,
+                      ],
+                      courierAccount: String(user.Courier[0].id),
+                    });
+                  }
+                }}
+                className="h-4 w-4"
+                type="checkbox"
+                disabled={!user}
+                id="Leopards"
+                name="Leopards"
+                checked={shipperInfo.courierServices.includes("Leopards")}
+                value="Leopards"
+              />
+              <label htmlFor="Leopards">Leopards</label>
+              <input
+                onChange={(e) => {
+                  // remove the value from the array if the checkbox is unchecked
+
+                  if (!e.target.checked) {
+                    const courierServices = shipperInfo.courierServices.filter(
+                      (service) => service !== e.target.value
+                    );
+                    setShipperInfo({
+                      ...shipperInfo,
+                      courierServices,
+                    });
+                  } else {
+                    setShipperInfo({
+                      ...shipperInfo,
+                      courierServices: [
+                        ...shipperInfo.courierServices,
+                        e.target.value,
+                      ],
+                    });
+                  }
+                }}
+                className="h-4 w-4"
+                type="checkbox"
+                disabled={!user}
+                id="TCS"
+                name="TCS"
+                value="TCS"
+                checked={shipperInfo.courierServices.includes("TCS")}
+              />
+              <label htmlFor="TCS">TCS</label>
+            </li>
+
+            {shipperInfo.courierServices.includes("Leopards") && (
+              <li className="flex w-96 flex-row gap-3 items-center px-2 py-1 lg:w-96">
+                <p>Select your Leopards Account</p>
+                <select
+                  className="h-10 border-[1px] border-blue-400 bg-black px-2 text-slate-300 ml-auto"
+                  name="courierAccount"
+                  defaultValue={`${user.Courier[0].id}`}
+                  onChange={(e) => {
+                    setShipperInfo({
+                      ...shipperInfo,
+                      courierAccount: e.target.value,
+                    });
+                  }}
+                >
+                  {user.Courier.map((account) => {
+                    if (account.name === "Leopards") {
+                      return (
+                        <option key={account.id} value={account.id}>
+                          {account.name} ({account.id})
+                        </option>
+                      );
+                    }
+                  })}
+                </select>
+              </li>
+            )}
+
+            {shipperInfo.courierServices.includes("TCS") && (
+              <li className="flex w-96 flex-row gap-3 items-center px-2 py-1 lg:w-96">
+                <p>Select your TCS Account</p>
+                <select
+                  className="h-10 border-[1px] border-blue-400 bg-black px-2 text-slate-300 ml-auto"
+                  name="courierAccount"
+                  defaultValue={`${
+                    user.Courier.find((courier) => courier.name === "TCS").id
+                  }`}
+                  onChange={(e) => {
+                    setShipperInfo({
+                      ...shipperInfo,
+                      courierAccount: e.target.value,
+                    });
+                  }}
+                >
+                  {user.Courier.map((account) => {
+                    if (account.name === "TCS") {
+                      return (
+                        <option key={account.id} value={account.id}>
+                          {account.name} ({account.data.accountNumber})
+                        </option>
+                      );
+                    }
+                  })}
+                </select>
+              </li>
+            )}
+
             <li
               className={` transition-all duration-300  flex w-96 flex-col sm:flex-row gap-3 px ${
                 openShipperForm ? "" : "scale-0"
@@ -303,6 +507,7 @@ export default function Page() {
                 City{" "}
               </p>
               <select
+                disabled={shipperInfo.courierServices.length === 0}
                 onChange={(e) => {
                   setShipperInfo({
                     ...shipperInfo,
@@ -315,22 +520,44 @@ export default function Page() {
                 id=""
               >
                 <option value="">Select City</option>
-                {LEOPARDS_CITIES.map((city) => {
+                {/* {LEOPARDS_CITIES.map((city) => {
                   return (
                     <option key={city.id} value={city.id}>
                       {city.name}
                     </option>
                   );
-                })}
+                })} */}
+                {shipperInfo.courierServices.includes("Leopards") &&
+                  LEOPARDS_CITIES.map((city) => {
+                    return (
+                      <option key={city.id} value={city.id}>
+                        {city.name}
+                      </option>
+                    );
+                  })}
+
+                {shipperInfo.courierServices.includes("TCS") &&
+                  TCS_CITIES.map((city) => {
+                    return (
+                      <option key={city.cityID} value={city.cityName}>
+                        {city.cityName}
+                      </option>
+                    );
+                  })}
               </select>
             </li>
+          </ul>
+          <ul className="mt-[4.4rem] border-pink-400 flex flex-col gap-8">
             <li
-              className={` transition-all duration-300 -translate-x-2 flex w-96  flex-row gap-3 px-2 py-1 ${
+              className={`  transition-all duration-300 translate-x-1 flex w-96  flex-row gap-3 px-2 py-1 ${
                 openShipperForm ? "" : "scale-0"
               } `}
             >
               <p className="" htmlFor="">
-                Address{" "}
+                {/* Address{" "} */}
+                {shipperInfo.courierServices.includes("Leopards")
+                  ? "Address"
+                  : "Pickup Address"}
               </p>
               <textarea
                 onChange={handleChange}
@@ -339,8 +566,28 @@ export default function Page() {
                 name="address"
               ></textarea>
             </li>
-          </ul>
-          <ul className="mt-[4.4rem] border-pink-400 flex flex-col gap-8">
+
+            <li
+              className={` ${
+                shipperInfo.courierServices.includes("TCS")
+                  ? ""
+                  : "opacity-0 hidden"
+              }  transition-all duration-300 translate-x-1 flex w-96  flex-row gap-3 px-2 py-1 ${
+                openShipperForm ? "" : "scale-0"
+              } `}
+            >
+              <p className="" htmlFor="">
+                {/* Address{" "} */}
+                Return Address
+              </p>
+              <textarea
+                onChange={handleChange}
+                value={shipperInfo.returnAddress}
+                className="border-white-400 ml-auto w-52 h-28 resize-none border-[1px] bg-black border-gray-700 outline-none  focus:border-0 focus:outline-1 focus:outline-blue-900"
+                name="returnAddress"
+              ></textarea>
+            </li>
+
             <li
               className={` transition-all duration-300  flex w-96 items-center flex-row gap-3 px-2 ${
                 openShipperForm ? "" : "scale-0"
@@ -420,136 +667,6 @@ export default function Page() {
                   })}
               </select>
             </li>
-            <li
-              className={`flex w-96 flex-row gap-3 items-center px-2 py-1 lg:w-96
-            ${openShipperForm ? "" : "scale-0"} transition-all duration-300
-            `}
-            >
-              <p>Select Courier Services</p>
-            </li>
-            <li
-              className={`flex flex-row items-center   gap-4 -mt-6 text-base w-96
-                        ${
-                          openShipperForm ? "" : "scale-0"
-                        } transition-all duration-300
-            `}
-            >
-              <input
-                onChange={(e) => {
-                  if (!e.target.checked) {
-                    const courierServices = shipperInfo.courierServices.filter(
-                      (service) => service !== e.target.value
-                    );
-                    setShipperInfo({
-                      ...shipperInfo,
-                      courierServices,
-                      courierAccount: "",
-                    });
-                  } else {
-                    setShipperInfo({
-                      ...shipperInfo,
-                      courierServices: [
-                        ...shipperInfo.courierServices,
-                        e.target.value,
-                      ],
-                      courierAccount: String(user.Courier[0].id),
-                    });
-                  }
-                }}
-                className="h-4 w-4"
-                type="checkbox"
-                disabled={!user}
-                id="Leopards"
-                name="Leopards"
-                value="Leopards"
-              />
-              <label htmlFor="Leopards">Leopards</label>
-              <input
-                onChange={(e) => {
-                  // remove the value from the array if the checkbox is unchecked
-
-                  if (!e.target.checked) {
-                    const courierServices = shipperInfo.courierServices.filter(
-                      (service) => service !== e.target.value
-                    );
-                    setShipperInfo({
-                      ...shipperInfo,
-                      courierServices,
-                    });
-                  } else {
-                    setShipperInfo({
-                      ...shipperInfo,
-                      courierServices: [
-                        ...shipperInfo.courierServices,
-                        e.target.value,
-                      ],
-                    });
-                  }
-                }}
-                className="h-4 w-4"
-                type="checkbox"
-                disabled={!user}
-                id="TCS"
-                name="TCS"
-                value="TCS"
-              />
-              <label htmlFor="TCS">TCS</label>
-              <input
-                onChange={(e) => {
-                  if (!e.target.checked) {
-                    const courierServices = shipperInfo.courierServices.filter(
-                      (service) => service !== e.target.value
-                    );
-                    setShipperInfo({
-                      ...shipperInfo,
-                      courierServices,
-                    });
-                  } else {
-                    setShipperInfo({
-                      ...shipperInfo,
-                      courierServices: [
-                        ...shipperInfo.courierServices,
-                        e.target.value,
-                      ],
-                    });
-                  }
-                }}
-                className="h-4 w-4"
-                type="checkbox"
-                disabled={!user}
-                id="DeepBlue"
-                name="DeepBlue"
-                value="DeepBlue"
-              />
-              <label htmlFor="DeepBlue">DeepBlue</label>
-            </li>
-
-            {shipperInfo.courierServices.includes("Leopards") && (
-              <li className="flex w-96 flex-row gap-3 items-center px-2 py-1 lg:w-96">
-                <p>Select your Leopards Account</p>
-                <select
-                  className="h-10 border-[1px] border-blue-400 bg-black px-2 text-slate-300 ml-auto"
-                  name="courierAccount"
-                  defaultValue={`${user.Courier[0].id}`}
-                  onChange={(e) => {
-                    setShipperInfo({
-                      ...shipperInfo,
-                      courierAccount: e.target.value,
-                    });
-                  }}
-                >
-                  {user.Courier.map((account) => {
-                    if (account.name === "Leopards") {
-                      return (
-                        <option key={account.id} value={account.id}>
-                          {account.name} ({account.id})
-                        </option>
-                      );
-                    }
-                  })}
-                </select>
-              </li>
-            )}
 
             <button
               disabled={isWaiting}

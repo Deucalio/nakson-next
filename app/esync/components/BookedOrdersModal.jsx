@@ -266,11 +266,13 @@ export default function BookedOrdersModal({
       newOrders = newOrders.map((order) => {
         return {
           ...order,
-          service_type: order.correct_city.shipment_type.find(
-            (type) => type.toLowerCase() === order.service_type.toLowerCase()
-          )
-            ? order.service_type
-            : order.correct_city.shipment_type[0],
+          service_type:
+            order.correct_city &&
+            order.correct_city.shipment_type.find(
+              (type) => type.toLowerCase() === order.service_type.toLowerCase()
+            )
+              ? order.service_type
+              : order.correct_city.shipment_type[0],
         };
       });
 
