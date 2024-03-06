@@ -20,18 +20,24 @@ export async function GET(request) {
   const skus = {};
 
   for (const store of stores) {
+    if (store.name === "Deepsea Life Sciences") {
+      console.log("Skipping ", store.name);
+      continue;
+    }
     const response = await axios.get(
-      `https://${store.store_info.shop}/admin/api/2023-10/orders.json?status=any&limit=50
-      `,
+      // `https://${store.store_info.shop}/admin/api/2023-10/orders.json?status=any&limit=50`,
+      `https://${store.store_info.shop}/admin/api/2023-10/orders.json?status=open&financial_status=unpaid&limit=50&fulfillment_status=unfulfilled`,
       {
         headers: {
           "X-Shopify-Access-Token": store.store_info.accessToken,
         },
       }
     );
-    let resOrders = response.data.orders.filter((order) =>
-      order.tags.includes("call confirmed")
+    let resOrders = response.data.orders;
+    resOrders = resOrders.filter((order) =>
+      order.tags.toLowerCase().includes("call confirmed")
     );
+    console.log("resOrders: ", resOrders.length);
     orders.push(...resOrders);
   }
 
