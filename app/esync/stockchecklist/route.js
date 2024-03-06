@@ -29,7 +29,10 @@ export async function GET(request) {
         },
       }
     );
-    orders.push(...response.data.orders);
+    let resOrders = response.data.orders.filter((order) =>
+      order.tags.includes("call confirmed")
+    );
+    orders.push(...resOrders);
   }
 
   for (const order of orders) {

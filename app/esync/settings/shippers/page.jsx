@@ -66,43 +66,23 @@ export default function Page() {
     saveUser();
   }, []);
 
+  useEffect(() => {
+    // User can't select multiple courier services
+    if (shipperInfo.courierServices.length > 1) {
+      setShipperInfo({
+        ...shipperInfo,
+        courierServices: [shipperInfo.courierServices[1]],
+      });
+    }
+  }, [shipperInfo]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setShipperInfo({ ...shipperInfo, [name]: value });
   };
 
-  useEffect(() => {
-    // User can't select multiple courier services (checkboxes) at the same time
-    if (user) {
-      if (shipperInfo.courierAccount === "") {
-        console.log(
-          "test: ",
-          user.Courier.find(
-            (acc) => acc.name === shipperInfo.courierServices[0]
-          )
-        );
-        setShipperInfo({
-          ...shipperInfo,
-          courierAccount: user.Courier[0].id,
-        });
-      }
-    }
-
-    if (shipperInfo.courierServices.length > 1) {
-      const courierServices = shipperInfo.courierServices.filter(
-        (service) => service !== shipperInfo.courierServices[0]
-      );
-
-      setShipperInfo({
-        ...shipperInfo,
-        courierServices,
-        courierAccount: user.Courier.find((courier) => courier.name === "TCS"),
-      });
-    }
-  }, [shipperInfo]);
-
   const addShipper = async () => {
-    console.log(shipperInfo);
+    console.log("shipper Info: ", shipperInfo);
     if (
       !shipperInfo.courierAccount ||
       !shipperInfo.name ||
@@ -131,19 +111,15 @@ export default function Page() {
 
       try {
         const courier = user.Courier.find(
-          (courier) =>
-            courier.data.accountNumber === Number(shipperInfo.courierAccount)
+          (courier) => courier.id === Number(shipperInfo.courierAccount)
         );
-        console.log(courier);
-
-        return;
         const response = await axios.post(`${serverURL}/tcs/add-cost-center`, {
           userEmail: user.email,
           ...shipperInfo,
         });
         console.log("res", response.data);
         if (response.status === 200) {
-          setShowNotification("Shipper Added Successfully");
+          setShowNotification("Cost Center Added Successfully");
           setLabel("Success");
         }
       } catch (e) {
@@ -336,23 +312,18 @@ export default function Page() {
             >
               <input
                 onChange={(e) => {
-                  if (!e.target.checked) {
-                    const courierServices = shipperInfo.courierServices.filter(
-                      (service) => service !== e.target.value
-                    );
+                  if (e.target.checked) {
+                    console.log("Leopards");
                     setShipperInfo({
                       ...shipperInfo,
-                      courierServices,
-                      courierAccount: "",
-                    });
-                  } else {
-                    setShipperInfo({
-                      ...shipperInfo,
+                      city: "",
                       courierServices: [
                         ...shipperInfo.courierServices,
                         e.target.value,
                       ],
-                      courierAccount: String(user.Courier[0].id),
+                      courierAccount: user.Courier.find(
+                        (courier) => courier.name === "Leopards"
+                      ).id,
                     });
                   }
                 }}
@@ -367,23 +338,19 @@ export default function Page() {
               <label htmlFor="Leopards">Leopards</label>
               <input
                 onChange={(e) => {
-                  // remove the value from the array if the checkbox is unchecked
+                  if (e.target.checked) {
+                    console.log("TCS");
+                    setShipperInfo({
+                      ...shipperInfo,
+                      city: "",
 
-                  if (!e.target.checked) {
-                    const courierServices = shipperInfo.courierServices.filter(
-                      (service) => service !== e.target.value
-                    );
-                    setShipperInfo({
-                      ...shipperInfo,
-                      courierServices,
-                    });
-                  } else {
-                    setShipperInfo({
-                      ...shipperInfo,
                       courierServices: [
                         ...shipperInfo.courierServices,
                         e.target.value,
                       ],
+                      courierAccount: user.Courier.find(
+                        (courier) => courier.name === "TCS"
+                      ).id,
                     });
                   }
                 }}

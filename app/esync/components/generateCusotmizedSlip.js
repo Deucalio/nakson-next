@@ -12,36 +12,69 @@ async function fetchPdfBytes(url) {
   return pdfBytes;
 }
 async function generateCusotmizedSlip(slipData) {
-  slipData = [
-    {
-      shop_name: "Nakson",
-      shop_logo:
-        "https://nakson.pk/cdn/shop/files/nakson_12.png?v=1671209093&width=300",
-      service_type: "OVERNIGHT",
-      courier: "Leopards",
-      consignee_info: {
-        name: "Hamad Jani",
-        address: "Lorem Ipsum is simply dumeMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-        phone: "03124124124",
-      },
-      shipper_info: {
-        name: "Nakson",
-        address: "172-D Nakson Office, Unit# 5 Latifabad, Hyderabad.",
-        phone: "03481273957",
-      },
-      destination: {
-        "name": "Washington DC",
-      },
-      shipping_instructions: "Call the consignee before delivery",
-      date: new Date().toLocaleString().split(",")[0],
-      pieces: "200",
-      weight: "100",
-      amount: "1000",
-      track_number: "HD1232131231123",
-      booked_packet_order_name: "Nvidia101",
-      collectType: "COD Parcel",
-    },
-  ];
+  // {
+  //   shop_name: 'Momdaughts',
+  //   shop_logo: 'https://momdaughts.com/cdn/shop/files/shapater_logo.png?v=1666980932&width=500',
+  //   service_type: 'OVERNIGHT',
+  //   courier: 'Leopards',
+  //   consignee_info: {
+  //     name: 'hamza asif',
+  //     address: 'Ali Muhammad Bazar Taj Pura scheme ',
+  //     phone: '3334571933'
+  //   },
+  //   shipper_info: {
+  //     name: 'MOMDAUGHTS',
+  //     address: '#30-B block E unit#6 Latifabad Hyderabad',
+  //     phone: '03320003362'
+  //   },
+  //   destination: {
+  //     id: '789',
+  //     name: 'Lahore',
+  //     shipment_type: [Array],
+  //     allow_as_origin: true,
+  //     allow_as_destination: true
+  //   },
+  //   shipping_instructions: 'Call the consignee before delivery',
+  //   date: '3/5/2024',
+  //   pieces: 1,
+  //   weight: 100,
+  //   amount: 844,
+  //   track_number: 'HD753217405',
+  //   booked_packet_order_name: '#MD4102',
+  //   collectType: 'COD Parcel'
+  // }
+  // _______________
+
+  // slipData = [
+  //   {
+  //     shop_name: "Nakson",
+  //     shop_logo:
+  //       "https://nakson.pk/cdn/shop/files/nakson_12.png?v=1671209093&width=300",
+  //     service_type: "OVERNIGHT",
+  //     courier: "Leopards",
+  //     consignee_info: {
+  //       name: "Hamad Jani",
+  //       address: "Lorem Ipsum is simply dumeMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+  //       phone: "03124124124",
+  //     },
+  //     shipper_info: {
+  //       name: "Nakson",
+  //       address: "172-D Nakson Office, Unit# 5 Latifabad, Hyderabad.",
+  //       phone: "03481273957",
+  //     },
+  //     destination: {
+  //       "name": "Washington DC",
+  //     },
+  //     shipping_instructions: "Call the consignee before delivery",
+  //     date: new Date().toLocaleString().split(",")[0],
+  //     pieces: "200",
+  //     weight: "100",
+  //     amount: "1000",
+  //     track_number: "HD1232131231123",
+  //     booked_packet_order_name: "Nvidia101",
+  //     collectType: "COD Parcel",
+  //   },
+  // ];
 
   const serverRes = await axios.get("/api/server-url");
   const { serverURL } = serverRes.data;
@@ -51,7 +84,6 @@ async function generateCusotmizedSlip(slipData) {
   // 112 orders in 1 minute
   // 200 orders in 2 minute 30 seconds
 
-  console.log("HERE ", slipData.length, "Orders");
   let mergedPdfDoc = "";
   let mergedPdfBytes = "";
   mergedPdfDoc = await PDFDocument.create();
@@ -87,7 +119,10 @@ async function generateCusotmizedSlip(slipData) {
 
   let courierLogo = await fetchPdfBytes("https://i.imgur.com/GXyWx1J.png");
 
+  console.log("slipData: ", slipData);
+
   for (let order of slipData) {
+    console.log("order: ", order);
     const addressWidth = Math.ceil(
       fontinBoldUse.widthOfTextAtSize(order.consignee_info.address, 9)
     );

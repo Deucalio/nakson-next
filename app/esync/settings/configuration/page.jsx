@@ -1151,7 +1151,7 @@ export default function Page() {
                       const res = await axios.get("/api/server-url");
                       const { serverURL } = res.data;
                       const response = await axios.delete(
-                        `${serverURL}/shopify/delete-store/${store.name}`
+                        `${serverURL}/shopify/delete-store/${store.id}`
                       );
                       if (response.status === 200) {
                         // Send user to esync/settings and reload the page

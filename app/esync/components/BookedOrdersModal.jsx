@@ -384,11 +384,13 @@ export default function BookedOrdersModal({
       email: user.user.email,
       orders: ordersToBeBooked,
     });
-    console.log("Response One: ", responseOne.data);
-    return;
-    const pdfBytes = await generateCusotmizedSlip([
-      responseOne.data.booked_orders,
-    ]);
+    console.log(
+      "responseOne.data.booked_orders: ",
+      responseOne.data.booked_orders
+    );
+    const pdfBytes = await generateCusotmizedSlip(
+      responseOne.data.booked_orders
+    );
     const downloadFile = Object.values(pdfBytes);
     const blob = new Blob([new Uint8Array(downloadFile)], {
       type: "application/pdf",
