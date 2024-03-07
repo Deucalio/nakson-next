@@ -39,7 +39,7 @@ export default function Page() {
     city: "",
     address: "",
     specialInstructions: "sku,quantity",
-    shop: "",
+    shopID: "",
     courierServices: [],
     returnAddress: "",
   });
@@ -91,7 +91,7 @@ export default function Page() {
       !shipperInfo.city ||
       !shipperInfo.address ||
       !shipperInfo.specialInstructions ||
-      !shipperInfo.shop ||
+      !shipperInfo.shopID ||
       !shipperInfo.courierServices
     ) {
       setShowNotification("Incorrect Field");
@@ -618,14 +618,14 @@ export default function Page() {
                 className="h-10 border-[1px] border-blue-400 bg-black px-2 text-slate-300 ml-auto"
                 id=""
                 defaultValue=""
-                name="shop"
+                name="shopID"
               >
                 <option value="">Select Shop</option>
                 {user &&
                   user.stores.map((shop) => {
                     if (shop.store_info.platform === "shopify") {
                       return (
-                        <option key={shop.name} value={shop.name}>
+                        <option key={shop.name} value={shop.id}>
                           {shop.name} ({"shopify"})
                         </option>
                       );

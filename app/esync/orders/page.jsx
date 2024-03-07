@@ -513,7 +513,9 @@ export default function Home() {
                     {/* {order.financial_status} */}
                     pending
                   </li>
-                  <li className="bg-opacity-30 py-2 text-center ">N/A</li>
+                  <li className="bg-opacity-30 py-2 text-center ">
+                    {order.store_info.courierID}
+                  </li>
                   <li className="bg-opacity-30 py-2 text-center ">
                     {
                       // dd/mm/yy
