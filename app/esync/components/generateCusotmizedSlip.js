@@ -119,10 +119,7 @@ async function generateCusotmizedSlip(slipData) {
 
   let courierLogo = await fetchPdfBytes("https://i.imgur.com/GXyWx1J.png");
 
-  console.log("slipData: ", slipData);
-
   for (let order of slipData) {
-    console.log("order: ", order);
     const addressWidth = Math.ceil(
       fontinBoldUse.widthOfTextAtSize(order.consignee_info.address, 9)
     );

@@ -441,10 +441,19 @@ export default function Home() {
                     </li>
 
                     <li className="pointer-events-none col-span-2 bg-opacity-30 py-2 text-center ">
-                      {order.customer.first_name.charAt(0).toUpperCase() +
-                        order.customer.first_name.slice(1)}{" "}
-                      {order.customer.last_name.charAt(0).toUpperCase() +
-                        order.customer.last_name.slice(1)}
+                      {order.customer.first_name?.charAt(0).toUpperCase() +
+                        order.customer.first_name?.slice(1) &&
+                      order.customer.last_name?.charAt(0).toUpperCase() +
+                        order.customer.last_name?.slice(1)
+                        ? `${
+                            order.customer.first_name?.charAt(0).toUpperCase() +
+                            order.customer.first_name?.slice(1)
+                          } 
+                         ${
+                           order.customer.last_name?.charAt(0).toUpperCase() +
+                           order.customer.last_name?.slice(1)
+                         }`
+                        : "Unknown"}
                     </li>
 
                     <li className="pointer-events-none bg-opacity-30 py-2 text-center ">
@@ -456,7 +465,7 @@ export default function Home() {
                       {order.financial_status}
                     </li>
                     <li className="pointer-events-none bg-opacity-30 py-2 text-center ">
-                      N/A
+                      {order.store_info.courierID}
                     </li>
                     <li className="pointer-events-none bg-opacity-30 py-2 text-center ">
                       {
@@ -513,9 +522,7 @@ export default function Home() {
                     {/* {order.financial_status} */}
                     pending
                   </li>
-                  <li className="bg-opacity-30 py-2 text-center ">
-                    {order.store_info.courierID}
-                  </li>
+                  <li className="bg-opacity-30 py-2 text-center ">N/A</li>
                   <li className="bg-opacity-30 py-2 text-center ">
                     {
                       // dd/mm/yy
