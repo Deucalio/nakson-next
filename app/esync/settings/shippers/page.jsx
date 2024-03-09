@@ -82,6 +82,8 @@ export default function Page() {
   };
 
   const addShipper = async () => {
+    const res = await axios.get("/api/server-url");
+    const { serverURL } = res.data;
     console.log("shipper Info: ", shipperInfo);
     if (
       !shipperInfo.courierAccount ||
@@ -137,8 +139,6 @@ export default function Page() {
 
     const { apiKey, password } = selectedCourierAccount.data;
 
-    const res = await axios.get("/api/server-url");
-    const { serverURL } = res.data;
     try {
       const response = await axios.post(`${serverURL}/add-shipper`, {
         userEmail: user.email,

@@ -1672,7 +1672,7 @@ export default function Page() {
 
                 <p className="col-span-2 text-gray-300">Cost Centers</p>
                 {account.shippers !== "null" && (
-                  <div className="col-span-5 text-gray-500 font-bold overflow-y-auto h-32  border-slate-500 border-2 border-opacity-50 pb-2 text-xs">
+                  <div className="col-span-5 text-gray-500 font-bold overflow-y-auto h-40  border-slate-500 border-2 border-opacity-50 p-2 text-xs">
                     {account.shippers.map((shipper) => (
                       <ul
                         key={shipper.id}
@@ -1711,31 +1711,24 @@ export default function Page() {
                         </li>
 
                         <li className="flex flex-row gap-2 col-span-5">
-                          <p className=" text-gray-600">Name:</p>
+                          <p className=" text-gray-600">Cost Center Name:</p>
                           <p key={shipper.id}>
-                            {shipper.response.shipment_name}
+                            {shipper.response.costCenterName}
                           </p>
                         </li>
                         <li className="flex flex-row gap-2 col-span-5">
-                          <p className=" text-gray-600">Shipper ID:</p>
-                          <p key={shipper.id}>{shipper.response.shipment_id}</p>
+                          <p className=" text-gray-600">Cost Center Code:</p>
+                          <p key={shipper.id}>{shipper.response.costCenterCode}</p>
                         </li>
 
                         <li className="flex flex-row gap-2 col-span-5">
                           <p className=" text-gray-600">City:</p>
-                          <p key={shipper.id}>
-                            {
-                              LEOPARDS_CITIES.find(
-                                (city) =>
-                                  city.id === String(shipper.response.city_id)
-                              ).name
-                            }
-                          </p>
+                          <p key={shipper.id}>{shipper.response.costCenterCityName}</p>
                         </li>
                         <li className="flex flex-row gap-2 col-span-5">
                           <p className=" text-gray-600">Phone:</p>
                           <p key={shipper.id}>
-                            {shipper.response.shipment_phone}
+                            {shipper.response.contactNumber}
                           </p>
                         </li>
                       </ul>
