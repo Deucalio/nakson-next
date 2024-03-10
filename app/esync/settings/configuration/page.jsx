@@ -1718,12 +1718,16 @@ export default function Page() {
                         </li>
                         <li className="flex flex-row gap-2 col-span-5">
                           <p className=" text-gray-600">Cost Center Code:</p>
-                          <p key={shipper.id}>{shipper.response.costCenterCode}</p>
+                          <p key={shipper.id}>
+                            {shipper.response.costCenterCode}
+                          </p>
                         </li>
 
                         <li className="flex flex-row gap-2 col-span-5">
                           <p className=" text-gray-600">City:</p>
-                          <p key={shipper.id}>{shipper.response.costCenterCityName}</p>
+                          <p key={shipper.id}>
+                            {shipper.response.costCenterCityName}
+                          </p>
                         </li>
                         <li className="flex flex-row gap-2 col-span-5">
                           <p className=" text-gray-600">Phone:</p>

@@ -4,7 +4,7 @@ import LEOPARDS_CITIES from "../LEOPARDS_CITIES";
 import axios from "axios";
 import generateCusotmizedSlip from "./generateCusotmizedSlip";
 import { getUser } from "../actions/getUser";
-
+import TCS_CITIES from "../TCS_CITIES";
 const EditModal = ({
   shipmentType,
   orderToBeEditedId,
@@ -56,7 +56,6 @@ const EditModal = ({
       modalNode.classList.add("-top-12");
     }, 300);
   });
-
   const saveEditedOrderDetail = () => {
     // Save the details of the editied orders
     const newOrders = editedOrders.map((order) => {
@@ -202,6 +201,7 @@ export default function BookedOrdersModal({
   const [isDisable, setIsDisable] = useState(false);
 
   const modal = useRef(null);
+  const removeSpecialCharacter = (str) => str.replace(/[^a-zA-Z]/g, "");
 
   // First useEffect
   useEffect(() => {
@@ -251,7 +251,6 @@ export default function BookedOrdersModal({
 
     if (bookOptions.courier_type === "Leopards") {
       console.log("bookOptions: ", bookOptions);
-
       let newOrders = editedOrders.map((order) => {
         return {
           ...order,
@@ -267,21 +266,26 @@ export default function BookedOrdersModal({
 
       const correctCities = [];
       newOrders.filter((order) => correctCities.push(order.correct_city));
+      console.log("New Orders: ", newOrders);
 
-      // newOrders = newOrders.map((order) => {
-      //   return {
-      //     ...order,
-      //     service_type:
-      //       order.correct_city !== undefined &&
-      //       order.correct_city.shipment_type.find(
-      //         (type) => type.toLowerCase() === order.service_type.toLowerCase()
-      //       )
-      //         ? order.service_type[0]
-      //         : order.correct_city !== undefined
-      //         ? order.correct_city.shipment_type[0]
-      //         : "",
-      //   };
-      // });
+      setEditedOrders(newOrders);
+    } else if (bookOptions.courier_type === "TCS") {
+      console.log("bookOptions: ", bookOptions);
+      let newOrders = editedOrders.map((order) => {
+        return {
+          ...order,
+          courier_type: bookOptions.courier_type,
+          service_type: bookOptions.service_type,
+          correct_city: TCS_CITIES.find(
+            (city) =>
+              removeSpecialCharacter(city.cityName).toLowerCase() ===
+              removeSpecialCharacter(order.billing_address.city).toLowerCase()
+          ),
+        };
+      });
+
+      const correctCities = [];
+      newOrders.filter((order) => correctCities.push(order.correct_city));
       console.log("New Orders: ", newOrders);
 
       setEditedOrders(newOrders);
@@ -358,8 +362,6 @@ export default function BookedOrdersModal({
     }, 200);
   };
 
-  const removeSpecialCharacter = (str) => str.replace(/[^a-zA-Z]/g, "");
-
   const bookOrder = async (e) => {
     e.preventDefault();
 
@@ -388,6 +390,7 @@ export default function BookedOrdersModal({
       "responseOne.data.booked_orders: ",
       responseOne.data.booked_orders
     );
+
     const pdfBytes = await generateCusotmizedSlip(
       responseOne.data.booked_orders
     );
@@ -409,7 +412,7 @@ export default function BookedOrdersModal({
     const timeTaken = (endTime - startTime) / 1000; // Time in seconds
     console.log("Time Taken: ", timeTaken);
     setIsDisable(false);
-
+    console.log("fulfillOrdersData: ", responseOne.data.fulfillOrdersData);
     return;
 
     return 1;
@@ -504,6 +507,9 @@ export default function BookedOrdersModal({
               </option>
               <option className="bg-black text-blue-500" value="Leopards">
                 Leopards
+              </option>
+              <option className="bg-black text-blue-500" value="TCS">
+                TCS
               </option>
             </select>
 
@@ -736,7 +742,7 @@ export default function BookedOrdersModal({
                     <select
                       disabled
                       value="---"
-                      className="mt-1 h-10 w-32 rounded-lg border-slate-500 bg-zinc-800 outline-none border-0 px-3"
+                      className="mt-1 h-10 w-32 rounded-lg border-2  border-slate-500 bg-zinc-800 outline-none  px-3"
                     >
                       <option disabled value="---">
                         ---
@@ -755,7 +761,10 @@ export default function BookedOrdersModal({
                                 (city) =>
                                   removeSpecialCharacter(
                                     city.name
-                                  ).toLowerCase() === e.target.value
+                                  ).toLowerCase() ===
+                                  removeSpecialCharacter(
+                                    e.target.value
+                                  ).toLowerCase()
                               ),
                             };
                           } else {
@@ -767,6 +776,7 @@ export default function BookedOrdersModal({
                       }}
                       value={
                         order.correct_city &&
+                        order.correct_city.name &&
                         removeSpecialCharacter(
                           order.correct_city.name
                         ).toLowerCase()
@@ -775,23 +785,20 @@ export default function BookedOrdersModal({
                     >
                       <option value="---">---</option>
 
-                      {
-                        LEOPARDS_CITIES.map((city) => {
-                          return (
-                            <option
-                              key={city.id}
-                              name={city.name}
-                              id={city.id}
-                              value={removeSpecialCharacter(
-                                city.name
-                              ).toLowerCase()}
-                            >
-                              {city.name}
-                            </option>
-                          );
-                        })
-                        // if no courier is selected, dont show cities
-                      }
+                      {LEOPARDS_CITIES.map((city) => {
+                        return (
+                          <option
+                            key={city.id}
+                            name={city.name}
+                            id={city.id}
+                            value={removeSpecialCharacter(
+                              city.name
+                            ).toLowerCase()}
+                          >
+                            {city.name}
+                          </option>
+                        );
+                      })}
                     </select>
                   )}
                 </li>
@@ -823,28 +830,35 @@ export default function BookedOrdersModal({
                             return ord;
                           }
                         });
+                        console.log("new Order:", newOrders);
                         setEditedOrders(newOrders);
                       }}
-                      // value={bookOptions.service_type.toLowerCase()}
-                      value={
-                        order.service_type.slice(0, 1) +
-                        order.service_type.slice(1).toLowerCase()
-                      }
+                      value={order.service_type.toLowerCase()}
+                      // value={
+                      //   order.service_type.slice(0, 1) +
+                      //   order.service_type.slice(1).toLowerCase()
+                      // }
                       className="mt-1 h-10 w-32 rounded-lg border-slate-500 bg-zinc-800 outline-none border-0 px-3 text-base"
                     >
-                      {order.correct_city?.shipment_type.map((type) => {
-                        return (
-                          <option
-                            key={type}
-                            value={
-                              type.slice(0, 1) + type.slice(1).toLowerCase()
-                            }
-                            className="bg-zinc-800 text-slate-300 text-base"
-                          >
-                            {type.slice(0, 1) + type.slice(1).toLowerCase()}
-                          </option>
-                        );
-                      })}
+                      {/* {order.correct_city && (
+                        <option
+                          value={
+                            order.service_type.slice(0, 1) +
+                            order.service_type.slice(1).toLowerCase()
+                          }
+                        >
+                          {order.service_type}
+                        </option>
+                      )} */}
+                      {order.correct_city &&
+                        order.correct_city.shipment_type &&
+                        order.correct_city.shipment_type.map((type) => {
+                          return (
+                            <option key={type} value={type.toLowerCase()}>
+                              {type.slice(0, 1) + type.slice(1).toLowerCase()}
+                            </option>
+                          );
+                        })}
                     </select>
                   )}
                 </li>

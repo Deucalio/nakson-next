@@ -54,7 +54,7 @@ async function generateCusotmizedSlip(slipData) {
   //     courier: "Leopards",
   //     consignee_info: {
   //       name: "Hamad Jani",
-  //       address: "Lorem Ipsum is simply dumeMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+  //       address: "Lorem Ipsum  galley of type and andandandand andand  andand andand andand ",
   //       phone: "03124124124",
   //     },
   //     shipper_info: {
@@ -120,6 +120,9 @@ async function generateCusotmizedSlip(slipData) {
   let courierLogo = await fetchPdfBytes("https://i.imgur.com/GXyWx1J.png");
 
   for (let order of slipData) {
+    if (order.consignee_info.address.length <= 74) {
+      order.consignee_info.address = order.consignee_info.address + "      ";
+    }
     const addressWidth = Math.ceil(
       fontinBoldUse.widthOfTextAtSize(order.consignee_info.address, 9)
     );
