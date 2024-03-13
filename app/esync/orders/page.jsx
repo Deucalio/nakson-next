@@ -64,7 +64,6 @@ export default function Home() {
       email: user.user.email,
     });
     let { data } = await res;
-    console.log("data: ", data);
 
     // some orders have their name as null
     // so we will set first and last name to empty string
@@ -90,6 +89,7 @@ export default function Home() {
     // });
 
     setFilterData(data.slice(0, numberOfPages));
+    console.log("raw data: ", data);
 
     setOrders(data);
   };
@@ -341,8 +341,9 @@ export default function Home() {
       </div>
 
       <section
+      key={filterData && filterData.length}
         ref={pageElement}
-        className={`relative transition-all duration-700 container mx-auto mt-24 border-rose-400 p-4 col-span-5 h-[85vh] ${
+        className={`relative transition-all duration-700 container mx-auto mt-24 border-rose-400 border-2 p-4 col-span-5 h-[85vh] ${
           showBookedOrdersModal
             ? "overflow-y-hidden"
             : openSidebar === true
