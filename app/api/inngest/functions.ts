@@ -6,7 +6,7 @@ export const helloWorld = inngest.createFunction(
     { event: "test/hello.world" },
     async ({ event, step }) => {
         await step.sleep("wait-a-moment", "1s");
-        const serverRes = await axios.get("/api/server-url");
+        const serverRes = await axios.get("https://nakson.services/api/server-url");
         const { serverURL } = serverRes.data;
         const res = await axios.get(`${serverURL}/kewl`);
         console.log("res: ", res.data);
