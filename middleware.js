@@ -7,7 +7,10 @@ export default auth((req) => {
   // console.log("req", req.nextUrl.pathname);
   console.log("is", isLoggedIn);
 
-  if (req.nextUrl.pathname === "/api/inngest" || req.nextUrl.pathname === "/api/shopify/fulfillorders") {
+  if (req.nextUrl.pathname === "/api/inngest") {
+    return NextResponse.next();
+  }
+  if (req.nextUrl.pathname === "/api/shopify/fulfillorders") {
     return NextResponse.next();
   }
 
