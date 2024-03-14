@@ -60,8 +60,6 @@ export const helloWorld = inngest.createFunction(
   { event: "test/hello.world" },
   async ({ event, step }) => {
     await step.sleep("wait-a-moment", "1s");
-    const { serverURL } = event.data;
-    console.log("serverURL: ", serverURL);
 
     // create 8 orders of shopify
     createOrder(8).then((res) => {

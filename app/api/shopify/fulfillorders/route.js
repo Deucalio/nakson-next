@@ -29,7 +29,6 @@ export async function GET(request) {
       s: "sad",
     },
   });
-  console.log("res: ", res);
   return NextResponse.json({
     name: "Hello Inngest from Next!",
     ordersData: "sad",
