@@ -5,7 +5,8 @@ import { inngest } from "../../inngest/client"; // Import our client
 export const dynamic = "force-dynamic";
 
 // Create a simple async Next.js API route handler
-export async function GET() {
+export async function GET(request: { url: any; }) {
+  const serverURL = request.url.includes("localhost") ? "http://localhost:3000" : "https://nakson.services";
   // Send your event payload to Inngest
   const res = await inngest.send({
     name: "test/hello.world",
@@ -13,7 +14,7 @@ export async function GET() {
       email: "testFromNext@example.com",
     },
   });
-  console.log("res: ",res)
+  console.log("res: ", res)
 
-  return NextResponse.json({ name: "Hello Inngest from Next!" });
+  return NextResponse.json({ name: "Hello Inngest from Next!", serverURL });
 }
