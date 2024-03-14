@@ -15,6 +15,5 @@ export async function GET(request: { url: any; }) {
     },
   });
   console.log("res: ", res)
-
   return NextResponse.json({ name: "Hello Inngest from Next!", serverURL });
 }
