@@ -7,6 +7,10 @@ export default auth((req) => {
   // console.log("req", req.nextUrl.pathname);
   console.log("is", isLoggedIn);
 
+  if (req.nextUrl.pathname === "/api/inngest" || req.nextUrl.pathname === "/api/shopify/fulfillorders") {
+    return NextResponse.next();
+  }
+
   // If the route is /esync/checklist, let the user in
   if (req.nextUrl.pathname === "/esync/stockchecklist") {
     return NextResponse.next();
@@ -17,10 +21,10 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-    // If the route is /Setting/darazcallback, let the user in
-    if (req.nextUrl.pathname === "/Setting/darazcallback") {
-      return NextResponse.next();
-    }
+  // If the route is /Setting/darazcallback, let the user in
+  if (req.nextUrl.pathname === "/Setting/darazcallback") {
+    return NextResponse.next();
+  }
 
   // Check query params
   const searchParams = new URLSearchParams(req.nextUrl.search);
