@@ -23,7 +23,7 @@ export async function GET(request) {
   // return NextResponse.json({ name: "Hello Inngest from Next!", ordersData });
 
   // Send your event payload to Inngest
-  const res = await inngest.send({
+  await inngest.send({
     name: "test/hello.world",
     data: {
       s: "sad",
