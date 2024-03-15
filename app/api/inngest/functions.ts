@@ -40,8 +40,6 @@ async function createOrder(numberOfOrders) {
         data,
         config
       );
-      // Wait for 2 seconds before sending the next request
-      await sleep(2000)
       console.log(`Order Created: ${i} `, response.data.order.name);
       // console.log("Hello")
       if (i % 4 === 0) {
@@ -61,12 +59,17 @@ export const helloWorld = inngest.createFunction(
   { id: "hello-world" },
   { event: "test/hello.world" },
   async ({ event, step }) => {
-    await step.sleep("wait-a-moment", "1s");
+    // await step.sleep("wait-a-moment", "1s");
 
-    // create 8 orders of shopify
-    createOrder(8).then((res) => {
-      console.log("Orders created");
+    await step.run("send-welcome-email", async () => {
+      await createOrder(8);
     });
+
+
+    // // create 8 orders of shopify
+    // createOrder(8).then((res) => {
+    //   console.log("Orders created");
+    // });
 
     // const res = await axios.get(`${serverURL}/kewl`);
     // console.log("res: ", res.data);
