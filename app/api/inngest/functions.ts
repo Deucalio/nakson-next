@@ -35,12 +35,7 @@ async function createOrder(numberOfOrders) {
   };
   for (let i = 1; i <= numberOfOrders; i++) {
     try {
-      const response = await axios.post(
-        "https://quickstart-65d173cf.myshopify.com/admin/api/2024-01/orders.json",
-        data,
-        config
-      );
-      console.log(`Order Created: ${i} `, response.data.order.name);
+      console.log(`Order Created: ${i} `);
       // console.log("Hello")
       if (i % 4 === 0) {
         if (i === numberOfOrders) {
