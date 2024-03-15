@@ -6,10 +6,6 @@ export const dynamic = "force-dynamic";
 
 // Create a simple async Next.js API route handler
 export async function GET(request) {
-  // const serverURL = request.url.includes("localhost")
-  //   ? "http://localhost:4000"
-  //   : "https://nakson.services";\
-
   //   {
   //     "id": "5753533137188",
   //     "name": "#MD4292",
@@ -31,6 +27,5 @@ export async function GET(request) {
   });
   return NextResponse.json({
     name: "Hello Inngest from Next!",
-    ordersData: "sad",
   });
 }

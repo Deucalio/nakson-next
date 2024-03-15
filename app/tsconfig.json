@@ -28,7 +28,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "api/shopify/fulfillorders/route.js", "api/inngest/functions.ts"  ],
+, "api/shopify/fulfillorders/route.ts", "api/inngest/functions.ts"  ],
   "exclude": [
     "node_modules"
   ]

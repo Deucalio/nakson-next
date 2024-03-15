@@ -8,4 +8,5 @@ export const { GET, POST, PUT } = serve({
     functions: [
         helloWorld, // <-- This is where you'll always add all your functions
     ],
+    streaming: "allow",
 });
