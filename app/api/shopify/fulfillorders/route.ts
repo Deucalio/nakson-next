@@ -20,9 +20,70 @@ export async function GET(request) {
 
   // Send your event payload to Inngest
   await inngest.send({
-    name: "test/hello.world",
+    name: "test/fulfill.orders",
+    // "domain": "quickstart-65d173cf.myshopify.com",
+    // "access_token": "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",
+    // "trackingNo": "HD12"
     data: {
-      s: "sad",
+      ordersData:
+        [
+          {
+            id: "5653655486664",
+            name: "#1428",
+            domain: "quickstart-65d173cf.myshopify.com",
+            access_token: "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",
+            trackingNo: "HD120"
+          },
+          {
+            "id": "5653655453896",
+            "name": "#1427",
+            "domain": "quickstart-65d173cf.myshopify.com",
+            "access_token": "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",
+            "trackingNo": "HD121"
+          },
+          {
+            "id": "5653655388360",
+            "name": "#1426",
+            "domain": "quickstart-65d173cf.myshopify.com",
+            "access_token": "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",
+            "trackingNo": "HD122"
+          },
+          {
+            "id": "5653655355592",
+            "name": "#1425",
+            "domain": "quickstart-65d173cf.myshopify.com",
+            "access_token": "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",
+            "trackingNo": "HD123"
+          },
+          {
+            "id": "5653654569160",
+            "name": "#1424",
+            "domain": "quickstart-65d173cf.myshopify.com",
+            "access_token": "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",
+            "trackingNo": "HD124"
+          },
+          {
+            "id": "5653654536392",
+            "name": "#1423",
+            "domain": "quickstart-65d173cf.myshopify.com",
+            "access_token": "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",
+            "trackingNo": "HD125"
+          },
+          {
+            "id": "5653654503624",
+            "name": "#1422",
+            "domain": "quickstart-65d173cf.myshopify.com",
+            "access_token": "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",
+            "trackingNo": "HD126"
+          },
+          {
+            "id": "5653654470856",
+            "name": "#1421",
+            "domain": "quickstart-65d173cf.myshopify.com",
+            "access_token": "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",
+            "trackingNo": "HD127"
+          }
+        ],
     },
   });
   return NextResponse.json({

@@ -3,91 +3,49 @@ import axios from "axios";
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-async function createOrder(numberOfOrders) {
-  const data = {
-    order: {
-      financial_status: "pending",
-      line_items: [
-        {
-          title: "Green Gummy Gums",
-          price: 750.99,
-          grams: "1300",
-          quantity: 3,
-          tax_lines: [
-            {
-              price: 73.5,
-              rate: 0.06,
-              title: "State tax",
-            },
-          ],
-        },
-      ],
-      total_tax: 13.5,
-      currency: "EUR",
-    },
-  };
 
-  // const config = {
-  //   headers: {
-  //     "X-Shopify-Access-Token": "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",
-  //     "Content-Type": "application/json",
-  //   },
-  // };
-  const config = {
-    method: 'POST',
-    headers: {
-      "X-Shopify-Access-Token": "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",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data)
-  };
+const getFulfillmenOrderID = async (id, access_token, domain) => {
 
+  try {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "X-Shopify-Access-Token": access_token,
+      },
+    };
 
-  for (let i = 1; i <= numberOfOrders; i++) {
-    try {
-      const response = await fetch(
-        "https://quickstart-65d173cf.myshopify.com/admin/api/2024-01/orders.json",
-        config
-      );
-      // const response = await axios.post(
-      //   "https://quickstart-65d173cf.myshopify.com/admin/api/2024-01/orders.json",
-      //   data,
-      //   config
-      // );
-      const json = await response.json();
-      console.log(`Order Created: ${i} `, json.order.name);
-      // console.log("Hello")
-      if (i % 4 === 0) {
-        if (i === numberOfOrders) {
-          return;
-        }
-        console.log("Waiting for a minute");
-        // Wait for a minute before sending the next request
-        await sleep(60000);
-      }
-    } catch (error) {
-      console.error(`Request ${i + 1} failed:`, error);
+    const response = await fetch(`https://${domain}/admin/api/2023-10/orders/${id}/fulfillment_orders.json`, requestOptions);
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+
+    const result = await response.json();
+    const fulfillmentOrderID = result.fulfillment_orders[0].id
+    return fulfillmentOrderID;
+  } catch (error) {
+    console.error('There was a problem with your fetch operation:', error);
   }
 }
-export const helloWorld = inngest.createFunction(
+
+
+
+export const fulfillOrders = inngest.createFunction(
   { id: "hello-world" },
-  { event: "test/hello.world" },
+  { event: "test/fulfill.orders" },
   async ({ event, step }) => {
-    // await step.sleep("wait-a-moment", "1s");
+    const { ordersData } = event.data
 
-    await step.run("send-welcome-email", async () => {
-      await createOrder(8);
-    });
+    const fulfilledOrders = await step.run("fulfill-order", async () => {
+
+      for (let i = 1; i <= ordersData.length; i++) {
+        const order = ordersData[i - 1];
+        const fulfillmentID = await getFulfillmenOrderID(order.id, order.access_token, order.domain)
+        console.log(`Order fulfillmentID: ${i} `, fulfillmentID);
+      }
+      return ordersData
+    })
 
 
-    // // create 8 orders of shopify
-    // createOrder(8).then((res) => {
-    //   console.log("Orders created");
-    // });
-
-    // const res = await axios.get(`${serverURL}/kewl`);
-    // console.log("res: ", res.data);
-    return { event, body: "Sad" };
-  }
-);
+    return { event, fulfilledOrders: fulfilledOrders, totalOrders: ordersData.length };
+  });
