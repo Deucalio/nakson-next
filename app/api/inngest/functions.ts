@@ -27,20 +27,35 @@ async function createOrder(numberOfOrders) {
     },
   };
 
+  // const config = {
+  //   headers: {
+  //     "X-Shopify-Access-Token": "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",
+  //     "Content-Type": "application/json",
+  //   },
+  // };
   const config = {
+    method: 'POST',
     headers: {
       "X-Shopify-Access-Token": "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",
       "Content-Type": "application/json",
     },
+    body: JSON.stringify(data)
   };
+
+
   for (let i = 1; i <= numberOfOrders; i++) {
     try {
-      const response = await axios.post(
+      const response = await fetch(
         "https://quickstart-65d173cf.myshopify.com/admin/api/2024-01/orders.json",
-        data,
         config
       );
-      console.log(`Order Created: ${i} `, response.data.order.name);
+      // const response = await axios.post(
+      //   "https://quickstart-65d173cf.myshopify.com/admin/api/2024-01/orders.json",
+      //   data,
+      //   config
+      // );
+      const json = await response.json();
+      console.log(`Order Created: ${i} `, json.order.name);
       // console.log("Hello")
       if (i % 4 === 0) {
         if (i === numberOfOrders) {
