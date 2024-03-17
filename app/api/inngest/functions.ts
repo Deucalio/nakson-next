@@ -83,13 +83,14 @@ export const fulfillOrders = inngest.createFunction(
     for (let i = 1; i <= ordersData.length; i++) {
       const order = ordersData[i - 1];
       const fulfillmentID = await getFulfillmenOrderID(order.id, order.access_token, order.domain)
-      // const fulfillment = await fulfillOrder(order.id, fulfillmentID, order.access_token, order.domain, order.trackingNo)
+      const fulfillment = await fulfillOrder(order.id, fulfillmentID, order.access_token, order.domain, order.trackingNo)
       if (i % 40 === 0) {
         // Wait for a minute after every 40 requests
         await sleep(60000);
         console.log("Sleeping for 60 seconds");
       }
-      fulfilledOrdersData.push([order.name, "Not Fulfilled", order.trackingNo]); // Convert the array to a string using the join() method
+
+      fulfilledOrdersData.push([order.name, fulfillment, order.trackingNo]); // Convert the array to a string using the join() method
     }
     console.log("fulfilledOrdersData: ", fulfilledOrdersData);
     return fulfilledOrdersData
