@@ -18,75 +18,23 @@ export async function GET(request) {
   // console.log("ordersData: ", ordersData);
   // return NextResponse.json({ name: "Hello Inngest from Next!", ordersData });
 
-  // Send your event payload to Inngest
+
+  return NextResponse.json({
+    name: "Hello Inngest from Next!",
+  });
+}
+export async function POST(req, res) {
+  const data = await req.json()
+  const { ordersData } = data
+
+  // // Send your event payload to Inngest
   await inngest.send({
     name: "test/fulfill.orders",
     // "domain": "quickstart-65d173cf.myshopify.com",
     // "access_token": "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",
     // "trackingNo": "HD12"
-    data: {
-      ordersData:
-        [
-          {
-            id: "5653655486664",
-            name: "#1428",
-            domain: "quickstart-65d173cf.myshopify.com",
-            access_token: "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",
-            trackingNo: "HD120"
-          },
-          {
-            "id": "5653655453896",
-            "name": "#1427",
-            "domain": "quickstart-65d173cf.myshopify.com",
-            "access_token": "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",
-            "trackingNo": "HD121"
-          },
-          {
-            "id": "5653655388360",
-            "name": "#1426",
-            "domain": "quickstart-65d173cf.myshopify.com",
-            "access_token": "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",
-            "trackingNo": "HD122"
-          },
-          {
-            "id": "5653655355592",
-            "name": "#1425",
-            "domain": "quickstart-65d173cf.myshopify.com",
-            "access_token": "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",
-            "trackingNo": "HD123"
-          },
-          {
-            "id": "5653654569160",
-            "name": "#1424",
-            "domain": "quickstart-65d173cf.myshopify.com",
-            "access_token": "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",
-            "trackingNo": "HD124"
-          },
-          {
-            "id": "5653654536392",
-            "name": "#1423",
-            "domain": "quickstart-65d173cf.myshopify.com",
-            "access_token": "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",
-            "trackingNo": "HD125"
-          },
-          {
-            "id": "5653654503624",
-            "name": "#1422",
-            "domain": "quickstart-65d173cf.myshopify.com",
-            "access_token": "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",
-            "trackingNo": "HD126"
-          },
-          {
-            "id": "5653654470856",
-            "name": "#1421",
-            "domain": "quickstart-65d173cf.myshopify.com",
-            "access_token": "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",
-            "trackingNo": "HD127"
-          }
-        ],
-    },
+    data: { ordersData },
   });
-  return NextResponse.json({
-    name: "Hello Inngest from Next!",
-  });
+
+  return NextResponse.json({ message: "Orders are being fulfilled!, stay Patient!" })
 }
