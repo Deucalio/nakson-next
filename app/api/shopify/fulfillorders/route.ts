@@ -25,8 +25,8 @@ export async function GET(request) {
 }
 export async function POST(req, res) {
   const data = await req.json()
-  const { ordersData } = data
-  console.log("ordersData: ", ordersData)
+  const { ordersData, len  } = data
+  // console.log("ordersData: ", ordersData)
   console.log("ordersData.length", ordersData.length)
 
 
@@ -36,7 +36,7 @@ export async function POST(req, res) {
     // "domain": "quickstart-65d173cf.myshopify.com",
     // "access_token": "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",
     // "trackingNo": "HD12"
-    data: { ordersData },
+    data: { ordersData: ordersData.slice(0, len) },
   });
 
   return NextResponse.json({ message: "Orders are being fulfilled!, stay Patient!" })

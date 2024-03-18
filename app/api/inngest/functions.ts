@@ -78,22 +78,60 @@ export const fulfillOrders = inngest.createFunction(
   async ({ event, step }) => {
     const { ordersData } = event.data
 
-    const fulfilledOrdersData: any[][] = [];
 
-    for (let i = 1; i <= ordersData.length; i++) {
-      const order = ordersData[i - 1];
-      // const fulfillmentID = await getFulfillmenOrderID(order.id, order.access_token, order.domain)
-      // const fulfillment = await fulfillOrder(order.id, fulfillmentID, order.access_token, order.domain, order.trackingNo)
-      // if (i % 40 === 0) {
-      //   // Wait for a minute after every 40 requests
-      //   await sleep(60000);
-      //   console.log("Sleeping for 60 seconds");
-      // }
 
-      fulfilledOrdersData.push([order.name, "Eww", order.trackingNo]); // Convert the array to a string using the join() method
-    }
-    console.log("fulfilledOrdersData: ", fulfilledOrdersData);
-    return fulfilledOrdersData
+
+    // Using Step.run to log the progress of the function
+    const fulfillmentIDS = await step.run("fetch-fulfillment-order-ID", async () => {
+      const ordersFullfillmentIDs: string[] = []; // Specify the type of the array as string[]
+
+      for (let i = 1; i <= ordersData.length; i++) {
+
+        // After 40 requests, wait for a minute
+        if (i % 40 === 0) {
+          await sleep(60000);
+          console.log("Sleeping for 60 seconds");
+        }
+        const order = ordersData[i - 1];
+        const fulfillmentID = await getFulfillmenOrderID(order.id, order.access_token, order.domain)
+        ordersFullfillmentIDs.push(fulfillmentID)
+      }
+      return ordersFullfillmentIDs
+    })
+
+    const fulfilledOrders = await step.run("fulfill-orders", async () => {
+      const fulfilledOrdersData: any[][] = [];
+
+      for (let i = 1; i <= ordersData.length; i++) {
+        const order = ordersData[i - 1];
+        const fulfillment = await fulfillOrder(order.id, fulfillmentIDS[i - 1], order.access_token, order.domain, order.trackingNo)
+        fulfilledOrdersData.push([order.name, fulfillment, order.trackingNo]); // Convert the array to a string using the join() method
+      }
+      return fulfilledOrdersData
+    })
+
+    console.log("fulfilledOrders: ", fulfilledOrders);
+    return 1;
+
+
+
+
+
+
+    // for (let i = 1; i <= ordersData.length; i++) {
+    //   const order = ordersData[i - 1];
+    //   // const fulfillmentID = await getFulfillmenOrderID(order.id, order.access_token, order.domain)
+    //   // const fulfillment = await fulfillOrder(order.id, fulfillmentID, order.access_token, order.domain, order.trackingNo)
+    //   // if (i % 40 === 0) {
+    //   //   // Wait for a minute after every 40 requests
+    //   //   await sleep(60000);
+    //   //   console.log("Sleeping for 60 seconds");
+    //   // }
+
+    //   fulfilledOrdersData.push([order.name, "Eww", order.trackingNo]); // Convert the array to a string using the join() method
+    // }
+    // console.log("fulfilledOrdersData: ", fulfilledOrdersData);
+    // return fulfilledOrdersData
 
 
 
