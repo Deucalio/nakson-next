@@ -57,13 +57,16 @@ const fulfillOrder = async (id, fulfillment_id, access_token, domain, trackingNo
   try {
     const response = await fetch(`https://${domain}/admin/api/2023-04/fulfillments.json`, requestOptions);
     const result = await response.json();
-    await sleep(1000);
-    if (result.fulfillment) {
-      if (result.fulfillment.status === "success") {
-        return result.fulfillment.status;
+    console.log("result: ", result);
+    if (result) {
+      if (result.fulfillment) {
+        if (result.fulfillment.status === "success") {
+          return result.fulfillment.status;
+        }
       }
-    } else {
-      return "Order already fulfilled";
+      else if (result.errors.join("").includes("status= closed")) {
+        return "Order Already Fulfilled";
+      }
     }
 
   } catch (error) {
