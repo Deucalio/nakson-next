@@ -97,8 +97,8 @@ export const fulfillOrders = inngest.createFunction(
       for (let i = 1; i <= ordersData.length; i++) {
         const order = ordersData[i - 1];
 
-        // After 40 requests, wait for a minute
-        if (i % 10 === 0) {
+        // After 9 requests, wait for a minute
+        if (i % 9 === 0) {
           await sleep(60000);
           console.log("Sleeping for 60 seconds");
         }
