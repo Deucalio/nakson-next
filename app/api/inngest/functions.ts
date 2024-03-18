@@ -57,7 +57,6 @@ const fulfillOrder = async (id, fulfillment_id, access_token, domain, trackingNo
   try {
     const response = await fetch(`https://${domain}/admin/api/2023-04/fulfillments.json`, requestOptions);
     const result = await response.json();
-    console.log("result: ", result);
     if (result) {
       if (result.fulfillment) {
         if (result.fulfillment.status === "success") {
