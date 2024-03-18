@@ -25,7 +25,7 @@ export async function GET(request) {
 }
 export async function POST(req, res) {
   const data = await req.json()
-  const { ordersData, len  } = data
+  const { ordersData, len } = data
   // console.log("ordersData: ", ordersData)
   console.log("ordersData.length", ordersData.length)
 

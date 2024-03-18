@@ -20,6 +20,7 @@ const getFulfillmenOrderID = async (id, access_token, domain) => {
       throw new Error('Network response was not ok');
     }
 
+
     const result = await response.json();
     const fulfillmentOrderID = result.fulfillment_orders[0].id
     return fulfillmentOrderID;
@@ -57,14 +58,19 @@ const fulfillOrder = async (id, fulfillment_id, access_token, domain, trackingNo
   try {
     const response = await fetch(`https://${domain}/admin/api/2023-04/fulfillments.json`, requestOptions);
     const result = await response.json();
-    if (result) {
-      if (result.fulfillment) {
-        if (result.fulfillment.status === "success") {
-          return result.fulfillment.status;
+    if (result.fulfillment) {
+      if (result.fulfillment.status === "success") {
+        return result.fulfillment.status;
+      }
+    }
+    else if (result.errors) {
+      if (Array.isArray(result.errors)) {
+        if (result.errors.join("").includes("status= closed")) {
+          return "Already Fulfilled"
         }
       }
-      else if (result.errors.join("").includes("status= closed")) {
-        return "Order Already Fulfilled";
+      else if (result.errors.includes("api limit")) {
+        return "API Limit Exceeded"
       }
     }
 
@@ -84,35 +90,38 @@ export const fulfillOrders = inngest.createFunction(
 
 
     // Using Step.run to log the progress of the function
-    const fulfillmentIDS = await step.run("fetch-fulfillment-order-ID", async () => {
-      const ordersFullfillmentIDs: string[] = []; // Specify the type of the array as string[]
-
-      for (let i = 1; i <= ordersData.length; i++) {
-
-        // After 40 requests, wait for a minute
-        if (i % 40 === 0) {
-          await sleep(60000);
-          console.log("Sleeping for 60 seconds");
-        }
-        const order = ordersData[i - 1];
-        const fulfillmentID = await getFulfillmenOrderID(order.id, order.access_token, order.domain)
-        ordersFullfillmentIDs.push(fulfillmentID)
-      }
-      return ordersFullfillmentIDs
-    })
-
-    const fulfilledOrders = await step.run("fulfill-orders", async () => {
+    const fulfillment = await step.run("fetch-fulfillment-order-ID", async () => {
+      // const ordersFullfillmentIDs: string[] = []; // Specify the type of the array as string[]
       const fulfilledOrdersData: any[][] = [];
 
       for (let i = 1; i <= ordersData.length; i++) {
         const order = ordersData[i - 1];
-        const fulfillment = await fulfillOrder(order.id, fulfillmentIDS[i - 1], order.access_token, order.domain, order.trackingNo)
-        fulfilledOrdersData.push([order.name, fulfillment, order.trackingNo]); // Convert the array to a string using the join() method
+
+        // After 40 requests, wait for a minute
+        if (i % 10 === 0) {
+          await sleep(60000);
+          console.log("Sleeping for 60 seconds");
+        }
+        const fulfillmentID = await getFulfillmenOrderID(order.id, order.access_token, order.domain)
+        const fulfillment = await fulfillOrder(order.id, fulfillmentID, order.access_token, order.domain, order.trackingNo)
+        fulfilledOrdersData.push([order.name, fulfillment, order.trackingNo])
+        // ordersFullfillmentIDs.push(fulfillmentID)
       }
       return fulfilledOrdersData
     })
 
-    console.log("fulfilledOrders: ", fulfilledOrders);
+    // const fulfilledOrders = await step.run("fulfill-orders", async () => {
+    //   const fulfilledOrdersData: any[][] = [];
+
+    //   for (let i = 1; i <= ordersData.length; i++) {
+    //     const order = ordersData[i - 1];
+    //     const fulfillment = await fulfillOrder(order.id, fulfillmentIDS[i - 1], order.access_token, order.domain, order.trackingNo)
+    //     fulfilledOrdersData.push([order.name, fulfillment, order.trackingNo]); // Convert the array to a string using the join() method
+    //   }
+    //   return fulfilledOrdersData
+    // })
+
+    console.log("fulfillment: ", fulfillment);
     return 1;
 
 
