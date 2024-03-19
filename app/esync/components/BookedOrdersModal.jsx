@@ -380,19 +380,18 @@ export default function BookedOrdersModal({
     setIsDisable(true);
     // Start timer
     const startTime = new Date();
-    console.log("Downloadiing...");
 
-    const responseOne = await axios.post(`${serverURL}/leopards/book`, {
+    const courier = bookOptions.courier_type.toLowerCase();
+    console.log("Courier: ", courier);
+    const responseOne = await axios.post(`${serverURL}/${courier}/book`, {
       email: user.user.email,
       orders: ordersToBeBooked,
     });
-    console.log(
-      "responseOne.data.booked_orders: ",
-      responseOne.data.booked_orders
-    );
-
+    console.log("responseOne: ", responseOne.data);
+    console.log("Downloading Slip...");
     const pdfBytes = await generateCusotmizedSlip(
-      responseOne.data.booked_orders
+      responseOne.data.booked_orders,
+      courier
     );
     const downloadFile = Object.values(pdfBytes);
     const blob = new Blob([new Uint8Array(downloadFile)], {
@@ -401,7 +400,7 @@ export default function BookedOrdersModal({
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "Next-Slip.pdf"; // Set the desired file name
+    a.download = `${courier}-${responseOne.data.booked_orders.length}-${responseOne.data.timeTaken}-Slip.pdf`; // Set the desired file name
     document.body.appendChild(a);
 
     a.click();
@@ -495,9 +494,15 @@ export default function BookedOrdersModal({
           <div className="flex flex-row gap-5">
             <select
               onChange={(e) => {
+                const courier = e.target.value;
                 setBookOptions({
-                  courier_type: e.target.value,
-                  service_type: e.target.value === "" ? "--" : "Overnight",
+                  courier_type: courier,
+                  service_type:
+                    courier === ""
+                      ? "--"
+                      : courier === "Leopards"
+                      ? "Overnight"
+                      : "Express",
                 });
               }}
               className="mt-1 h-10 rounded-lg border-2 border-slate-500 bg-black px-3 text-white"
@@ -548,20 +553,47 @@ export default function BookedOrdersModal({
               >
                 Customized
               </option>
-              <option className="bg-black text-blue-500" value="Overnight">
-                Overnight
-              </option>
-              <option className="bg-black text-blue-500" value="Overland">
-                Overland
-              </option>
-              <option className="bg-black text-blue-500" value="Detain">
-                Detain
-              </option>
+
+              {bookOptions.courier_type === "Leopards" && (
+                <>
+                  <option className="bg-black text-blue-500" value="Overnight">
+                    Overnight
+                  </option>
+                  <option className="bg-black text-blue-500" value="Overland">
+                    Overland
+                  </option>
+                  <option className="bg-black text-blue-500" value="Detain">
+                    Detain
+                  </option>
+                </>
+              )}
+              {
+                // TCS Service Types
+                bookOptions.courier_type === "TCS" && (
+                  <>
+                    <option className="bg-black text-blue-500" value="Express">
+                      Express
+                    </option>
+                    <option
+                      className="bg-black text-blue-500"
+                      value="Economy-Express"
+                    >
+                      Economy Express
+                    </option>
+                    <option className="bg-black text-blue-500" value="Overland">
+                      Overland
+                    </option>
+                  </>
+                )
+              }
             </select>
           </div>
 
           <button
-            disabled={isDisable}
+            disabled={
+              isDisable ||
+              editedOrders.every((order) => order.correct_city === undefined)
+            }
             onClick={(e) => bookOrder(e)}
             className="rounded-md bg-blue-800 px-4 py-2 text-slate-100 hover:bg-blue-900 disabled:opacity-50 disabled:pointer-events-none transition-all duration-700"
           >
@@ -572,7 +604,9 @@ export default function BookedOrdersModal({
           onClick={() => closeModal()}
           className={` ${
             showEditModal ? ["blur-xl", "pointer-events-none"].join(" ") : ""
-          } absolute transition-all duration-700 right-0 top-0 z-50 h-9 text-red-700 hover:text-red-800 cursor-pointer`}
+          } absolute transition-all duration-700 right-0 top-0 z-50 h-9 text-red-700 hover:text-red-800 cursor-pointer
+          ${isDisable && ["text-red-950", "pointer-events-none"].join(" ")}
+          `}
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 512 512"
         >
@@ -742,7 +776,7 @@ export default function BookedOrdersModal({
                     <select
                       disabled
                       value="---"
-                      className="mt-1 h-10 w-32 rounded-lg border-2  border-slate-500 bg-zinc-800 outline-none  px-3"
+                      className="mt-1 h-10 w-32 rounded-lg  bg-zinc-800 outline-none  px-3"
                     >
                       <option disabled value="---">
                         ---
@@ -801,6 +835,61 @@ export default function BookedOrdersModal({
                       })}
                     </select>
                   )}
+
+                  {
+                    // TCS Cities
+                    bookOptions.courier_type === "TCS" && (
+                      <select
+                        onChange={(e) => {
+                          const newOrders = editedOrders.map((ord) => {
+                            if (ord.name === order.name) {
+                              return {
+                                ...ord,
+                                correct_city: TCS_CITIES.find(
+                                  (city) =>
+                                    removeSpecialCharacter(
+                                      city.cityName
+                                    ).toLowerCase() ===
+                                    removeSpecialCharacter(
+                                      e.target.value
+                                    ).toLowerCase()
+                                ),
+                              };
+                            } else {
+                              return ord;
+                            }
+                          });
+                          console.log("Changed Orders (TCS): ", newOrders);
+                          setEditedOrders(newOrders);
+                        }}
+                        value={
+                          order.correct_city &&
+                          order.correct_city.cityName &&
+                          removeSpecialCharacter(
+                            order.correct_city.cityName
+                          ).toLowerCase()
+                        }
+                        className="mt-1 h-10 w-32 rounded-lg border-slate-500 bg-zinc-800 outline-none border-0 px-3"
+                      >
+                        <option value="---">---</option>
+
+                        {TCS_CITIES.map((city) => {
+                          return (
+                            <option
+                              key={city.cityID}
+                              name={city.cityName}
+                              id={city.cityID}
+                              value={removeSpecialCharacter(
+                                city.cityName
+                              ).toLowerCase()}
+                            >
+                              {city.cityName}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    )
+                  }
                 </li>
                 <li className="flex items-center col-span-2 justify-center transition-all text-slate-300">
                   {bookOptions.courier_type === "" && (
@@ -859,6 +948,67 @@ export default function BookedOrdersModal({
                             </option>
                           );
                         })}
+                    </select>
+                  )}
+
+                  {bookOptions.courier_type === "TCS" && (
+                    <select
+                      onChange={(e) => {
+                        const newOrders = editedOrders.map((ord) => {
+                          if (ord.id === order.id) {
+                            return {
+                              ...ord,
+                              service_type: e.target.value,
+                            };
+                          } else {
+                            return ord;
+                          }
+                        });
+                        console.log("new Order:", newOrders);
+                        setEditedOrders(newOrders);
+                      }}
+                      value={order.service_type}
+                      // value={
+                      //   order.service_type.slice(0, 1) +
+                      //   order.service_type.slice(1).toLowerCase()
+                      // }
+                      className="mt-1 h-10 w-32 rounded-lg border-slate-500 bg-zinc-800 outline-none border-0 px-3 text-base"
+                    >
+                      {
+                        <>
+                          <option
+                            className="bg-black text-blue-500"
+                            value="Express"
+                          >
+                            Express
+                          </option>
+                          <option
+                            className="bg-black text-blue-500"
+                            value="Economy-Express"
+                          >
+                            Economy Express
+                          </option>
+                          <option
+                            className="bg-black text-blue-500"
+                            value="Overland"
+                          >
+                            Overland
+                          </option>
+                        </>
+                      }
+
+                      {/* {order.correct_city && (
+                        <option
+                          value={
+                            order.service_type.slice(0, 1) +
+                            order.service_type.slice(1).toLowerCase()
+                          }
+                        >
+                          {order.service_type}
+                        </option>
+                      )} */}
+
+                      {}
                     </select>
                   )}
                 </li>

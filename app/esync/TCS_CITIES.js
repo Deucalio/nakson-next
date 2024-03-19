@@ -3523,17 +3523,17 @@ let TCS_CITIES = [
   },
 ];
 
-TCS_CITIES.sort((a, b) => {
-  const nameA = a.cityName.toLowerCase();
-  const nameB = b.cityName.toLowerCase();
+// TCS_CITIES.sort((a, b) => {
+//   const nameA = a.cityName.toLowerCase();
+//   const nameB = b.cityName.toLowerCase();
 
-  if (nameA < nameB) {
-    return -1;
-  }
-  if (nameA > nameB) {
-    return 1;
-  }
-  return 0;
-});
+//   if (nameA < nameB) {
+//     return -1;
+//   }
+//   if (nameA > nameB) {
+//     return 1;
+//   }
+//   return 0;
+// });
 
 export default TCS_CITIES;

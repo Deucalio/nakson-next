@@ -11,7 +11,7 @@ async function fetchPdfBytes(url) {
   const pdfBytes = await response.arrayBuffer();
   return pdfBytes;
 }
-async function generateCusotmizedSlip(slipData) {
+async function generateCusotmizedSlip(slipData, courier) {
   // {
   //   shop_name: 'Momdaughts',
   //   shop_logo: 'https://momdaughts.com/cdn/shop/files/shapater_logo.png?v=1666980932&width=500',
@@ -116,8 +116,13 @@ async function generateCusotmizedSlip(slipData) {
   // const height1 = mergedPdfDoc.getPage(0).getHeight();
   // const width1 = mergedPdfDoc.getPage(0).getWidth();
   // console.log("page height: ", height1);
+  let courierLogo = "";
 
-  let courierLogo = await fetchPdfBytes("https://i.imgur.com/GXyWx1J.png");
+  if (courier === "leopards") {
+    courierLogo = await fetchPdfBytes("https://i.imgur.com/GXyWx1J.png");
+  } else if (courier === "tcs") {
+    courierLogo = await fetchPdfBytes("https://i.imgur.com/oLzX6zv.png");
+  }
 
   for (let order of slipData) {
     if (order.consignee_info.address.length <= 74) {

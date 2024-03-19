@@ -341,9 +341,9 @@ export default function Home() {
       </div>
 
       <section
-      key={filterData && filterData.length}
+        key={filterData && filterData.length}
         ref={pageElement}
-        className={`relative transition-all duration-700 container mx-auto mt-24 border-rose-400 border-2 p-4 col-span-5 h-[85vh] ${
+        className={`relative transition-all duration-700 container mx-auto mt-24  p-4 col-span-5 h-[85vh] ${
           showBookedOrdersModal
             ? "overflow-y-hidden"
             : openSidebar === true
@@ -419,11 +419,16 @@ export default function Home() {
                     onClick={(e) => {
                       console.log("filterData: ", filterData);
                       const lastUl = e.target.children[9];
-                      e.target.classList.toggle("bg-zinc-900");
-                      lastUl.classList.toggle("max-h-32");
-                      lastUl.classList.toggle("m-4");
-                      lastUl.classList.toggle("p-16");
-                      lastUl.classList.toggle("border");
+                      if (lastUl) {
+                        if (!lastUl.classList.contains("max-h-0")) {
+                          return;
+                        }
+                        e.target.classList.toggle("bg-zinc-900");
+                        lastUl.classList.toggle("max-h-32");
+                        lastUl.classList.toggle("m-4");
+                        lastUl.classList.toggle("p-16");
+                        lastUl.classList.toggle("border");
+                      }
                     }}
                     key={order.id}
                     className={`md:mx-auto grid w-[63rem]  text-white mt-4 cursor-pointer grid-cols-12 max-h-full items-center rounded-sm transition-all duration-500 hover:bg-zinc-900
