@@ -64,6 +64,28 @@ export default function Page() {
     setUser(user);
   };
 
+  // Daewoo State and Refs
+  const [openDaewooModal, setOpenDaewooModal] = useState(false);
+  const [daewooInfo, setDaewooInfo] = useState({
+    apiKey: "",
+    apiUser: "",
+    apiPassword: "",
+  });
+
+  const [showConnectedDaewooAccount, setShowConnectedDaewooAccount] =
+    useState(false);
+  const [daewooAccounts, setDaewooAccounts] = useState(null);
+
+  const getDaewooAccounts = async () => {
+    alert("sad");
+  };
+
+  const connectDaewooAccount = async () => {
+    alert("Eww");
+  };
+
+  // _____________
+
   // TCS State and Refs
   const [openTCSModal, setOpenTCSModal] = useState(false);
   const [tcsInfo, setTCSInfo] = useState({
@@ -457,7 +479,9 @@ export default function Page() {
           openLeopardsModal ||
           showConnectedLeopardsAccount ||
           openTCSModal ||
-          showConnectedTCSAccount
+          showConnectedTCSAccount ||
+          openDaewooModal ||
+          showConnectedDaewooAccount
             ? ["blur-sm", "pointer-events-none"].join(" ")
             : ""
         }`}
@@ -756,9 +780,9 @@ export default function Page() {
                   </ul>
                 </div>
 
-                <div className=" p-4 border-gray-700 bg-slate-900 rounded-2xl col-span-4">
-                  <ul className="flex flex-col  gap-2  py-2 w-full items-center ">
-                    <li className="flex flex-row gap-3 items-center">
+                <div className="px-8 py-6 border-gray-700 bg-slate-900 rounded-2xl col-span-3 flex flex-col gap-4">
+                  <ul className="flex flex-col  gap-2  py-2 w-full ">
+                    <li className="flex flex-row gap-3">
                       <Image
                         className="h-full rounded-lg"
                         width={75}
@@ -773,7 +797,7 @@ export default function Page() {
                         Show Connected Accounts
                       </button>
                     </li>
-                    <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
+                    <li className="text-sm text-gray-100 flex flex-col  gap-2">
                       <p>
                         To connect your Leopards Account,{" "}
                         <span
@@ -785,8 +809,8 @@ export default function Page() {
                       </p>
                     </li>
                   </ul>
-                  <ul className="flex flex-col  gap-2  py-2 w-full items-center ">
-                    <li className="flex flex-row gap-3 items-center">
+                  <ul className="flex flex-col  gap-2  py-2 w-full ">
+                    <li className="flex flex-row gap-3">
                       <Image
                         className="h-full rounded-lg"
                         width={75}
@@ -802,7 +826,7 @@ export default function Page() {
                         Show Connected Accounts
                       </button>
                     </li>
-                    <li className="text-sm text-gray-100 flex flex-col items-center gap-2">
+                    <li className="text-sm text-gray-100 flex flex-col gap-2">
                       <p>
                         To connect your TCS Account,{" "}
                         <span
@@ -810,6 +834,39 @@ export default function Page() {
                             setOpenTCSModal(true);
                           }}
                           className="   border-opacity-25 py-2  text-red-700 transition-all hover:text-red-800 cursor-pointer"
+                        >
+                          Click Here
+                        </span>
+                      </p>
+                    </li>
+                  </ul>
+
+                  {/* Daewoo Express */}
+                  <ul className="flex flex-col  gap-2  py-2 w-full ">
+                    <li className="flex flex-row gap-3">
+                      <Image
+                        className="h-full rounded-lg"
+                        width={150}
+                        height={150}
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Daewoo_logo.svg/2560px-Daewoo_logo.svg.png"
+                        alt="Daewoo Logo"
+                      />
+
+                      <button
+                        onClick={() => getDaewooAccounts()}
+                        className="bg-blue-700 hover:bg-blue-800 transition-all text-xs p-2 rounded-md h-8 self-center  "
+                      >
+                        Show Connected Accounts
+                      </button>
+                    </li>
+                    <li className="text-sm text-gray-100 flex flex-col  gap-2">
+                      <p>
+                        To connect your Daewoo Express Account,{" "}
+                        <span
+                          onClick={() => {
+                            setOpenDaewooModal(true);
+                          }}
+                          className="   border-opacity-25 py-2  text-blue-700 transition-all hover:text-blue-800 cursor-pointer"
                         >
                           Click Here
                         </span>
@@ -987,6 +1044,84 @@ export default function Page() {
               disabled={isLoading}
               onClick={connectTCSAccount}
               className="py-3 px-8 disabled:opacity-50 disabled:pointer-events-none rounded-lg bg-rose-700 transition-all hover:bg-rose-800"
+            >
+              {isLoading ? "Adding your Account..." : "Add Account"}
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      {/* DAEWOO MODAL */}
+      <div
+        className={`z-50 absolute overflow-y-auto top-24  flex h-[28rem] items-center w-[40rem] flex-col  rounded-md border border-indigo-600 border-opacity-40 bg-black p-2 text-white transition-all duration-300 md:left-1/3 
+      md:-translate-x-11 ${
+        openDaewooModal ? "" : ["opacity-0", "pointer-events-none"].join(" ")
+      }   `}
+      >
+        <svg
+          onClick={() => {
+            setDaewooInfo({ apiKey: "", apiUser: "", apiPassword: "" });
+            setOpenDaewooModal(false);
+          }}
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          className={`h-9 ${isLoading && "pointer-events-none"} 
+           cursor-pointer w-9 bg-black text-red-600 hover:text-red-800 transition-all absolute right-3 top-2 rounded-md`}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18 18 6M6 6l12 12"
+          />
+        </svg>
+        <ul className="relative mx-auto mt-10 flex h-fit w-[36rem] flex-col gap-2 px-3 py-6">
+          <li class="mx-auto">
+            <Image
+              className="h-full rounded-lg "
+              width={150}
+              height={150}
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Daewoo_logo.svg/2560px-Daewoo_logo.svg.png"
+              alt="Daewoo Logo"
+            />
+          </li>
+          <li className="my-4 gap-8 p-2 text-sm flex flex-col items-center ">
+            <input
+              className="w-2/4 bg-black text-slate-200 py-2 border-blue-800 border-opacity-40 border px-3 rounded-md outline-none outline placeholder:opacity-70 focus:outline-0"
+              placeholder="API Key: "
+              type="text"
+              name="apiKey"
+              value={tcsInfo.apiKey}
+              onChange={(e) =>
+                setDaewooInfo({ ...daewooInfo, apiKey: e.target.value })
+              }
+            />
+            <input
+              className="w-2/4 bg-black text-slate-200 py-2 border-blue-800 border-opacity-40 border px-3 rounded-md outline-none outline placeholder:opacity-70 focus:outline-0"
+              placeholder="API User: "
+              type="text"
+              name="apiUser"
+              value={daewooInfo.apiUser}
+              onChange={(e) =>
+                setDaewooInfo({ ...daewooInfo, apiUser: e.target.value })
+              }
+            />
+
+            <input
+              name="apiPassword"
+              value={tcsInfo.password}
+              onChange={(e) =>
+                setDaewooInfo({ ...daewooInfo, apiPassword: e.target.value })
+              }
+              className="w-2/4 bg-black text-slate-200 py-2 border-blue-800 border-opacity-40 border px-3 rounded-md outline-none outline placeholder:opacity-70 focus:outline-0"
+              placeholder="API Password: "
+              type="password"
+            />
+            <button
+              disabled={isLoading}
+              onClick={connectDaewooAccount}
+              className="py-3 px-8 disabled:opacity-50 disabled:pointer-events-none rounded-lg bg-indigo-700 transition-all hover:bg-indigo-800"
             >
               {isLoading ? "Adding your Account..." : "Add Account"}
             </button>
@@ -1808,37 +1943,12 @@ export default function Page() {
 
       {/* _____________ */}
 
-      <div className="absolute z-10 border-2 border-indigo-700 top-16 left-1/3 h-[28rem] w-[35rem] hidden ">
-        <div>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleCrop(URL.createObjectURL(e.target.files[0]))}
-          />
-
-          {croppedImage && (
-            <button onClick={() => setCroppedImage(null)}>
-              Clear Cropped Image
-            </button>
-          )}
-          {croppedImage && (
-            <ImageCropper imageSrc={croppedImage} onCrop={handleCrop} />
-          )}
-
-          <div className="p-4">
-            {croppedImage && (
-              <div className="h-36 w-36 bg-white border-2 rounded-md">
-                <img
-                  className="h-32 w-32"
-                  src={croppedImage}
-                  alt="Cropped Image"
-                />
-              </div>
-            )}
-            {croppedImage && <p>Cropped Image Preview</p>}
-          </div>
-        </div>
-      </div>
+      <div
+        className={`
+      absolute inset-0 bg-black opacity-50 z-10
+        ${openDaewooModal ? "" : "hidden"}
+      `}
+      ></div>
 
       <Notification
         label={label}

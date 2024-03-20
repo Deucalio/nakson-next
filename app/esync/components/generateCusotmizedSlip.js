@@ -6,6 +6,25 @@ import axios from "axios";
 import BwipJs from "bwip-js";
 // import { fontKit } from "@pdf-lib/fontkit/fontkit";
 
+function calculateDimensions(width, height) {
+  const availableWidth = 100;
+  const availableHeight = 100;
+
+  const aspectRatio = width / height;
+
+  if (width > height) {
+    return { width: availableWidth, height: availableWidth / aspectRatio };
+  } else if (height > width) {
+    return { width: availableHeight * aspectRatio, height: availableHeight };
+  }
+}
+
+function stringToBase64(str) {
+  // Using btoa() to convert string to Base64
+  const base64String = btoa(str);
+  return base64String;
+}
+
 async function fetchPdfBytes(url) {
   const response = await fetch(url);
   const pdfBytes = await response.arrayBuffer();
@@ -138,7 +157,8 @@ async function generateCusotmizedSlip(slipData, courier) {
 
     // console.log("address width: ", addressWidth);
     // console.log("address height: ", addressHeight);
-    const page = mergedPdfDoc.addPage([595, 305 + addressHeight - 35]);
+    const page = mergedPdfDoc.addPage([595, 375 + addressHeight]);
+    // - 35
 
     const { width, height } = page.getSize();
 
@@ -155,21 +175,55 @@ async function generateCusotmizedSlip(slipData, courier) {
       } catch (e) {
         console.log("Error Fetching Bytes for QRCode: ", e);
       }
+      const logoBytes = await fetchPdfBytes(order.shop_logo);
 
       const courierImage = await mergedPdfDoc.embedPng(courierLogo);
+      const logoImage = await mergedPdfDoc.embedPng(logoBytes);
+
+      const courierImageDimensions = calculateDimensions(
+        courierImage.width,
+        courierImage.height
+      );
+      const logoImageDimensions = calculateDimensions(
+        logoImage.width,
+        logoImage.height
+      );
+
+      console.log("courierImageDimensions: ", courierImageDimensions);
+      console.log("logoImageDimensions: ", logoImageDimensions);
+
+      // Find
+
+      page.drawImage(logoImage, {
+        x: 14,
+        y: 273 + addressHeight,
+        width: logoImageDimensions.width,
+        height: logoImageDimensions.height,
+      });
 
       page.drawImage(courierImage, {
-        x: 470,
-        y: 210 + addressHeight,
-        width: 100,
-        height: 30,
+        x: 480,
+        y: 273 + addressHeight,
+        width: courierImageDimensions.width,
+        height: courierImageDimensions.height,
+      });
+
+      // Rectangle
+      page.drawRectangle({
+        x: 1,
+        y: 1,
+        width: 591,
+        height: 371 + addressHeight,
+        borderWidth: 2,
+        opacity: 0,
+        borderOpacity: 1,
       });
 
       const qrCodeImage = await mergedPdfDoc.embedPng(qrCodeBytes);
       // add qr code
       page.drawImage(qrCodeImage, {
         x: 253,
-        y: 80 + addressHeight,
+        y: 90 + addressHeight,
         width: 90,
         height: 90,
       });
@@ -194,20 +248,9 @@ async function generateCusotmizedSlip(slipData, courier) {
       // // add barcode
       page.drawImage(barcodeImg, {
         x: (width - 270) / 2,
-        y: 176 + addressHeight,
+        y: 273 + addressHeight,
         width: 270,
         height: 40,
-      });
-
-      // Logo Image
-      const logoBytes = await fetchPdfBytes(order.shop_logo);
-
-      const logoImage = await mergedPdfDoc.embedPng(logoBytes);
-      page.drawImage(logoImage, {
-        x: 14,
-        y: 210 + addressHeight,
-        width: 100,
-        height: 50,
       });
 
       // use the images folder to store the images
@@ -231,7 +274,7 @@ async function generateCusotmizedSlip(slipData, courier) {
         (width -
           Math.ceil(fontinBoldUse.widthOfTextAtSize(order.service_type, 28))) /
         2,
-      y: 241 + addressHeight,
+      y: 251 + addressHeight + 87,
     });
     // COD OR NON COD
     page.drawText(order.collectType, {
@@ -241,7 +284,7 @@ async function generateCusotmizedSlip(slipData, courier) {
         (width -
           Math.ceil(fontinBoldUse.widthOfTextAtSize(order.collectType, 10))) /
         2,
-      y: 226 + addressHeight,
+      y: 236 + addressHeight + 87,
     });
 
     // page.drawRectangle({
@@ -256,44 +299,45 @@ async function generateCusotmizedSlip(slipData, courier) {
 
     page.drawRectangle({
       x: 14,
-      y: 7,
+      y: 17,
       width: 566,
       height: 166 + addressHeight,
       borderWidth: 2.5,
       opacity: 0,
       borderOpacity: 1,
     });
+    // START FORM HERE
 
     page.drawSquare({
       x: (width - 100) / 2,
-      y: 108 + addressHeight - 35,
+      y: 128 + addressHeight - 35,
       borderWidth: 1.5,
       size: 100,
       opacity: 0,
     });
 
     page.drawLine({
-      start: { x: (width - 1.5) / 2, y: 108 + addressHeight - 35 },
-      end: { x: (width - 1.5) / 2, y: 35 },
+      start: { x: (width - 1.5) / 2, y: 128 + addressHeight - 35 },
+      end: { x: (width - 1.5) / 2, y: 55 },
       thickness: 1,
     });
 
     page.drawLine({
-      start: { x: 14, y: 35 },
-      end: { x: 14 + 565, y: 35 },
+      start: { x: 14, y: 55 },
+      end: { x: 14 + 565, y: 55 },
       thickness: 1.5,
     });
 
     page.drawLine({
-      start: { x: 399, y: 35 },
-      end: { x: 399, y: 7 },
+      start: { x: 399, y: 55 },
+      end: { x: 399, y: 27 },
       thickness: 1,
     });
 
     // Shipper Information Line (below Contact#)
     page.drawLine({
-      start: { x: 354, y: 75 + addressHeight },
-      end: { x: 574, y: 75 + addressHeight },
+      start: { x: 354, y: 95 + addressHeight },
+      end: { x: 574, y: 95 + addressHeight },
       thickness: 1,
     });
 
@@ -302,27 +346,27 @@ async function generateCusotmizedSlip(slipData, courier) {
       font: fontinBoldUse,
       size: 16,
       x: 20,
-      y: 191 + addressHeight - 35,
+      y: 211 + addressHeight - 35,
     });
 
     page.drawText("Name:", {
       font: fontinBoldUse,
       size: 10,
       x: 20,
-      y: 170 + addressHeight - 35,
+      y: 190 + addressHeight - 35,
     });
     page.drawText(order.consignee_info.name, {
       font: fontInUse,
       x: 75,
       size: 9,
-      y: 170 + addressHeight - 35,
+      y: 190 + addressHeight - 35,
     });
 
     page.drawText("Address:", {
       font: fontinBoldUse,
       size: 10,
       x: 20,
-      y: 155 + addressHeight - 35,
+      y: 175 + addressHeight - 35,
     });
     page.drawText(order.consignee_info.address, {
       font: fontInUse,
@@ -330,27 +374,27 @@ async function generateCusotmizedSlip(slipData, courier) {
       size: 9,
       lineHeight: addressLineHeight,
       maxWidth: addressMaxWidth,
-      y: 155 + addressHeight - 35,
+      y: 175 + addressHeight - 35,
     });
 
     page.drawText("Contact:", {
       font: fontinBoldUse,
       size: 10,
       x: 20,
-      y: 118,
+      y: 138,
     });
 
     page.drawText(order.consignee_info.phone, {
       font: fontInUse,
       x: 75,
       size: 9,
-      y: 118,
+      y: 138,
     });
 
     // Line
     page.drawLine({
-      start: { x: 20, y: 113 },
-      end: { x: 238, y: 113 },
+      start: { x: 20, y: 133 },
+      end: { x: 238, y: 133 },
       thickness: 1,
     });
 
@@ -359,14 +403,14 @@ async function generateCusotmizedSlip(slipData, courier) {
       font: fontinBoldUse,
       size: 10,
       x: 20,
-      y: 100,
+      y: 120,
     });
     page.drawText(order.shipping_instructions, {
       font: fontInUse,
       x: 75,
       size: 9,
       maxWidth: addressMaxWidth, //170
-      y: 100,
+      y: 120,
     });
 
     // Shipper Information
@@ -374,20 +418,20 @@ async function generateCusotmizedSlip(slipData, courier) {
       font: fontinBoldUse,
       size: 16,
       x: 354,
-      y: 191 + addressHeight - 35,
+      y: 211 + addressHeight - 35,
     });
 
     page.drawText("Name:", {
       font: fontInUse,
       size: 10,
       x: 354,
-      y: 170 + addressHeight - 35,
+      y: 190 + addressHeight - 35,
     });
     page.drawText(order.shipper_info.name, {
       font: fontInUse,
       x: 409,
       size: 9,
-      y: 170 + addressHeight - 35,
+      y: 190 + addressHeight - 35,
     });
 
     page.drawText("Address:", {
@@ -395,7 +439,7 @@ async function generateCusotmizedSlip(slipData, courier) {
       size: 10,
       x: 354,
       maxWidth: addressMaxWidth,
-      y: 155 + addressHeight - 35,
+      y: 175 + addressHeight - 35,
     });
     page.drawText(order.shipper_info.address.slice(0, 200), {
       font: fontInUse,
@@ -403,20 +447,20 @@ async function generateCusotmizedSlip(slipData, courier) {
       size: 9,
       lineHeight: addressLineHeight,
       maxWidth: addressMaxWidth,
-      y: 155 + addressHeight - 35,
+      y: 175 + addressHeight - 35,
     });
 
     page.drawText("Contact:", {
       font: fontInUse,
       size: 10,
       x: 354,
-      y: 115 + addressHeight - 35,
+      y: 135 + addressHeight - 35,
     });
     page.drawText(order.shipper_info.phone, {
       font: fontInUse,
       x: 409,
       size: 9,
-      y: 115 + addressHeight - 35,
+      y: 135 + addressHeight - 35,
     });
 
     // Destination
@@ -424,14 +468,14 @@ async function generateCusotmizedSlip(slipData, courier) {
       font: fontinBoldUse,
       size: 18,
       x: 20,
-      y: 14,
+      y: 34,
     });
 
     page.drawText(order.destination.name, {
       font: fontinBoldUse,
       size: 16,
       x: 146,
-      y: 14,
+      y: 34,
     });
 
     // RS
@@ -443,52 +487,52 @@ async function generateCusotmizedSlip(slipData, courier) {
       font: Impact,
       size: 28,
       x: 396 + (181 - amountWidth),
-      y: 9,
+      y: 29,
     });
 
     // Tracking #, Date, Pieces and Weight
     page.drawText("Tracking #:", {
       size: 10,
       x: 301,
-      y: 97 + addressHeight - 35,
+      y: 117 + addressHeight - 35,
     });
     page.drawText(order.track_number, {
       size: 10,
       x: 354,
-      y: 97 + addressHeight - 35,
+      y: 117 + addressHeight - 35,
     });
 
     page.drawText("Date:", {
       size: 10,
       x: 301,
-      y: 85 + addressHeight - 35,
+      y: 105 + addressHeight - 35,
     });
     page.drawText(order.date, {
       size: 10,
       x: 354,
-      y: 85 + addressHeight - 35,
+      y: 105 + addressHeight - 35,
     });
 
     page.drawText("Pieces:", {
       size: 10,
       x: 301,
-      y: 73 + addressHeight - 35,
+      y: 93 + addressHeight - 35,
     });
     page.drawText(String(order.pieces), {
       size: 10,
       x: 354,
-      y: 73 + addressHeight - 35,
+      y: 93 + addressHeight - 35,
     });
 
     page.drawText("Weight:", {
       size: 10,
       x: 301,
-      y: 61 + addressHeight - 35,
+      y: 81 + addressHeight - 35,
     });
     page.drawText(String(order.weight), {
       size: 10,
       x: 354,
-      y: 61 + addressHeight - 35,
+      y: 81 + addressHeight - 35,
     });
 
     // Order Name
@@ -498,7 +542,7 @@ async function generateCusotmizedSlip(slipData, courier) {
     page.drawText(order.booked_packet_order_name, {
       size: 18,
       x: 15 + 566 - orderNameWidth,
-      y: 40,
+      y: 60,
     });
   }
 
