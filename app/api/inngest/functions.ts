@@ -1,6 +1,6 @@
 import { inngest } from "./client";
 import axios from "axios";
-import { bookTCSOrders } from "../courier/tcs/functions"
+import TCS_CITIES from "../../esync/TCS_CITIES";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -156,6 +156,10 @@ export const fulfillOrders = inngest.createFunction(
 // _________________________ TCS
 
 
+const bookTCSOrders = async (data) => {
+  await sleep(5000); // Sleep for 5 seconds
+  return "Sad";
+};
 
 
 export const bookOrders = inngest.createFunction(

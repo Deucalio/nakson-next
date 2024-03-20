@@ -1,5 +1,3 @@
-import TCS_CITIES from "../../../esync/TCS_CITIES";
-
 const bookTCSOrders = async (data) => {
   return "Sad";
 
