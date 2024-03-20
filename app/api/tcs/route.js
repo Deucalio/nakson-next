@@ -7,7 +7,7 @@ export async function GET(request) {
   // but if the request is from the production server, we will return the server URL as the production server
   const prisma = new PrismaClient();
 
-  const user = prisma.user.findMany();
+  const user = await prisma.user.findMany();
   console.log("user", user);
 
   return Response.json({
