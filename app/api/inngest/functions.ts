@@ -177,13 +177,30 @@ export const bookOrders = inngest.createFunction(
         orders,
         user
       }
-      const res = await bookTCSOrders(data)
       const id = Math.floor(Math.random() * 1000)
-      console.log("res", res)
+
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      const raw = JSON.stringify({
+        id,
+        email: "zyc@gmail.com",
+        data: data.orders
+      });
+
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
+      const backendRes = await fetch("https://esync-backend.vercel.app/tcs/booked-orders", requestOptions)
 
 
       return "Booked Orders"
     })
+    console.log("bookOrders", bookOrders)
 
     return { event };
   });
