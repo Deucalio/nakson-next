@@ -780,7 +780,7 @@ export default function Page() {
                   </ul>
                 </div>
 
-                <div className="px-8 py-6 border-gray-700 bg-slate-900 rounded-2xl col-span-3 flex flex-col gap-4">
+                <div className="px-8 py-6 border-gray-700 bg-slate-900 rounded-2xl col-span-4 mr-16 flex flex-col gap-4">
                   <ul className="flex flex-col  gap-2  py-2 w-full ">
                     <li className="flex flex-row gap-3">
                       <Image
@@ -1053,8 +1053,8 @@ export default function Page() {
 
       {/* DAEWOO MODAL */}
       <div
-        className={`z-50 absolute overflow-y-auto top-24  flex h-[28rem] items-center w-[40rem] flex-col  rounded-md border border-indigo-600 border-opacity-40 bg-black p-2 text-white transition-all duration-300 md:left-1/3 
-      md:-translate-x-11 ${
+        className={`z-50 absolute overflow-y-auto top-24  flex h-[28rem] items-center w-[40rem] flex-col  rounded-md border border-indigo-600 border-opacity-40 bg-black p-2 text-white transition-all duration-300 md:left-1/2 
+      md:-translate-x-1/2 ${
         openDaewooModal ? "" : ["opacity-0", "pointer-events-none"].join(" ")
       }   `}
       >
@@ -1092,7 +1092,7 @@ export default function Page() {
               placeholder="API Key: "
               type="text"
               name="apiKey"
-              value={tcsInfo.apiKey}
+              value={daewooInfo.apiKey}
               onChange={(e) =>
                 setDaewooInfo({ ...daewooInfo, apiKey: e.target.value })
               }
@@ -1110,7 +1110,7 @@ export default function Page() {
 
             <input
               name="apiPassword"
-              value={tcsInfo.password}
+              value={daewooInfo.apiPassword}
               onChange={(e) =>
                 setDaewooInfo({ ...daewooInfo, apiPassword: e.target.value })
               }

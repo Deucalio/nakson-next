@@ -1,5 +1,7 @@
 import { inngest } from "./client";
 import axios from "axios";
+import { bookTCSOrders } from "../courier/tcs/functions"
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -147,4 +149,39 @@ export const fulfillOrders = inngest.createFunction(
 
 
     // return { event, fulfilledOrders: fulfilledOrders, totalOrders: ordersData.length };
+  });
+
+
+
+// _________________________ TCS
+
+
+
+
+export const bookOrders = inngest.createFunction(
+  { id: "tcs-book-orders" },
+  { event: "test/tcsbook.orders" },
+
+  async ({ event, step }) => {
+    const { orders, user } = event.data
+
+
+
+
+    // Using Step.run to log the progress of the function
+    const bookOrders = await step.run("tcs-book-orders", async () => {
+      // const ordersFullfillmentIDs: string[] = []; // Specify the type of the array as string[]
+      const id = Math.floor(Math.random() * 1000)
+      const data = {
+        orders,
+        user
+      }
+      const res = await bookTCSOrders(data)
+      console.log("res", res)
+
+
+      return "Booked Orders"
+    })
+
+    return { event };
   });

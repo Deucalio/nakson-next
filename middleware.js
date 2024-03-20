@@ -13,6 +13,9 @@ export default auth((req) => {
   if (req.nextUrl.pathname === "/api/shopify/fulfillorders") {
     return NextResponse.next();
   }
+  if (req.nextUrl.pathname === "/api/courier/tcs") {
+    return NextResponse.next();
+  }
 
   // If the route is /esync/checklist, let the user in
   if (req.nextUrl.pathname === "/esync/stockchecklist") {

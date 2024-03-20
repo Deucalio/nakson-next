@@ -312,7 +312,9 @@ export default function Home() {
 
       <div
         className={`transition-all duration-500 absolute top-8 left-60 translate-x-10 flex flex-row gap-5    ${
-          showBookedOrdersModal ? "blur-lg" : ""
+          showBookedOrdersModal
+            ? ["blur-lg", "pointer-events-none"].join(" ")
+            : ""
         }`}
       >
         <button

@@ -97,12 +97,12 @@ ul.MuiPagination-ul {
 
 /* span class=loader (/settings) */
 .loader {
-  width: 88px;
-  height: 88px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: inline-block;
-  border-top: 2px solid #fff;
-  border-right: 2px solid transparent;
+  border-top: 3px solid #ea530d;
+  border-right: 3px solid transparent;
   box-sizing: border-box;
   animation: rotation 1s linear infinite;
 }

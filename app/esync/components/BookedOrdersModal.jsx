@@ -5,6 +5,7 @@ import axios from "axios";
 import generateCusotmizedSlip from "./generateCusotmizedSlip";
 import { getUser } from "../actions/getUser";
 import TCS_CITIES from "../TCS_CITIES";
+import Notification from "./Notification";
 const EditModal = ({
   shipmentType,
   orderToBeEditedId,
@@ -166,6 +167,8 @@ export default function BookedOrdersModal({
   setShowBookedOrdersModal,
 }) {
   const [user, setUser] = useState({});
+
+  const [showNotification, setShowNotification] = useState(false);
 
   const saveUser = async () => {
     const user = await getUser();
@@ -364,9 +367,11 @@ export default function BookedOrdersModal({
 
   const bookOrder = async (e) => {
     e.preventDefault();
+    setIsDisable(true);
 
     if (bookOptions.courier_type === "") {
       alert("Select Courier");
+      setIsDisable(false);
       return;
     }
 
@@ -377,7 +382,6 @@ export default function BookedOrdersModal({
     // get Server URL
     const serverRes = await axios.get("/api/server-url");
     const { serverURL } = serverRes.data;
-    setIsDisable(true);
     // Start timer
     const startTime = new Date();
 
@@ -482,7 +486,7 @@ export default function BookedOrdersModal({
     <>
       <div
         ref={modal}
-        className={`absolute transition-all left-24 -mt-14 opacity-0 duration-700 top-6 -translate-y-1 -translate-x-5  z-50 mx-auto  h-[90vh] w-[30rem] overflow-auto rounded-sm border-slate-700 bg-black md:w-11/12
+        className={` absolute transition-all left-24 -mt-14 opacity-0 duration-700 top-6 -translate-y-1 -translate-x-5  z-50 mx-auto  h-[90vh] w-[30rem] overflow-auto rounded-sm border-slate-700 bg-black md:w-11/12
         border-[1px] 
         `}
       >
@@ -491,7 +495,13 @@ export default function BookedOrdersModal({
             showEditModal ? ["blur-xl", "pointer-events-none"].join(" ") : ""
           } m-4 flex flex-row transition-all duration-700 justify-around gap-2 border-b-[1px] border-slate-500 px-3 py-3`}
         >
-          <div className="flex flex-row gap-5">
+          <div
+            className={`flex flex-row gap-5 ${
+              isDisable
+                ? ["opacity-50", "pointer-events-none"].join(" ")
+                : "opacity-100"
+            } `}
+          >
             <select
               onChange={(e) => {
                 const courier = e.target.value;
@@ -651,7 +661,7 @@ export default function BookedOrdersModal({
         <div
           className={`${
             showEditModal ? ["blur-xl", "pointer-events-none"].join(" ") : ""
-          } m-4 transition-all duration-700 translate-y-5 py-4  h-2/3  overflow-y-auto scroll-smooth`}
+          } m-4 transition-all duration-700 translate-y-5 py-4  h-2/3  overflow-y-auto scroll-smooth  relative`}
         >
           {/* UNDO MODAL */}
 
@@ -666,7 +676,11 @@ export default function BookedOrdersModal({
               <p class="font-bold hover:underline cursor-pointer">Undo</p>
             </div>
           )}
-          <ul className="grid w-[60rem] grid-cols-13 font-bold text-slate-400 md:h-10 md:w-auto text-sm ">
+          <ul
+            className={`grid w-[60rem] grid-cols-13 font-bold text-slate-400 md:h-10 md:w-auto text-sm ${
+              isDisable && ["opacity-50", "pointer-events-none"].join(" ")
+            }`}
+          >
             <li className="flex items-center justify-center bg-slate-900">
               SR#
             </li>
@@ -707,7 +721,9 @@ export default function BookedOrdersModal({
                   showEditModal
                     ? ["blur-xl", "pointer-events-none"].join(" ")
                     : ""
-                } mt-5 grid w-[65rem] transition-all duration-300 grid-cols-13 rounded-lg bg-zinc-900 pb-2 text-slate-300 md:w-auto h-14 text-sm  scroll-smooth `}
+                } mt-5 grid w-[65rem] transition-all duration-300 grid-cols-13 rounded-lg bg-zinc-900 pb-2 text-slate-300 md:w-auto h-14 text-sm  scroll-smooth ${
+                  isDisable && ["opacity-50", "pointer-events-none"].join(" ")
+                } `}
               >
                 <li className="relative flex flex-row items-center justify-center transition-all ">
                   <svg
@@ -1037,8 +1053,22 @@ export default function BookedOrdersModal({
                 </li>
               </ul>
             ))}
+          <span
+            className={`loader absolute top-1/3   left-1/2
+          ${isDisable ? "opacity-100" : "opacity-0"}
+          `}
+          ></span>
         </div>
       </div>
+      {isDisable && (
+        <Notification
+          timer={20}
+          showNotification={"Order are being Booked..."}
+          setShowNotification={setShowNotification}
+          label={"Success"}
+        />
+      )}
+
       {showEditModal && (
         <EditModal
           shipmentType={shipmentType}

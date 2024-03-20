@@ -189,9 +189,6 @@ async function generateCusotmizedSlip(slipData, courier) {
         logoImage.height
       );
 
-      console.log("courierImageDimensions: ", courierImageDimensions);
-      console.log("logoImageDimensions: ", logoImageDimensions);
-
       // Find
 
       page.drawImage(logoImage, {

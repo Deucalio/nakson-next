@@ -1,16 +1,21 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-const Notification = ({ label, showNotification, setShowNotification }) => {
+const Notification = ({
+  label,
+  showNotification,
+  setShowNotification,
+  timer = 7,
+}) => {
   const notificationRef = useRef(null);
   useEffect(() => {
     let time = setTimeout(() => {
       if (notificationRef.current) {
         notificationRef.current.classList.add("opacity-0");
       }
-    }, 7000); // 7 seconds
+    }, timer * 1000); //
     let timeout = setTimeout(() => {
       setShowNotification("");
-    }, 9000); // 9 seconds
+    }, timer * 3000); //  hide after timer + 3 seconds
     return () => {
       clearTimeout(time);
       clearTimeout(timeout);
@@ -25,7 +30,7 @@ const Notification = ({ label, showNotification, setShowNotification }) => {
       }
       ${label === "Error" && ["text-red-600", "border-red-700"].join(" ")}
       
-      transition-all duration-500 text-base border-2  font-semibold absolute flex flex-row items-center gap-2 bottom-12  right-4 py-2 px-6 rounded-lg pointer-events-none
+      transition-all duration-500 text-base border-2  font-semibold absolute flex flex-row items-center gap-2 bottom-12 z-50  right-4 py-2 px-6 rounded-lg pointer-events-none
         ${showNotification ? "opacity-1" : "opacity-0"}
       `}
     >
