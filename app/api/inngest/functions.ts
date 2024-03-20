@@ -166,17 +166,15 @@ export const bookOrders = inngest.createFunction(
     const { orders, user } = event.data
 
 
-
-
     // Using Step.run to log the progress of the function
     const bookOrders = await step.run("tcs-book-orders", async () => {
       // const ordersFullfillmentIDs: string[] = []; // Specify the type of the array as string[]
-      const id = Math.floor(Math.random() * 1000)
       const data = {
         orders,
         user
       }
       const res = await bookTCSOrders(data)
+      const id = Math.floor(Math.random() * 1000)
       console.log("res", res)
 
 
