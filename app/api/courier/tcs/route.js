@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic"; // defaults to auto
-import { PrismaClient } from "../../../../prisma/generated/client";
+// import { PrismaClient } from "../../../../prisma/generated/client";
 import { inngest } from "../../inngest/client"; // Import our client
 
 const orders = [
@@ -387,17 +387,21 @@ const orders = [
 export async function GET(request) {
   // if request is from localhost, we will return the server URL as localhost
   // but if the request is from the production server, we will return the server URL as the production server
-  const prisma = new PrismaClient();
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: "subhankhanyz@gmail.com",
-    },
-    include: {
-      stores: true,
-      Courier: true,
-    },
-  });
+  // const prisma = new PrismaClient();
+
+  // const user = await prisma.user.findUnique({
+  //   where: {
+  //     email: "subhankhanyz@gmail.com",
+  //   },
+  //   include: {
+  //     stores: true,
+  //     Courier: true,
+  //   },
+  // });
+  const data = await request.json();
+  
+
 
   const func = await inngest.send({
     name: "test/tcsbook.orders",

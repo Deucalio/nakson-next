@@ -167,25 +167,19 @@ export const bookOrders = inngest.createFunction(
   { event: "test/tcsbook.orders" },
 
   async ({ event, step }) => {
-    const { orders, user } = event.data
+    const { email, orders } = event.data
 
 
     // Using Step.run to log the progress of the function
     const bookOrders = await step.run("tcs-book-orders", async () => {
       // const ordersFullfillmentIDs: string[] = []; // Specify the type of the array as string[]
-      const data = {
-        orders,
-        user
-      }
-      const id = Math.floor(Math.random() * 1000)
 
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 
       const raw = JSON.stringify({
-        id,
-        email: "zyc@gmail.com",
-        data: data.orders
+        email: email,
+        orders: orders
       });
 
       const requestOptions: RequestInit = {
@@ -195,7 +189,11 @@ export const bookOrders = inngest.createFunction(
         redirect: "follow",
       };
 
-      const backendRes = await fetch("https://esync-backend.vercel.app/tcs/booked-orders", requestOptions)
+      const backendRes = await fetch("http://localhost:4000/tcs/book", requestOptions)
+
+      const result = await backendRes.json();
+
+      console.log("result :", result)
 
 
       return "Booked Orders"

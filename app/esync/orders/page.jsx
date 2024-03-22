@@ -33,10 +33,13 @@ export default function Home() {
 
   const saveUser = async () => {
     const user = await getUser();
+    // console.log("user: ", user);
+    console.log("user", user);
     setUser(user);
   };
 
   useEffect(() => {
+    console.log("saving user:");
     saveUser();
   }, []);
 
@@ -58,6 +61,7 @@ export default function Home() {
 
   const fetchOrders = async () => {
     if (!user) return;
+
     const serverRes = await axios.get("/api/server-url");
     const { serverURL } = serverRes.data;
     const res = axios.post(`${serverURL}/orders`, {

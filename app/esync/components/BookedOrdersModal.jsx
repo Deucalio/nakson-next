@@ -172,6 +172,7 @@ export default function BookedOrdersModal({
 
   const saveUser = async () => {
     const user = await getUser();
+    console.log("user inside: ", user);
     setUser(user);
   };
 
@@ -366,8 +367,14 @@ export default function BookedOrdersModal({
   };
 
   const bookOrder = async (e) => {
+    if (!user) {
+      return alert("No User Found");
+    }
+
     e.preventDefault();
     setIsDisable(true);
+
+    console.log("user", user);
 
     if (bookOptions.courier_type === "") {
       alert("Select Courier");
@@ -382,6 +389,7 @@ export default function BookedOrdersModal({
     // get Server URL
     const serverRes = await axios.get("/api/server-url");
     const { serverURL } = serverRes.data;
+
     // Start timer
     const startTime = new Date();
 
@@ -391,7 +399,12 @@ export default function BookedOrdersModal({
       email: user.user.email,
       orders: ordersToBeBooked,
     });
-    console.log("responseOne: ", responseOne.data);
+
+    // const responseOne = await axios.post(`http://localhost:3000/api/courier/tcs`, {
+    //   email: user.user.email,
+    //   orders: ordersToBeBooked,
+    // });
+
     console.log("Downloading Slip...");
     const pdfBytes = await generateCusotmizedSlip(
       responseOne.data.booked_orders,
@@ -413,71 +426,10 @@ export default function BookedOrdersModal({
 
     const endTime = new Date();
     const timeTaken = (endTime - startTime) / 1000; // Time in seconds
-    console.log("Time Taken: ", timeTaken);
+    console.log("Time Taken to download Slip: ", timeTaken);
     setIsDisable(false);
-    console.log("fulfillOrdersData: ", responseOne.data.fulfillOrdersData);
+
     return;
-
-    return 1;
-
-    console.log("BOOKED");
-    // send req to backened to book orders
-
-    // send only those orders which are selected and have correct_city
-    const selectedOrders = editedOrders.filter(
-      (order) => order.selected && order.correct_city != undefined
-    );
-    console.log("s", selectedOrders);
-
-    // // if selected orders exceed 10 then use a loop to send 10 orders at a time
-    // if (selectedOrders.length > 100) {
-    //   let i = 0;
-    //   while (i < selectedOrders.length) {
-    //     const req = await axios
-    //       .post("http://localhost:4000/orders", {
-    //         orders: selectedOrders.slice(i, i + 100),
-    //       })
-    //       .then((res) => {
-    //         setBookedOrdersData(res.data);
-    //         let pdfBytes = Object.values(res.data.pdfBytes);
-    //         const blob = new Blob([new Uint8Array(pdfBytes)], {
-    //           type: "application/pdf",
-    //         });
-    //         const url = window.URL.createObjectURL(blob);
-    //         const a = document.createElement("a");
-    //         a.href = url;
-    //         a.download = `NEW-${i}-${
-    //           i + selectedOrders.slice(i, i + 100).length
-    //         }.pdf`; // Set the desired file name
-    //         document.body.appendChild(a);
-    //         a.click();
-    //         document.body.removeChild(a);
-    //         window.URL.revokeObjectURL(url);
-    //       });
-    //     i += 100;
-    //   }
-    //   return;
-    // }
-
-    await axios
-      .post("http://localhost:4000/orders", {
-        orders: selectedOrders,
-      })
-      .then((res) => {
-        setBookedOrdersData(res.data);
-        let pdfBytes = Object.values(res.data.pdfBytes);
-        const blob = new Blob([new Uint8Array(pdfBytes)], {
-          type: "application/pdf",
-        });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "generated-slip.pdf"; // Set the desired file name
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        // window.URL.revokeObjectURL(url);
-      });
   };
 
   // Display loading Screen if EditedOrders is empty

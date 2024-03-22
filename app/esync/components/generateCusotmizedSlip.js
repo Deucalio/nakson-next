@@ -1,15 +1,14 @@
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, cmyk } from "pdf-lib";
 import { PDFFont } from "pdf-lib";
-import { StandardFonts } from "pdf-lib";
+import { StandardFonts, rgb } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import axios from "axios";
 import BwipJs from "bwip-js";
 // import { fontKit } from "@pdf-lib/fontkit/fontkit";
 
 function calculateDimensions(width, height) {
-  const availableWidth = 100;
-  const availableHeight = 100;
-
+  const availableWidth = 110;
+  const availableHeight = 110;
   const aspectRatio = width / height;
 
   if (width > height) {
@@ -24,6 +23,39 @@ function stringToBase64(str) {
   const base64String = btoa(str);
   return base64String;
 }
+
+function base64ToString(base64Str) {
+  // Using atob() to decode Base64 string to original string
+  const originalString = atob(base64Str);
+  return originalString;
+}
+
+const generateQRCode = async (order, courier) => {
+  let qrCodeBytes = "";
+
+  if (courier === "leopards") {
+    try {
+      qrCodeBytes = await fetchPdfBytes(
+        `https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=${order.track_number},${order.order_id},${order.amount}`
+      );
+    } catch (e) {
+      console.log("Error Fetching Bytes for QRCode: ", e);
+    }
+    return qrCodeBytes;
+  } else if (courier === "tcs") {
+    try {
+      const base64Data = stringToBase64(
+        `${order.track_number}|${order.destination.city_code}${order.origin_city.city_code}|${order.amount}|${order.service_type}|${order.consignee_info.name}|${order.consignee_info.address}|${order.consignee_info.phone}`
+      );
+      qrCodeBytes = await fetchPdfBytes(
+        `https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=${order.track_number}-${order.order_id}-${order.amount}-${base64Data}`
+      );
+    } catch (e) {
+      console.log("Error Fetching Bytes for QRCode: ", e);
+    }
+    return qrCodeBytes;
+  }
+};
 
 async function fetchPdfBytes(url) {
   const response = await fetch(url);
@@ -111,11 +143,18 @@ async function generateCusotmizedSlip(slipData, courier) {
   mergedPdfDoc.registerFontkit(fontkit);
 
   //load font and embed it to pdf documentx
+  const Poppins =
+    "https://cdn.jsdelivr.net/fontsource/fonts/poppins@latest/latin-400-normal.ttf";
+  const PoppinsBold =
+    "https://cdn.jsdelivr.net/fontsource/fonts/poppins@latest/latin-700-normal.ttf ";
 
-  const OpenSans =
-    "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-400-normal.ttf";
-  const OpenSansBold =
-    "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-600-normal.ttf";
+  const OpenSans = Poppins;
+  const OpenSansBold = PoppinsBold;
+
+  // const OpenSans =
+  //   "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-400-normal.ttf";
+  // const OpenSansBold =
+  //   "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-700-normal.ttf";
 
   const BebasNeue =
     "https://cdn.jsdelivr.net/fontsource/fonts/bebas-neue@latest/latin-400-normal.ttf";
@@ -144,21 +183,22 @@ async function generateCusotmizedSlip(slipData, courier) {
   }
 
   for (let order of slipData) {
+    // order.consignee_info.address =
+    // "Lorem Ipsum  galley of type and andandandand andand  andand andand andand,Lorem Ipsum  galley of type and andandandand andand  andand andand andandLorem Ipsum  galley of type and andandandand andand  andand andand andandLorem Ipsum  galley of type and andandandand andand  andand andand andandLorem Ipsum  galley of type and andandandand andand  andand andand andandLorem Ipsum  galley of type and andandandand andand  andand andand andandLorem Ipsum  galley of type and andandandand andand  andand andand andand";
     if (order.consignee_info.address.length <= 74) {
       order.consignee_info.address = order.consignee_info.address + "      ";
     }
     const addressWidth = Math.ceil(
-      fontinBoldUse.widthOfTextAtSize(order.consignee_info.address, 9)
+      fontinBoldUse.widthOfTextAtSize(order.consignee_info.address, 10)
     );
-    const addressMaxWidth = 170;
+    const addressMaxWidth = 225;
     const addressLineHeight = 10;
     const adressNumberOfLines = Math.ceil(addressWidth / addressMaxWidth);
     const addressHeight = adressNumberOfLines * addressLineHeight;
 
     // console.log("address width: ", addressWidth);
     // console.log("address height: ", addressHeight);
-    const page = mergedPdfDoc.addPage([595, 375 + addressHeight]);
-    // - 35
+    const page = mergedPdfDoc.addPage([595, 375]);
 
     const { width, height } = page.getSize();
 
@@ -168,13 +208,8 @@ async function generateCusotmizedSlip(slipData, courier) {
     // Fetch QR Code
     let qrCodeBytes = "";
     try {
-      try {
-        qrCodeBytes = await fetchPdfBytes(
-          `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${order.track_number},${order.destination.id},${order.amount}`
-        );
-      } catch (e) {
-        console.log("Error Fetching Bytes for QRCode: ", e);
-      }
+      qrCodeBytes = await generateQRCode(order, courier);
+
       const logoBytes = await fetchPdfBytes(order.shop_logo);
 
       const courierImage = await mergedPdfDoc.embedPng(courierLogo);
@@ -192,37 +227,37 @@ async function generateCusotmizedSlip(slipData, courier) {
       // Find
 
       page.drawImage(logoImage, {
-        x: 14,
-        y: 273 + addressHeight,
+        x: 69 - logoImageDimensions.width / 2,
+        y: 315 - logoImageDimensions.height / 2,
         width: logoImageDimensions.width,
         height: logoImageDimensions.height,
       });
 
       page.drawImage(courierImage, {
-        x: 480,
-        y: 273 + addressHeight,
+        x: 526 - courierImageDimensions.width / 2,
+        y: 315 - courierImageDimensions.height / 2,
         width: courierImageDimensions.width,
         height: courierImageDimensions.height,
       });
 
       // Rectangle
-      page.drawRectangle({
-        x: 1,
-        y: 1,
-        width: 591,
-        height: 371 + addressHeight,
-        borderWidth: 2,
-        opacity: 0,
-        borderOpacity: 1,
-      });
+      // page.drawRectangle({
+      //   x: 1,
+      //   y: 1,
+      //   width: 591,
+      //   height: 371 + addressHeight,
+      //   borderWidth: 2,
+      //   opacity: 0,
+      //   borderOpacity: 1,
+      // });
 
       const qrCodeImage = await mergedPdfDoc.embedPng(qrCodeBytes);
       // add qr code
       page.drawImage(qrCodeImage, {
-        x: 253,
-        y: 90 + addressHeight,
-        width: 90,
-        height: 90,
+        x: 250.5,
+        y: 156.5,
+        width: 95,
+        height: 95,
       });
 
       // const barcode = await fetchPdfBytes(
@@ -233,6 +268,11 @@ async function generateCusotmizedSlip(slipData, courier) {
       const barcodeBuffer = await fetchPdfBytes(
         `${serverURL}/create-barcode/${order.track_number}`
       );
+
+      const barcodeBuffer_aboveRS = await fetchPdfBytes(
+        `${serverURL}/create-barcode/RS${order.amount}?key=value`
+      );
+
       // let barcodeImg = "";
       // try {
       //   barcodeImg = await mergedPdfDoc.embedPng(barcode);
@@ -241,13 +281,24 @@ async function generateCusotmizedSlip(slipData, courier) {
       // }
 
       const barcodeImg = await mergedPdfDoc.embedPng(barcodeBuffer);
+      const barcodeBuffer_aboveRSImg = await mergedPdfDoc.embedPng(
+        barcodeBuffer_aboveRS
+      );
 
       // // add barcode
       page.drawImage(barcodeImg, {
         x: (width - 270) / 2,
-        y: 273 + addressHeight,
+        y: 262,
         width: 270,
         height: 40,
+      });
+
+      // add barcode above RS
+      page.drawImage(barcodeBuffer_aboveRSImg, {
+        x: 437.42,
+        y: 52.55,
+        width: 135,
+        height: 35,
       });
 
       // use the images folder to store the images
@@ -271,7 +322,7 @@ async function generateCusotmizedSlip(slipData, courier) {
         (width -
           Math.ceil(fontinBoldUse.widthOfTextAtSize(order.service_type, 28))) /
         2,
-      y: 251 + addressHeight + 87,
+      y: 245 + 87,
     });
     // COD OR NON COD
     page.drawText(order.collectType, {
@@ -281,7 +332,7 @@ async function generateCusotmizedSlip(slipData, courier) {
         (width -
           Math.ceil(fontinBoldUse.widthOfTextAtSize(order.collectType, 10))) /
         2,
-      y: 236 + addressHeight + 87,
+      y: 230 + 87,
     });
 
     // page.drawRectangle({
@@ -296,252 +347,258 @@ async function generateCusotmizedSlip(slipData, courier) {
 
     page.drawRectangle({
       x: 14,
-      y: 17,
-      width: 566,
-      height: 166 + addressHeight,
-      borderWidth: 2.5,
+      y: 14,
+      width: 567,
+      height: 240,
+      borderWidth: 2,
       opacity: 0,
       borderOpacity: 1,
     });
     // START FORM HERE
 
-    page.drawSquare({
-      x: (width - 100) / 2,
-      y: 128 + addressHeight - 35,
+    // QR CODE Square
+    // page.drawSquare({
+    //   x: (width - 100) / 2,
+    //   y: 128 + addressHeight - 35,
+    //   borderWidth: 1.5,
+    //   size: 100,
+    //   opacity: 0,
+    // });
+
+    page.drawRectangle({
+      x: 247.7,
+      y: 50.726,
+      width: 180.9,
+      height: 103,
       borderWidth: 1.5,
-      size: 100,
       opacity: 0,
+      borderOpacity: 1,
     });
 
-    page.drawLine({
-      start: { x: (width - 1.5) / 2, y: 128 + addressHeight - 35 },
-      end: { x: (width - 1.5) / 2, y: 55 },
-      thickness: 1,
-    });
+    // _____
 
     page.drawLine({
-      start: { x: 14, y: 55 },
-      end: { x: 14 + 565, y: 55 },
+      start: { x: 428.6, y: 153.726 },
+      end: { x: 581, y: 153.726 },
       thickness: 1.5,
     });
 
     page.drawLine({
-      start: { x: 399, y: 55 },
-      end: { x: 399, y: 27 },
-      thickness: 1,
+      start: { x: 14, y: 49.78 },
+      end: { x: 250.88, y: 49.78 },
+      thickness: 1.5,
+    });
+
+    page.drawRectangle({
+      x: 247,
+      y: 14,
+      width: 182.4,
+      height: 36.726,
+      opacity: 1,
     });
 
     // Shipper Information Line (below Contact#)
-    page.drawLine({
-      start: { x: 354, y: 95 + addressHeight },
-      end: { x: 574, y: 95 + addressHeight },
-      thickness: 1,
-    });
+    // page.drawLine({
+    //   start: { x: 354, y: 95 + addressHeight },
+    //   end: { x: 574, y: 95 + addressHeight },
+    //   thickness: 1,
+    // });
 
     // Consignee Information
     page.drawText("Consignee Information", {
       font: fontinBoldUse,
       size: 16,
-      x: 20,
-      y: 211 + addressHeight - 35,
+      x: 19,
+      y: 235,
     });
 
-    page.drawText("Name:", {
-      font: fontinBoldUse,
-      size: 10,
-      x: 20,
-      y: 190 + addressHeight - 35,
-    });
+    // page.drawText("Name:", {
+    //   font: fontinBoldUse,
+    //   size: 10,
+    //   x: 20,
+    //   y: 190 + addressHeight - 35,
+    // });
     page.drawText(order.consignee_info.name, {
       font: fontInUse,
-      x: 75,
-      size: 9,
-      y: 190 + addressHeight - 35,
+      x: 19,
+      size: 12,
+      y: 213.67,
     });
 
-    page.drawText("Address:", {
-      font: fontinBoldUse,
-      size: 10,
-      x: 20,
-      y: 175 + addressHeight - 35,
-    });
+    // page.drawText("Address:", {
+    //   font: fontinBoldUse,
+    //   size: 10,
+    //   x: 20,
+    //   y: 175 + addressHeight - 35,
+    // });
+
     page.drawText(order.consignee_info.address, {
       font: fontInUse,
-      x: 75,
-      size: 9,
+      x: 19,
+      size: 10,
       lineHeight: addressLineHeight,
       maxWidth: addressMaxWidth,
-      y: 175 + addressHeight - 35,
-    });
-
-    page.drawText("Contact:", {
-      font: fontinBoldUse,
-      size: 10,
-      x: 20,
-      y: 138,
+      y: 200,
     });
 
     page.drawText(order.consignee_info.phone, {
       font: fontInUse,
-      x: 75,
+      x: 19,
       size: 9,
-      y: 138,
+      y: 152 - addressHeight + 30,
     });
 
-    // Line
-    page.drawLine({
-      start: { x: 20, y: 133 },
-      end: { x: 238, y: 133 },
-      thickness: 1,
-    });
+    // __________________
 
     // Remarks
     page.drawText("Remarks: ", {
       font: fontinBoldUse,
-      size: 10,
-      x: 20,
-      y: 120,
+      size: 14,
+      x: 247.5 + 5,
+      y: 139,
     });
-    page.drawText(order.shipping_instructions, {
+
+    page.drawText(order.shipping_instructions.slice(0, 110), {
       font: fontInUse,
-      x: 75,
-      size: 9,
-      maxWidth: addressMaxWidth, //170
-      y: 120,
+      x: 247.5 + 5,
+      size: 10,
+      maxWidth: 175,
+      y: 127.4,
     });
 
     // Shipper Information
     page.drawText("Shipper Information", {
       font: fontinBoldUse,
       size: 16,
-      x: 354,
-      y: 211 + addressHeight - 35,
+      x: 353.64,
+      y: 235,
     });
 
-    page.drawText("Name:", {
-      font: fontInUse,
-      size: 10,
-      x: 354,
-      y: 190 + addressHeight - 35,
-    });
     page.drawText(order.shipper_info.name, {
       font: fontInUse,
-      x: 409,
-      size: 9,
-      y: 190 + addressHeight - 35,
+      x: 353.64,
+      size: 12,
+      y: 213.67,
     });
 
-    page.drawText("Address:", {
+    page.drawText(order.shipper_info.address.slice(0, 60), {
       font: fontInUse,
-      size: 10,
-      x: 354,
-      maxWidth: addressMaxWidth,
-      y: 175 + addressHeight - 35,
-    });
-    page.drawText(order.shipper_info.address.slice(0, 200), {
-      font: fontInUse,
-      x: 409,
+      x: 353.64,
       size: 9,
       lineHeight: addressLineHeight,
       maxWidth: addressMaxWidth,
-      y: 175 + addressHeight - 35,
+      y: 202.86,
     });
 
-    page.drawText("Contact:", {
-      font: fontInUse,
-      size: 10,
-      x: 354,
-      y: 135 + addressHeight - 35,
-    });
     page.drawText(order.shipper_info.phone, {
       font: fontInUse,
-      x: 409,
+      x: 353.64,
       size: 9,
-      y: 135 + addressHeight - 35,
+      y: 170.75,
     });
 
-    // Destination
-    page.drawText("Destination:", {
-      font: fontinBoldUse,
-      size: 18,
-      x: 20,
-      y: 34,
-    });
+    const destinationNameWidth = Math.ceil(
+      fontinBoldUse.widthOfTextAtSize(order.destination.name, 20)
+    );
 
     page.drawText(order.destination.name, {
       font: fontinBoldUse,
-      size: 16,
-      x: 146,
-      y: 34,
+      size: 20,
+      x: 130.815 - destinationNameWidth / 2,
+      y: 24.2,
     });
 
     // RS
     let amountWidth = Math.ceil(
-      fontinBoldUse.widthOfTextAtSize("RS" + String(order.amount), 28)
+      Impact.widthOfTextAtSize("RS" + String(order.amount), 36)
     );
 
     page.drawText("RS " + String(order.amount), {
       font: Impact,
-      size: 28,
-      x: 396 + (181 - amountWidth),
-      y: 29,
+      size: 36,
+      x: 505.06 - amountWidth / 2,
+      y: 22,
     });
 
     // Tracking #, Date, Pieces and Weight
-    page.drawText("Tracking #:", {
-      size: 10,
-      x: 301,
-      y: 117 + addressHeight - 35,
+    page.drawText("Tracking: ", {
+      font: fontinBoldUse,
+      size: 11,
+      x: 434.12,
+      y: 144,
     });
     page.drawText(order.track_number, {
       size: 10,
-      x: 354,
-      y: 117 + addressHeight - 35,
+      x: 490,
+      y: 144,
     });
 
     page.drawText("Date:", {
-      size: 10,
-      x: 301,
-      y: 105 + addressHeight - 35,
+      font: fontinBoldUse,
+      size: 11,
+      x: 434.12,
+      y: 131,
     });
     page.drawText(order.date, {
       size: 10,
-      x: 354,
-      y: 105 + addressHeight - 35,
+      x: 490,
+      y: 131,
     });
 
     page.drawText("Pieces:", {
-      size: 10,
-      x: 301,
-      y: 93 + addressHeight - 35,
+      font: fontinBoldUse,
+      size: 11,
+      x: 434.12,
+      y: 118,
     });
     page.drawText(String(order.pieces), {
       size: 10,
-      x: 354,
-      y: 93 + addressHeight - 35,
+      x: 490,
+      y: 118,
     });
 
     page.drawText("Weight:", {
-      size: 10,
-      x: 301,
-      y: 81 + addressHeight - 35,
+      font: fontinBoldUse,
+      size: 11,
+      x: 434.12,
+      y: 105,
     });
     page.drawText(String(order.weight), {
       size: 10,
-      x: 354,
-      y: 81 + addressHeight - 35,
+      x: 490,
+      y: 105,
     });
 
     // Order Name
     let orderNameWidth = Math.ceil(
-      fontinBoldUse.widthOfTextAtSize(order.booked_packet_order_name, 18)
+      fontinBoldUse.widthOfTextAtSize(order.booked_packet_order_name, 24)
     );
     page.drawText(order.booked_packet_order_name, {
-      size: 18,
-      x: 15 + 566 - orderNameWidth,
-      y: 60,
+      font: fontinBoldUse,
+      size: 24,
+      x: 341 - orderNameWidth / 2,
+      y: 22.89,
+      color: cmyk(0, 0, 0, 0),
     });
   }
+
+  // (14, 2.37)
+  // (511,2.37)
+
+  page.drawText("Managed by www.nakson.services", {
+    size: 6,
+    x: 14,
+    y: 2.37,
+  });
+
+  page.drawText(
+    `UAN: ${courier === "leopards" ? "111-300-786" : "111-123-456"}`,
+    {
+      size: 6,
+      x: 14,
+      y: 2.37,
+    }
+  );
 
   mergedPdfBytes = await mergedPdfDoc.save();
   return mergedPdfBytes;
