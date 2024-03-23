@@ -201,12 +201,12 @@ const bookTCSOrders = async (data) => {
           password: booked[store].courierInfo.data.password,
         });
 
-        console.log(
-          "CN: ",
-          cn,
-          "Order Name: ",
-          booked_orders_details[counter].booked_packet_order_name
-        );
+        // console.log(
+        //   "CN: ",
+        //   cn,
+        //   "Order Name: ",
+        //   booked_orders_details[counter].booked_packet_order_name
+        // );
         booked_orders_details[counter].track_number = cn;
         counter += 1;
       } catch (e) {

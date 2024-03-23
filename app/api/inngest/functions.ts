@@ -172,7 +172,6 @@ export const bookOrders = inngest.createFunction(
 
       const bookOrder = await bookTCSOrders(event.data)
       console.log("timeTaken :", bookOrder.timeTaken)
-
       return bookOrder.dbID
     })
 
@@ -181,5 +180,5 @@ export const bookOrders = inngest.createFunction(
       console.log("myTurn")
     })
 
-    return { event, dbID: bookOrders };
+    return { event };
   });
