@@ -162,19 +162,21 @@ const EditModal = ({
 };
 
 export default function BookedOrdersModal({
+  user,
+  setUser,
   setFilterData,
   filterData: SelectedOrders,
   setShowBookedOrdersModal,
 }) {
-  const [user, setUser] = useState({});
+  // const [user, setUser] = useState({});
 
   const [showNotification, setShowNotification] = useState(false);
 
-  const saveUser = async () => {
-    const user = await getUser();
-    console.log("user inside: ", user);
-    setUser(user);
-  };
+  // const saveUser = async () => {
+  //   const user = await getUser();
+  //   console.log("user inside: ", user);
+  //   setUser(user);
+  // };
 
   const [bookedOrdersData, setBookedOrdersData] = useState([]);
 
@@ -210,7 +212,7 @@ export default function BookedOrdersModal({
   // First useEffect
   useEffect(() => {
     // Fetch User
-    saveUser();
+    // saveUser();
     // Add default property
     let newOrders = SelectedOrders.map((order) => {
       return {
@@ -367,14 +369,13 @@ export default function BookedOrdersModal({
   };
 
   const bookOrder = async (e) => {
-    if (!user) {
+    console.log("user: ", user);
+    e.preventDefault();
+    if (!user.user.email) {
       return alert("No User Found");
     }
 
-    e.preventDefault();
     setIsDisable(true);
-
-    console.log("user", user);
 
     if (bookOptions.courier_type === "") {
       alert("Select Courier");
@@ -400,10 +401,7 @@ export default function BookedOrdersModal({
       orders: ordersToBeBooked,
     });
 
-    // const responseOne = await axios.post(`http://localhost:3000/api/courier/tcs`, {
-    //   email: user.user.email,
-    //   orders: ordersToBeBooked,
-    // });
+    console.log("Response One: ", responseOne.data);
 
     console.log("Downloading Slip...");
     const pdfBytes = await generateCusotmizedSlip(

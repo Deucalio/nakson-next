@@ -628,6 +628,8 @@ export default function Home() {
       {/* MODAL */}
       {showBookedOrdersModal && (
         <BookedOrdersModal
+          user={user}
+          setUsers={setUser}
           setFilterData={setFilterData}
           filterData={filterData.filter((order) => order.selected)}
           setShowBookedOrdersModal={setShowBookedOrdersModal}

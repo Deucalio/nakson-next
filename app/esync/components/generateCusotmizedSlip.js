@@ -31,12 +31,14 @@ function base64ToString(base64Str) {
 }
 
 const generateQRCode = async (order, courier) => {
+  console.log("order: ", order);
   let qrCodeBytes = "";
 
   if (courier === "leopards") {
     try {
+      // Tracking Number, Destination City Code, Amount
       qrCodeBytes = await fetchPdfBytes(
-        `https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=${order.track_number},${order.order_id},${order.amount}`
+        `https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=${order.track_number},${order.destination.id},${order.amount}.00`
       );
     } catch (e) {
       console.log("Error Fetching Bytes for QRCode: ", e);
@@ -44,11 +46,20 @@ const generateQRCode = async (order, courier) => {
     return qrCodeBytes;
   } else if (courier === "tcs") {
     try {
-      const base64Data = stringToBase64(
-        `${order.track_number}|${order.destination.city_code}${order.origin_city.city_code}|${order.amount}|${order.service_type}|${order.consignee_info.name}|${order.consignee_info.address}|${order.consignee_info.phone}`
-      );
+      const base64Data = `${order.track_number}|${order.origin_city.city_code}${
+        order.destination.city_code
+      }|${order.amount}|${order.service_type}|${
+        order.consignee_info.name
+      }|${order.consignee_info.address.trim()},${order.destination.name}|${
+        order.consignee_info.phone
+      }`;
+
+      const encodedData = stringToBase64(base64Data);
+
+      // console.log("base64Data: ", base64Data);
+      // console.log("encodedData: ", encodedData);
       qrCodeBytes = await fetchPdfBytes(
-        `https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=${order.track_number}-${order.order_id}-${order.amount}-${base64Data}`
+        `https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=${order.track_number}-${order.origin_city.city_code}${order.destination.city_code}-${order.amount}-${encodedData}`
       );
     } catch (e) {
       console.log("Error Fetching Bytes for QRCode: ", e);
@@ -63,70 +74,6 @@ async function fetchPdfBytes(url) {
   return pdfBytes;
 }
 async function generateCusotmizedSlip(slipData, courier) {
-  // {
-  //   shop_name: 'Momdaughts',
-  //   shop_logo: 'https://momdaughts.com/cdn/shop/files/shapater_logo.png?v=1666980932&width=500',
-  //   service_type: 'OVERNIGHT',
-  //   courier: 'Leopards',
-  //   consignee_info: {
-  //     name: 'hamza asif',
-  //     address: 'Ali Muhammad Bazar Taj Pura scheme ',
-  //     phone: '3334571933'
-  //   },
-  //   shipper_info: {
-  //     name: 'MOMDAUGHTS',
-  //     address: '#30-B block E unit#6 Latifabad Hyderabad',
-  //     phone: '03320003362'
-  //   },
-  //   destination: {
-  //     id: '789',
-  //     name: 'Lahore',
-  //     shipment_type: [Array],
-  //     allow_as_origin: true,
-  //     allow_as_destination: true
-  //   },
-  //   shipping_instructions: 'Call the consignee before delivery',
-  //   date: '3/5/2024',
-  //   pieces: 1,
-  //   weight: 100,
-  //   amount: 844,
-  //   track_number: 'HD753217405',
-  //   booked_packet_order_name: '#MD4102',
-  //   collectType: 'COD Parcel'
-  // }
-  // _______________
-
-  // slipData = [
-  //   {
-  //     shop_name: "Nakson",
-  //     shop_logo:
-  //       "https://nakson.pk/cdn/shop/files/nakson_12.png?v=1671209093&width=300",
-  //     service_type: "OVERNIGHT",
-  //     courier: "Leopards",
-  //     consignee_info: {
-  //       name: "Hamad Jani",
-  //       address: "Lorem Ipsum  galley of type and andandandand andand  andand andand andand ",
-  //       phone: "03124124124",
-  //     },
-  //     shipper_info: {
-  //       name: "Nakson",
-  //       address: "172-D Nakson Office, Unit# 5 Latifabad, Hyderabad.",
-  //       phone: "03481273957",
-  //     },
-  //     destination: {
-  //       "name": "Washington DC",
-  //     },
-  //     shipping_instructions: "Call the consignee before delivery",
-  //     date: new Date().toLocaleString().split(",")[0],
-  //     pieces: "200",
-  //     weight: "100",
-  //     amount: "1000",
-  //     track_number: "HD1232131231123",
-  //     booked_packet_order_name: "Nvidia101",
-  //     collectType: "COD Parcel",
-  //   },
-  // ];
-
   const serverRes = await axios.get("/api/server-url");
   const { serverURL } = serverRes.data;
   // Current Performance:
@@ -269,9 +216,16 @@ async function generateCusotmizedSlip(slipData, courier) {
         `${serverURL}/create-barcode/${order.track_number}`
       );
 
-      const barcodeBuffer_aboveRS = await fetchPdfBytes(
-        `${serverURL}/create-barcode/RS${order.amount}?key=value`
-      );
+      let barcodeBuffer_aboveRS = "";
+      if (courier === "tcs") {
+        barcodeBuffer_aboveRS = await fetchPdfBytes(
+          `${serverURL}/create-barcode/RS${order.amount}?key=value`
+        );
+      } else if (courier === "leopards") {
+        barcodeBuffer_aboveRS = await fetchPdfBytes(
+          `${serverURL}/create-barcode/${order.amount}.00?key=value`
+        );
+      }
 
       // let barcodeImg = "";
       // try {
@@ -580,25 +534,21 @@ async function generateCusotmizedSlip(slipData, courier) {
       y: 22.89,
       color: cmyk(0, 0, 0, 0),
     });
-  }
-
-  // (14, 2.37)
-  // (511,2.37)
-
-  page.drawText("Managed by www.nakson.services", {
-    size: 6,
-    x: 14,
-    y: 2.37,
-  });
-
-  page.drawText(
-    `UAN: ${courier === "leopards" ? "111-300-786" : "111-123-456"}`,
-    {
-      size: 6,
+    page.drawText("Managed by www.nakson.services", {
+      size: 8,
       x: 14,
-      y: 2.37,
-    }
-  );
+      y: 4,
+    });
+
+    page.drawText(
+      `UAN: ${courier === "leopards" ? "111-300-786" : "111-123-456"}`,
+      {
+        size: 8,
+        x: 511,
+        y: 4,
+      }
+    );
+  }
 
   mergedPdfBytes = await mergedPdfDoc.save();
   return mergedPdfBytes;
