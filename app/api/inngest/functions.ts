@@ -165,33 +165,15 @@ export const bookOrders = inngest.createFunction(
   { event: "test/tcsbook.orders" },
 
   async ({ event, step }) => {
+    // const ordersFullfillmentIDs: string[] = []; // Specify the type of the array as string[]
 
     // Using Step.run to log the progress of the function
     const bookOrders = await step.run("tcs-book-orders", async () => {
-      // const ordersFullfillmentIDs: string[] = []; // Specify the type of the array as string[]
 
-      // const myHeaders = new Headers();
-      // myHeaders.append("Content-Type", "application/json");
-
-      // const raw = JSON.stringify({
-      //   user: user,
-      //   orders: orders,
-      //   dbID: dbID
-      // });
-
-      // const requestOptions: RequestInit = {
-      //   method: "POST",
-      //   headers: myHeaders,
-      //   body: raw,
-      //   redirect: "follow",
-      // };
-
-      // const backendRes = await fetch(`${serverURL}/tcs/book`, requestOptions)
       const bookOrder = await bookTCSOrders(event.data)
-
       console.log("timeTaken :", bookOrder.timeTaken)
 
-      return "Booked Orders"
+      return bookOrder.dbID
     })
 
     const myTurn = await step.run("my-turn", async () => {
@@ -199,5 +181,5 @@ export const bookOrders = inngest.createFunction(
       console.log("myTurn")
     })
 
-    return { event };
+    return { event, dbID: bookOrders };
   });

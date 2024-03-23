@@ -413,13 +413,12 @@ export default function BookedOrdersModal({
     const startTime = new Date();
 
     const courier = bookOptions.courier_type.toLowerCase();
-    console.log("Courier: ", courier);
 
     // Inngest API
     // Generate a ID for Database
     const id = Math.floor(Math.random() * 1000000);
     console.log("dbID: ", id);
-    const responseInngest = await axios.post(`/api/courier/tcs`, {
+    const responseInngest = await axios.post(`/api/courier/${courier}`, {
       email: user.user.email,
       orders: ordersToBeBooked,
       serverURL: serverURL,

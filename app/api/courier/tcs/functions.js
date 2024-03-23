@@ -237,11 +237,10 @@ const bookTCSOrders = async (data) => {
     }),
   });
 
-  const { backendMsg } = await backendRes.json();
+  const { message: backendMsg } = await backendRes.json();
   console.log("Backend Response: ", backendMsg);
 
   return {
-    message: "Orders are being booked",
     timeTaken: timeTaken,
     booked,
     booked_orders: booked_orders_details,
