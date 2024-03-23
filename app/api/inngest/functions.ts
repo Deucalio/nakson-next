@@ -1,6 +1,7 @@
 import { inngest } from "./client";
 import axios from "axios";
 import TCS_CITIES from "../../esync/TCS_CITIES";
+import { bookTCSOrders } from "../courier/tcs/functions"
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -156,10 +157,7 @@ export const fulfillOrders = inngest.createFunction(
 // _________________________ TCS
 
 
-const bookTCSOrders = async (data) => {
-  await sleep(5000); // Sleep for 5 seconds
-  return "Sad";
-};
+
 
 
 export const bookOrders = inngest.createFunction(
@@ -167,39 +165,36 @@ export const bookOrders = inngest.createFunction(
   { event: "test/tcsbook.orders" },
 
   async ({ event, step }) => {
-    const { email, orders, serverURL, dbID } = event.data
+    const { user, orders, serverURL, dbID } = event.data
 
 
     // Using Step.run to log the progress of the function
     const bookOrders = await step.run("tcs-book-orders", async () => {
       // const ordersFullfillmentIDs: string[] = []; // Specify the type of the array as string[]
 
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
+      // const myHeaders = new Headers();
+      // myHeaders.append("Content-Type", "application/json");
 
-      const raw = JSON.stringify({
-        email: email,
-        orders: orders,
-        dbID: dbID
-      });
+      // const raw = JSON.stringify({
+      //   user: user,
+      //   orders: orders,
+      //   dbID: dbID
+      // });
 
-      const requestOptions: RequestInit = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      };
+      // const requestOptions: RequestInit = {
+      //   method: "POST",
+      //   headers: myHeaders,
+      //   body: raw,
+      //   redirect: "follow",
+      // };
 
-      const backendRes = await fetch(`${serverURL}/tcs/book`, requestOptions)
+      // const backendRes = await fetch(`${serverURL}/tcs/book`, requestOptions)
+      const bookOrder = await bookTCSOrders(event.data)
 
-      const result = await backendRes.json();
-
-      console.log("result :", result)
-
+      console.log("bookOrder :", bookOrder)
 
       return "Booked Orders"
     })
-    console.log("bookOrders", bookOrders)
 
     return { event };
   });

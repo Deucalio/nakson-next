@@ -1,5 +1,5 @@
 const bookTCSOrders = async (data) => {
-  return "Sad";
+  return data.dbID;
 
   const ordersTrackingNumbers = [];
 
@@ -7,7 +7,7 @@ const bookTCSOrders = async (data) => {
   const start = new Date().getTime();
   // // End the timer
 
-  const { orders, user } = data;
+  const { orders, user, dbID, serverURL } = data;
   console.log("Orders: ", orders.length);
 
   const userCourier = user.Courier.filter((acc) => acc.name === "TCS");
@@ -215,12 +215,9 @@ const bookTCSOrders = async (data) => {
     }
   }
 
-  const end = new Date().getTime();
-  const timeTaken = (end - start) / 1000;
-
   //   Send the data to backend
 
-  const backendRes = await fetch("http://localhost:4000/tcs/booked-orders", {
+  const backendRes = await fetch(`${serverURL}/tcs/booked-orders`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -235,8 +232,18 @@ const bookTCSOrders = async (data) => {
 
   console.log("Backend Response: ", await backendRes.json());
 
+  const end = new Date().getTime();
+  const timeTaken = (end - start) / 1000;
+
+  console.log("Time Taken: ", timeTaken);
+
   return {
+    message: "Orders are being booked",
     timeTaken: timeTaken,
+    booked,
+    booked_orders: booked_orders_details,
+    ordersTrackingNumbers: ordersTrackingNumbers,
+    dbID: dbID,
   };
 };
 
