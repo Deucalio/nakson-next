@@ -220,25 +220,34 @@ const bookTCSOrders = async (data) => {
 
   //   Send the data to backend
 
-  const backendRes = await fetch(`${serverURL}/tcs/save-temp-data`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  const raw = JSON.stringify({
+    id: dbID,
+    email: user.email,
+    data: {
+      timeTaken: timeTaken,
+      booked,
+      slipData: booked_orders_details,
+      ordersTrackingNumbers: ordersTrackingNumbers,
     },
-    body: JSON.stringify({
-      id: dbID,
-      email: user.email,
-      data: {
-        timeTaken: timeTaken,
-        booked,
-        slipData: booked_orders_details,
-        ordersTrackingNumbers: ordersTrackingNumbers,
-      },
-    }),
   });
 
-  const { message: backendMsg } = await backendRes.json();
-  console.log("Backend Response: ", backendMsg);
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow",
+  };
+
+  const backendRes = await fetch(
+    `${serverURL}/tcs/save-temp-data`,
+    requestOptions
+  );
+
+  const backendResult = await backendRes.json();
+  console.log("backendResult: ", backendResult);
 
   return {
     timeTaken: timeTaken,
