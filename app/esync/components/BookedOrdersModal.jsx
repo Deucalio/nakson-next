@@ -174,10 +174,6 @@ export default function BookedOrdersModal({
 
   const [slipData, setSlipData] = useState([]);
 
-  const fetchSlipData = async () => {
-    // await
-  };
-
   // useEffect(() => {
   //   // If isDisable is true, and slipData is empty, then send a request to the server
   //   if (isDisable && slipData.length === 0) {
@@ -422,9 +418,7 @@ export default function BookedOrdersModal({
     // Inngest API
     // Generate a ID for Database
     const id = Math.floor(Math.random() * 1000000);
-
     console.log("dbID: ", id);
-
     const responseInngest = await axios.post(`/api/courier/tcs`, {
       email: user.user.email,
       orders: ordersToBeBooked,
