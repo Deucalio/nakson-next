@@ -1,6 +1,6 @@
-const bookTCSOrders = async (data) => {
-  return data.dbID;
+import TCS_CITIES from "../../../esync/TCS_CITIES";
 
+const bookTCSOrders = async (data) => {
   const ordersTrackingNumbers = [];
 
   // Start the timer
@@ -215,27 +215,30 @@ const bookTCSOrders = async (data) => {
     }
   }
 
+  const end = new Date().getTime();
+  const timeTaken = (end - start) / 1000;
+
   //   Send the data to backend
 
-  const backendRes = await fetch(`${serverURL}/tcs/booked-orders`, {
+  const backendRes = await fetch(`${serverURL}/tcs/save-temp-data`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      timeTaken: timeTaken,
-      booked,
-      booked_orders: booked_orders_details,
-      ordersTrackingNumbers: ordersTrackingNumbers,
+      id: dbID,
+      email: user.email,
+      data: {
+        timeTaken: timeTaken,
+        booked,
+        slipData: booked_orders_details,
+        ordersTrackingNumbers: ordersTrackingNumbers,
+      },
     }),
   });
 
-  console.log("Backend Response: ", await backendRes.json());
-
-  const end = new Date().getTime();
-  const timeTaken = (end - start) / 1000;
-
-  console.log("Time Taken: ", timeTaken);
+  const { backendMsg } = await backendRes.json();
+  console.log("Backend Response: ", backendMsg);
 
   return {
     message: "Orders are being booked",

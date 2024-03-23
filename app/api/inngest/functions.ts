@@ -165,8 +165,6 @@ export const bookOrders = inngest.createFunction(
   { event: "test/tcsbook.orders" },
 
   async ({ event, step }) => {
-    const { user, orders, serverURL, dbID } = event.data
-
 
     // Using Step.run to log the progress of the function
     const bookOrders = await step.run("tcs-book-orders", async () => {
@@ -191,9 +189,14 @@ export const bookOrders = inngest.createFunction(
       // const backendRes = await fetch(`${serverURL}/tcs/book`, requestOptions)
       const bookOrder = await bookTCSOrders(event.data)
 
-      console.log("bookOrder :", bookOrder)
+      console.log("timeTaken :", bookOrder.timeTaken)
 
       return "Booked Orders"
+    })
+
+    const myTurn = await step.run("my-turn", async () => {
+      console.log("\n")
+      console.log("myTurn")
     })
 
     return { event };
