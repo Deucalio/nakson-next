@@ -385,6 +385,12 @@ const orders = [
   },
 ];
 export async function GET(request) {
+  return Response.json({
+    message: "Hello There!",
+  });
+}
+
+export async function POST(request) {
   // if request is from localhost, we will return the server URL as localhost
   // but if the request is from the production server, we will return the server URL as the production server
 
@@ -399,21 +405,19 @@ export async function GET(request) {
   //     Courier: true,
   //   },
   // });
-  const data = await request.json();
-  
-
+  const { email, orders, serverURL, dbID } = await request.json();
 
   const func = await inngest.send({
     name: "test/tcsbook.orders",
     // "domain": "quickstart-65d173cf.myshopify.com",
     // "access_token": "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",
     // "trackingNo": "HD12"
-    data: { user: user, orders: orders },
+    data: { email: email, orders: orders, serverURL: serverURL, dbID: dbID },
   });
 
-  console.log("func", func);
+  // console.log("func", func);
 
   return Response.json({
-    user,
+    message: "Orders are being Booked",
   });
 }

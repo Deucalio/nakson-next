@@ -167,7 +167,7 @@ export const bookOrders = inngest.createFunction(
   { event: "test/tcsbook.orders" },
 
   async ({ event, step }) => {
-    const { email, orders } = event.data
+    const { email, orders, serverURL, dbID } = event.data
 
 
     // Using Step.run to log the progress of the function
@@ -179,7 +179,8 @@ export const bookOrders = inngest.createFunction(
 
       const raw = JSON.stringify({
         email: email,
-        orders: orders
+        orders: orders,
+        dbID: dbID
       });
 
       const requestOptions: RequestInit = {
@@ -189,7 +190,7 @@ export const bookOrders = inngest.createFunction(
         redirect: "follow",
       };
 
-      const backendRes = await fetch("http://localhost:4000/tcs/book", requestOptions)
+      const backendRes = await fetch(`${serverURL}/tcs/book`, requestOptions)
 
       const result = await backendRes.json();
 

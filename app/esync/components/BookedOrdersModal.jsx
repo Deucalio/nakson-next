@@ -172,6 +172,28 @@ export default function BookedOrdersModal({
 
   const [showNotification, setShowNotification] = useState(false);
 
+  const [slipData, setSlipData] = useState([]);
+
+  const fetchSlipData = async () => {
+    // await
+  };
+
+  // useEffect(() => {
+  //   // If isDisable is true, and slipData is empty, then send a request to the server
+  //   if (isDisable && slipData.length === 0) {
+  //     // Send a request to the server
+  //     const fetchSlipData = async () => {
+  //       const response = await axios.post("/api/courier/leopards/book", {
+  //         email: user.user.email,
+  //         orders: editedOrders,
+  //       });
+
+  //       setSlipData(response.data);
+  //     };
+  //     fetchSlipData();
+  //   }
+  // }, [isDisable]);
+
   // const saveUser = async () => {
   //   const user = await getUser();
   //   console.log("user inside: ", user);
@@ -396,36 +418,55 @@ export default function BookedOrdersModal({
 
     const courier = bookOptions.courier_type.toLowerCase();
     console.log("Courier: ", courier);
-    const responseOne = await axios.post(`${serverURL}/${courier}/book`, {
+
+    // Inngest API
+    // Generate a ID for Database
+    const id = Math.floor(Math.random() * 1000000);
+
+    console.log("dbID: ", id);
+
+    const responseInngest = await axios.post(`/api/courier/tcs`, {
       email: user.user.email,
       orders: ordersToBeBooked,
+      serverURL: serverURL,
+      dbID: id,
     });
+    console.log("Response Inngest: ", responseInngest.data.message);
 
-    console.log("Response One: ", responseOne.data);
-
-    console.log("Downloading Slip...");
-    const pdfBytes = await generateCusotmizedSlip(
-      responseOne.data.booked_orders,
-      courier
-    );
-    const downloadFile = Object.values(pdfBytes);
-    const blob = new Blob([new Uint8Array(downloadFile)], {
-      type: "application/pdf",
-    });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${courier}-${responseOne.data.booked_orders.length}-${responseOne.data.timeTaken}-Slip.pdf`; // Set the desired file name
-    document.body.appendChild(a);
-
-    a.click();
-
-    document.body.removeChild(a);
-
-    const endTime = new Date();
-    const timeTaken = (endTime - startTime) / 1000; // Time in seconds
-    console.log("Time Taken to download Slip: ", timeTaken);
     setIsDisable(false);
+
+    // _______________
+
+    // const responseOne = await axios.post(`${serverURL}/${courier}/book`, {
+    //   email: user.user.email,
+    //   orders: ordersToBeBooked,
+    // });
+
+    // console.log("Response One: ", responseOne.data);
+
+    // console.log("Downloading Slip...");
+    // const pdfBytes = await generateCusotmizedSlip(
+    //   responseOne.data.booked_orders,
+    //   courier
+    // );
+    // const downloadFile = Object.values(pdfBytes);
+    // const blob = new Blob([new Uint8Array(downloadFile)], {
+    //   type: "application/pdf",
+    // });
+    // const url = window.URL.createObjectURL(blob);
+    // const a = document.createElement("a");
+    // a.href = url;
+    // a.download = `${courier}-${responseOne.data.booked_orders.length}-${responseOne.data.timeTaken}-Slip.pdf`; // Set the desired file name
+    // document.body.appendChild(a);
+
+    // a.click();
+
+    // document.body.removeChild(a);
+
+    // const endTime = new Date();
+    // const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+    // console.log("Time Taken to download Slip: ", timeTaken);
+    // setIsDisable(false);
 
     return;
   };
