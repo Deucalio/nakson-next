@@ -31,7 +31,6 @@ function base64ToString(base64Str) {
 }
 
 const generateQRCode = async (order, courier) => {
-  console.log("order: ", order);
   let qrCodeBytes = "";
 
   if (courier === "leopards") {

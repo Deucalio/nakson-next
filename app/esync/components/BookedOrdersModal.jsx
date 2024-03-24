@@ -186,7 +186,7 @@ export default function BookedOrdersModal({
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${courier}-${data.length}-${timeTaken}-Slip.pdf`; // Set the desired file name
+    a.download = `${courier}-${data.length}-Slip.pdf`; // Set the desired file name
     document.body.appendChild(a);
 
     a.click();
@@ -225,8 +225,8 @@ export default function BookedOrdersModal({
     if (isDisable && slipData.length === 0) {
       interval = setInterval(() => {
         // Run your desired function here
+        console.log("Fetching Slip Data");
         fetchSlipData();
-        console.log("Function running every 15 seconds");
       }, 15000); // 15 seconds in milliseconds
     }
     return () => clearInterval(interval);
@@ -456,6 +456,17 @@ export default function BookedOrdersModal({
 
     const courier = bookOptions.courier_type.toLowerCase();
 
+    // if (courier === "leopards") {
+    //   const response = await axios.post(`${serverURL}/leopards/book`, {
+    //     email: user.user.email,
+    //     orders: ordersToBeBooked,
+    //   });
+    //   console.log("Response", response.data);
+    //   downloadSlip(response.data.booked_orders, "leopards");
+    //   setIsDisable(false);
+    //   return;
+    // }
+
     // Inngest API
     // Generate a ID for Database
     const id = Math.floor(Math.random() * 1000000);
@@ -467,17 +478,6 @@ export default function BookedOrdersModal({
     });
     console.log("Response Inngest: ", responseInngest.data.message);
     setDbID([id, courier]);
-
-    // _______________
-
-    // const responseOne = await axios.post(`${serverURL}/${courier}/book`, {
-    //   email: user.user.email,
-    //   orders: ordersToBeBooked,
-    // });
-
-    // console.log("Response One: ", responseOne.data);
-
-    // setIsDisable(false);
 
     return;
   };
@@ -1071,7 +1071,7 @@ export default function BookedOrdersModal({
         />
       )}
 
-      {slipData.length > 0 && (
+      {slipData && slipData.length > 0 && (
         <Notification
           timer={20}
           showNotification={"Generating Slip."}
