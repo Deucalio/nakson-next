@@ -195,7 +195,8 @@ export default function BookedOrdersModal({
 
     const endTime = new Date();
     const timeTaken = (endTime - startTime) / 1000; // Time in seconds
-    console.log("Time Taken to download Slip: ", timeTaken);
+    return timeTaken;
+    // console.log("Time Taken to download Slip: ", timeTaken);
   };
 
   useEffect(() => {
@@ -218,13 +219,14 @@ export default function BookedOrdersModal({
       return fetchedSlipData;
     };
 
-    if (dbID) {
+    if (dbID && slipData.length === 0) {
       interval = setInterval(async () => {
         // Run your desired function here
         console.log("Fetching Slip Data");
         const fetchedSlipData = await fetchSlipData();
         console.log("fetchedSlipData", fetchedSlipData);
-        downloadSlip(fetchedSlipData, dbID[1]);
+        const timeTaken = await downloadSlip(fetchedSlipData, dbID[1]);
+        console.log("Time Taken to Download Slip: ", timeTaken);
         setIsDisable(false);
       }, 15000); // 15 seconds in milliseconds
     }
@@ -1070,7 +1072,7 @@ export default function BookedOrdersModal({
         />
       )}
 
-      {slipData && slipData.length > 0 && (
+      {slipData.length > 0 && dbID && (
         <Notification
           timer={20}
           showNotification={"Downloading Slip..."}
