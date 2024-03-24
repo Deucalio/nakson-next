@@ -210,7 +210,6 @@ export default function BookedOrdersModal({
       );
       const result = response.data.data;
       if (!result) {
-        console.log("No Data Found");
         return;
       }
       const fetchedSlipData = result.slipData;
@@ -224,11 +223,15 @@ export default function BookedOrdersModal({
         // Run your desired function here
         console.log("Fetching Slip Data");
         const fetchedSlipData = await fetchSlipData();
+        if (!fetchedSlipData) {
+          console.log("No Data Found, Trying again after 10 seconds...");
+          return;
+        }
         console.log("fetchedSlipData", fetchedSlipData);
         const timeTaken = await downloadSlip(fetchedSlipData, dbID[1]);
         console.log("Time Taken to Download Slip: ", timeTaken);
         setIsDisable(false);
-      }, 15000); // 15 seconds in milliseconds
+      }, 10000); // 10 seconds in milliseconds
     }
     return () => clearInterval(interval);
   }, [dbID]);
