@@ -173,22 +173,64 @@ export default function BookedOrdersModal({
   const [showNotification, setShowNotification] = useState(false);
 
   const [slipData, setSlipData] = useState([]);
+  const [dbID, setDbID] = useState([]);
 
-  // useEffect(() => {
-  //   // If isDisable is true, and slipData is empty, then send a request to the server
-  //   if (isDisable && slipData.length === 0) {
-  //     // Send a request to the server
-  //     const fetchSlipData = async () => {
-  //       const response = await axios.post("/api/courier/leopards/book", {
-  //         email: user.user.email,
-  //         orders: editedOrders,
-  //       });
+  const downloadSlip = async (data, courier) => {
+    const startTime = new Date();
+    console.log("Downloading Slip...");
+    const pdfBytes = await generateCusotmizedSlip(data, courier);
+    const downloadFile = Object.values(pdfBytes);
+    const blob = new Blob([new Uint8Array(downloadFile)], {
+      type: "application/pdf",
+    });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${courier}-${data.length}-${timeTaken}-Slip.pdf`; // Set the desired file name
+    document.body.appendChild(a);
 
-  //       setSlipData(response.data);
-  //     };
-  //     fetchSlipData();
-  //   }
-  // }, [isDisable]);
+    a.click();
+
+    document.body.removeChild(a);
+
+    const endTime = new Date();
+    const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+    console.log("Time Taken to download Slip: ", timeTaken);
+  };
+
+  useEffect(() => {
+    let interval = "";
+    // Send a request to the server
+    const fetchSlipData = async () => {
+      const serverRes = await axios.get("/api/server-url");
+      const { serverURL } = serverRes.data;
+      const response = await axios.get(
+        `${serverURL}/${dbID[1]}/get-temp-data/${dbID[0]}`
+      );
+      const result = response.data.data;
+      if (!result) {
+        console.log("No Data Found");
+        return;
+      }
+
+      const fetchedSlipData = result.slipData;
+      console.log("Fetched Slip Data: ", fetchedSlipData);
+      console.log("ordersTrackingNumbers: ", result.ordersTrackingNumbers);
+      downloadSlip(fetchedSlipData, dbID[1]);
+      setSlipData(fetchedSlipData);
+      setIsDisable(false);
+      return;
+    };
+
+    if (isDisable && slipData.length === 0) {
+      interval = setInterval(() => {
+        // Run your desired function here
+        fetchSlipData();
+        console.log("Function running every 15 seconds");
+      }, 15000); // 15 seconds in milliseconds
+    }
+    return () => clearInterval(interval);
+  }, [dbID]);
 
   // const saveUser = async () => {
   //   const user = await getUser();
@@ -417,7 +459,6 @@ export default function BookedOrdersModal({
     // Inngest API
     // Generate a ID for Database
     const id = Math.floor(Math.random() * 1000000);
-    console.log("dbID: ", id);
     const responseInngest = await axios.post(`/api/courier/${courier}`, {
       email: user.user.email,
       orders: ordersToBeBooked,
@@ -425,8 +466,7 @@ export default function BookedOrdersModal({
       dbID: id,
     });
     console.log("Response Inngest: ", responseInngest.data.message);
-
-    setIsDisable(false);
+    setDbID([id, courier]);
 
     // _______________
 
@@ -437,28 +477,6 @@ export default function BookedOrdersModal({
 
     // console.log("Response One: ", responseOne.data);
 
-    // console.log("Downloading Slip...");
-    // const pdfBytes = await generateCusotmizedSlip(
-    //   responseOne.data.booked_orders,
-    //   courier
-    // );
-    // const downloadFile = Object.values(pdfBytes);
-    // const blob = new Blob([new Uint8Array(downloadFile)], {
-    //   type: "application/pdf",
-    // });
-    // const url = window.URL.createObjectURL(blob);
-    // const a = document.createElement("a");
-    // a.href = url;
-    // a.download = `${courier}-${responseOne.data.booked_orders.length}-${responseOne.data.timeTaken}-Slip.pdf`; // Set the desired file name
-    // document.body.appendChild(a);
-
-    // a.click();
-
-    // document.body.removeChild(a);
-
-    // const endTime = new Date();
-    // const timeTaken = (endTime - startTime) / 1000; // Time in seconds
-    // console.log("Time Taken to download Slip: ", timeTaken);
     // setIsDisable(false);
 
     return;
@@ -1048,6 +1066,15 @@ export default function BookedOrdersModal({
         <Notification
           timer={20}
           showNotification={"Order are being Booked..."}
+          setShowNotification={setShowNotification}
+          label={"Success"}
+        />
+      )}
+
+      {slipData.length > 0 && (
+        <Notification
+          timer={20}
+          showNotification={"Generating Slip."}
           setShowNotification={setShowNotification}
           label={"Success"}
         />
