@@ -173,7 +173,7 @@ export default function BookedOrdersModal({
   const [showNotification, setShowNotification] = useState(false);
 
   const [slipData, setSlipData] = useState([]);
-  const [dbID, setDbID] = useState([]);
+  const [dbID, setDbID] = useState(null);
 
   const downloadSlip = async (data, courier) => {
     const startTime = new Date();
@@ -212,21 +212,20 @@ export default function BookedOrdersModal({
         console.log("No Data Found");
         return;
       }
-
       const fetchedSlipData = result.slipData;
-      console.log("Fetched Slip Data: ", fetchedSlipData);
-      console.log("ordersTrackingNumbers: ", result.ordersTrackingNumbers);
-      downloadSlip(fetchedSlipData, dbID[1]);
       setSlipData(fetchedSlipData);
-      setIsDisable(false);
-      return;
+      setDbID(null);
+      return fetchedSlipData;
     };
 
-    if (isDisable && slipData.length === 0) {
-      interval = setInterval(() => {
+    if (dbID) {
+      interval = setInterval(async () => {
         // Run your desired function here
         console.log("Fetching Slip Data");
-        fetchSlipData();
+        const fetchedSlipData = await fetchSlipData();
+        console.log("fetchedSlipData", fetchedSlipData);
+        downloadSlip(fetchedSlipData, dbID[1]);
+        setIsDisable(false);
       }, 15000); // 15 seconds in milliseconds
     }
     return () => clearInterval(interval);
@@ -1065,7 +1064,7 @@ export default function BookedOrdersModal({
       {isDisable && (
         <Notification
           timer={20}
-          showNotification={"Order are being Booked..."}
+          showNotification={"Orders are being Booked..."}
           setShowNotification={setShowNotification}
           label={"Success"}
         />
@@ -1074,7 +1073,7 @@ export default function BookedOrdersModal({
       {slipData && slipData.length > 0 && (
         <Notification
           timer={20}
-          showNotification={"Generating Slip."}
+          showNotification={"Downloading Slip..."}
           setShowNotification={setShowNotification}
           label={"Success"}
         />
