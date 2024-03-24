@@ -170,6 +170,7 @@ export const bookOrders = inngest.createFunction(
     // Using Step.run to log the progress of the function
     const bookOrders = await step.run("tcs-book-orders", async () => {
 
+      await sleep(15000) // Sleep for 15 seconds
       const bookOrder = await bookTCSOrders(event.data)
       console.log("timeTaken :", bookOrder.timeTaken)
       return bookOrder.dbID

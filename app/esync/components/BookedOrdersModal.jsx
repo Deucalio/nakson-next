@@ -174,6 +174,7 @@ export default function BookedOrdersModal({
 
   const [slipData, setSlipData] = useState([]);
   const [dbID, setDbID] = useState(null);
+  const [functionInProcess, setFunctionInProcess] = useState(false);
 
   const downloadSlip = async (data, courier) => {
     const startTime = new Date();
@@ -195,42 +196,62 @@ export default function BookedOrdersModal({
 
     const endTime = new Date();
     const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+    setIsDisable(false);
     return timeTaken;
     // console.log("Time Taken to download Slip: ", timeTaken);
   };
 
   useEffect(() => {
+    console.log("slipData!", slipData);
+    const triggerDownload = async (data, courier) => {
+      const timeTaken = await downloadSlip(data, courier);
+      console.log("Time Taken to Download Slip: ", timeTaken);
+    };
+    if (slipData && slipData.length > 0 && dbID) {
+      const [data, courier] = [slipData, dbID[1]];
+      setDbID(null);
+      setSlipData([]);
+      triggerDownload(data, courier);
+    }
+  }, [slipData]);
+
+  const fetchSlipData = async () => {
+    setFunctionInProcess(true);
+    const serverRes = await axios.get("/api/server-url");
+    const { serverURL } = serverRes.data;
+    const response = await axios.get(
+      `https://esync-backend.vercel.app/${dbID[1]}/get-temp-data/${dbID[0]}`
+    );
+    const result = response.data.data;
+    console.log("result: ", result);
+    if (!result) {
+      setSlipData([]);
+      setFunctionInProcess(false);
+      return;
+    }
+    const fetchedSlipData = result.slipData;
+    setSlipData(fetchedSlipData);
+
+    setFunctionInProcess(false);
+
+    // setDbID(null);
+    return fetchedSlipData;
+  };
+
+  useEffect(() => {
     let interval = "";
     // Send a request to the server
-    const fetchSlipData = async () => {
-      const serverRes = await axios.get("/api/server-url");
-      const { serverURL } = serverRes.data;
-      const response = await axios.get(
-        `${serverURL}/${dbID[1]}/get-temp-data/${dbID[0]}`
-      );
-      const result = response.data.data;
-      if (!result) {
-        return;
-      }
-      const fetchedSlipData = result.slipData;
-      setSlipData(fetchedSlipData);
-      setDbID(null);
-      return fetchedSlipData;
-    };
-
-    if (dbID && slipData.length === 0) {
+    if (dbID && slipData.length === 0 && !functionInProcess) {
       interval = setInterval(async () => {
         // Run your desired function here
         console.log("Fetching Slip Data");
         const fetchedSlipData = await fetchSlipData();
+        console.log("fetchedSlipData", fetchedSlipData);
         if (!fetchedSlipData) {
           console.log("No Data Found, Trying again after 10 seconds...");
           return;
         }
-        console.log("fetchedSlipData", fetchedSlipData);
-        const timeTaken = await downloadSlip(fetchedSlipData, dbID[1]);
-        console.log("Time Taken to Download Slip: ", timeTaken);
-        setIsDisable(false);
+        return;
       }, 10000); // 10 seconds in milliseconds
     }
     return () => clearInterval(interval);
@@ -1075,7 +1096,7 @@ export default function BookedOrdersModal({
         />
       )}
 
-      {slipData.length > 0 && dbID && (
+      {slipData?.length > 0 && (
         <Notification
           timer={20}
           showNotification={"Downloading Slip..."}
