@@ -25,7 +25,7 @@ export async function GET(request) {
 }
 export async function POST(req, res) {
   const data = await req.json()
-  const { ordersData, len } = data
+  const { ordersData, len, courier } = data
 
 
   // // Send your event payload to Inngest
@@ -34,7 +34,7 @@ export async function POST(req, res) {
     // "domain": "quickstart-65d173cf.myshopify.com",
     // "access_token": "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",
     // "trackingNo": "HD12"
-    data: { ordersData: ordersData.slice(0, len) },
+    data: { ordersData: ordersData.slice(0, len), courier: courier },
   });
 
   return NextResponse.json({ message: "Orders are being fulfilled!, stay Patient!" })

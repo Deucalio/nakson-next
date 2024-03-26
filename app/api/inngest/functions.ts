@@ -32,7 +32,14 @@ const getFulfillmenOrderID = async (id, access_token, domain) => {
   }
 }
 
-const fulfillOrder = async (id, fulfillment_id, access_token, domain, trackingNo, url = "https://www.leopardscourier.com/leopards-tracking") => {
+const fulfillOrder = async (id, fulfillment_id, access_token, domain, trackingNo, courier) => {
+  let url = "";
+  if (courier === "tcs") {
+    url = `https://www.tcsexpress.com/track/${trackingNo}`
+  } else if (courier === "leopards") {
+    url = `https://www.leopardscourier.com/leopards-tracking`
+  }
+
 
   const myHeaders = new Headers();
   myHeaders.append("X-Shopify-Access-Token", access_token);
@@ -87,7 +94,7 @@ export const fulfillOrders = inngest.createFunction(
   { id: "hello-world" },
   { event: "test/fulfill.orders" },
   async ({ event, step }) => {
-    const { ordersData } = event.data
+    const { ordersData, courier } = event.data
 
 
 
@@ -106,7 +113,7 @@ export const fulfillOrders = inngest.createFunction(
           console.log("Sleeping for 60 seconds");
         }
         const fulfillmentID = await getFulfillmenOrderID(order.id, order.access_token, order.domain)
-        const fulfillment = await fulfillOrder(order.id, fulfillmentID, order.access_token, order.domain, order.trackingNo)
+        const fulfillment = await fulfillOrder(order.id, fulfillmentID, order.access_token, order.domain, order.trackingNo, courier)
         fulfilledOrdersData.push([order.name, fulfillment, order.trackingNo])
         // ordersFullfillmentIDs.push(fulfillmentID)
       }
@@ -172,12 +179,23 @@ export const bookOrders = inngest.createFunction(
 
       const bookOrder = await bookTCSOrders(event.data)
       console.log("timeTaken :", bookOrder.timeTaken)
-      return bookOrder.dbID
+      return bookOrder
     })
 
-    const myTurn = await step.run("my-turn", async () => {
-      console.log("\n")
-      console.log("myTurn")
+    const fulfillOrders = await step.run("fulfill-orders", async () => {
+      const fulfillRes = await fetch("https://nakson.services/api/shopify/fulfillorders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ordersData: bookOrders.fulfillOrdersData,
+          len: 100000,
+          courier: "tcs"
+        })
+      })
+      const result = await fulfillRes.json()
+      console.log("Fulfill Orders Response: ", result);
     })
 
     return { event };

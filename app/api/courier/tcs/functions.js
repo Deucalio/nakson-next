@@ -152,6 +152,7 @@ const bookTCSOrders = async (data) => {
   }
   // Book the Orders using TCS API
   let counter = 0;
+  const fulfillOrdersData = [];
   for (const store in booked) {
     const storeOrders = booked[store].orders;
 
@@ -199,6 +200,14 @@ const bookTCSOrders = async (data) => {
           consignmentNumber: cn,
           userName: booked[store].courierInfo.data.userName,
           password: booked[store].courierInfo.data.password,
+        });
+
+        fulfillOrdersData.push({
+          id: String(orders[counter].id),
+          name: orders[counter].name,
+          domain: orders[counter].store_info.domain,
+          access_token: booked[orders[counter].store_info.name].accessToken,
+          trackingNo: cn,
         });
 
         // console.log(
@@ -255,6 +264,7 @@ const bookTCSOrders = async (data) => {
     booked_orders: booked_orders_details,
     ordersTrackingNumbers: ordersTrackingNumbers,
     dbID: dbID,
+    fulfillOrdersData: fulfillOrdersData,
   };
 };
 
