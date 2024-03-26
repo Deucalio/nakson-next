@@ -28,6 +28,7 @@
     "cropperjs": "^1.6.1",
     "crypto": "^1.0.1",
     "crypto-js": "^4.2.0",
+    "file-saver": "^2.0.5",
     "gsap": "^3.12.2",
     "inngest": "^3.16.0",
     "js-file-download": "^0.4.12",

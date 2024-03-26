@@ -25,12 +25,17 @@ const Notification = ({
   return (
     <div
       ref={notificationRef}
-      className={`${
-        label === "Success" && ["text-green-500", "border-green-700"].join(" ")
+      className={`
+      
+   
+
+      ${
+        (label === "Success" || label === "Download") &&
+        ["text-green-500", "border-green-700"].join(" ")
       }
       ${label === "Error" && ["text-red-600", "border-red-700"].join(" ")}
       
-      transition-all duration-500 text-base border-2  font-semibold absolute flex flex-row items-center gap-2 bottom-12 z-50  right-4 py-2 px-6 rounded-lg pointer-events-none
+      transition-all duration-500 text-base border-2  font-semibold absolute flex flex-row items-center gap-2 bottom-12 z-50  right-4 py-2 px-6 rounded-lg 
         ${showNotification ? "opacity-1" : "opacity-0"}
       `}
     >
@@ -48,7 +53,17 @@ const Notification = ({
           d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
         />
       </svg>
-      <p className="">{showNotification}</p>
+      <p className="">
+        {label === "Download" && (
+          <>
+            <span className="underline text-blue-500 font-semibold transition-all hover:text-blue-600 cursor-pointer">
+              Click Here
+            </span>
+            &nbsp; to Download {showNotification}
+          </>
+        )}
+        {label !== "Download" && showNotification}
+      </p>
     </div>
   );
 };

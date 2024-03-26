@@ -495,7 +495,7 @@ export default function Home() {
                       }
                     </li>
                     <li className="pointer-events-none bg-opacity-30 py-2 text-center ">
-                      Rs {order.total_price}
+                      Rs {order.total_outstanding}
                     </li>
                     <li className="pointer-events-none bg-opacity-30 py-2 text-center col-span-2 ">
                       {order.tags}

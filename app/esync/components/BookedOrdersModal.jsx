@@ -5,6 +5,7 @@ import axios from "axios";
 import generateCusotmizedSlip from "./generateCusotmizedSlip";
 import { getUser } from "../actions/getUser";
 import TCS_CITIES from "../TCS_CITIES";
+import { saveAs } from "file-saver";
 import Notification from "./Notification";
 const EditModal = ({
   shipmentType,
@@ -177,9 +178,11 @@ export default function BookedOrdersModal({
   const [functionInProcess, setFunctionInProcess] = useState(false);
 
   const downloadSlip = async (data, courier) => {
+    setFunctionInProcess(true);
     const startTime = new Date();
     console.log("Downloading Slip...");
     const pdfBytes = await generateCusotmizedSlip(data, courier);
+
     const downloadFile = Object.values(pdfBytes);
     const blob = new Blob([new Uint8Array(downloadFile)], {
       type: "application/pdf",
@@ -197,26 +200,21 @@ export default function BookedOrdersModal({
     const endTime = new Date();
     const timeTaken = (endTime - startTime) / 1000; // Time in seconds
     setIsDisable(false);
+    setFunctionInProcess(false);
+    console.log("Time Taken to download Slip: ", timeTaken);
     return timeTaken;
-    // console.log("Time Taken to download Slip: ", timeTaken);
   };
 
   useEffect(() => {
-    console.log("slipData!", slipData);
-    const triggerDownload = async (data, courier) => {
-      const timeTaken = await downloadSlip(data, courier);
-      console.log("Time Taken to Download Slip: ", timeTaken);
-    };
-    if (slipData && slipData.length > 0 && dbID) {
-      const [data, courier] = [slipData, dbID[1]];
+    if (slipData.length > 0) {
+      const courier = dbID[1];
+      downloadSlip(slipData, courier);
+      console.log("Slip Data: ", slipData);
       setDbID(null);
-      setSlipData([]);
-      triggerDownload(data, courier);
     }
   }, [slipData]);
 
   const fetchSlipData = async () => {
-    setFunctionInProcess(true);
     const serverRes = await axios.get("/api/server-url");
     const { serverURL } = serverRes.data;
     const response = await axios.get(
@@ -230,7 +228,6 @@ export default function BookedOrdersModal({
       return;
     }
     const fetchedSlipData = result.slipData;
-    setSlipData(fetchedSlipData);
 
     setFunctionInProcess(false);
 
@@ -241,7 +238,7 @@ export default function BookedOrdersModal({
   useEffect(() => {
     let interval = "";
     // Send a request to the server
-    if (dbID && slipData.length === 0 && !functionInProcess) {
+    if (dbID && slipData.length === 0) {
       interval = setInterval(async () => {
         // Run your desired function here
         console.log("Fetching Slip Data");
@@ -251,6 +248,7 @@ export default function BookedOrdersModal({
           console.log("No Data Found, Trying again after 10 seconds...");
           return;
         }
+        setSlipData(fetchedSlipData);
         return;
       }, 10000); // 10 seconds in milliseconds
     }
@@ -481,16 +479,16 @@ export default function BookedOrdersModal({
 
     const courier = bookOptions.courier_type.toLowerCase();
 
-    // if (courier === "leopards") {
-    //   const response = await axios.post(`${serverURL}/leopards/book`, {
-    //     email: user.user.email,
-    //     orders: ordersToBeBooked,
-    //   });
-    //   console.log("Response", response.data);
-    //   downloadSlip(response.data.booked_orders, "leopards");
-    //   setIsDisable(false);
-    //   return;
-    // }
+    if (courier === "leopards") {
+      const response = await axios.post(`${serverURL}/leopards/book`, {
+        email: user.user.email,
+        orders: ordersToBeBooked,
+      });
+      console.log("Response", response.data);
+      downloadSlip(response.data.booked_orders, "leopards");
+      setIsDisable(false);
+      return;
+    }
 
     // Inngest API
     // Generate a ID for Database
@@ -513,7 +511,9 @@ export default function BookedOrdersModal({
     <>
       <div
         ref={modal}
-        className={` absolute transition-all left-24 -mt-14 opacity-0 duration-700 top-6 -translate-y-1 -translate-x-5  z-50 mx-auto  h-[90vh] w-[30rem] overflow-auto rounded-sm border-slate-700 bg-black md:w-11/12
+        className={` absolute transition-all left-24 -mt-14 opacity-0 duration-700 top-6 -translate-y-1 -translate-x-5  ${
+          showNotification ? "z-50" : ""
+        } mx-auto  h-[90vh] w-[30rem] overflow-auto rounded-sm border-slate-700 bg-black md:w-11/12
         border-[1px] 
         `}
       >
@@ -1096,10 +1096,10 @@ export default function BookedOrdersModal({
         />
       )}
 
-      {slipData?.length > 0 && (
+      {functionInProcess && (
         <Notification
-          timer={20}
-          showNotification={"Downloading Slip..."}
+          timer={10}
+          showNotification={"Generating Slip..."}
           setShowNotification={setShowNotification}
           label={"Success"}
         />
