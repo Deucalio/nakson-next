@@ -177,7 +177,7 @@ export default function BookedOrdersModal({
   const [dbID, setDbID] = useState(null);
   const [functionInProcess, setFunctionInProcess] = useState(false);
 
-  const downloadSlip = async (data, courier) => {
+  const downloadSlip = async (data, courier, dbid) => {
     setFunctionInProcess(true);
     const startTime = new Date();
     console.log("Downloading Slip...");
@@ -190,7 +190,7 @@ export default function BookedOrdersModal({
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${courier}-${data.length}-Slip.pdf`; // Set the desired file name
+    a.download = `${courier}-${data.length}-${dbid}-Slip.pdf`; // Set the desired file name
     document.body.appendChild(a);
 
     a.click();
@@ -207,8 +207,8 @@ export default function BookedOrdersModal({
 
   useEffect(() => {
     if (slipData.length > 0) {
-      const courier = dbID[1];
-      downloadSlip(slipData, courier);
+      const [dbid, courier] = dbID;
+      downloadSlip(slipData, courier, dbid);
       console.log("Slip Data: ", slipData);
       setDbID(null);
     }
@@ -479,16 +479,16 @@ export default function BookedOrdersModal({
 
     const courier = bookOptions.courier_type.toLowerCase();
 
-    if (courier === "leopards") {
-      const response = await axios.post(`${serverURL}/leopards/book`, {
-        email: user.user.email,
-        orders: ordersToBeBooked,
-      });
-      console.log("Response", response.data);
-      downloadSlip(response.data.booked_orders, "leopards");
-      setIsDisable(false);
-      return;
-    }
+    // if (courier === "leopards") {
+    //   const response = await axios.post(`${serverURL}/leopards/book`, {
+    //     email: user.user.email,
+    //     orders: ordersToBeBooked,
+    //   });
+    //   console.log("Response", response.data);
+    //   downloadSlip(response.data.booked_orders, "leopards");
+    //   setIsDisable(false);
+    //   return;
+    // }
 
     // Inngest API
     // Generate a ID for Database

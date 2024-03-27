@@ -2,6 +2,7 @@ import { inngest } from "./client";
 import axios from "axios";
 import TCS_CITIES from "../../esync/TCS_CITIES";
 import { bookTCSOrders } from "../courier/tcs/functions"
+import { bookLeopardsOrders } from "../courier/leopards/functions"
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -164,10 +165,7 @@ export const fulfillOrders = inngest.createFunction(
 // _________________________ TCS
 
 
-
-
-
-export const bookOrders = inngest.createFunction(
+export const bookOrdersTCS = inngest.createFunction(
   { id: "tcs-book-orders" },
   { event: "test/tcsbook.orders" },
 
@@ -192,6 +190,43 @@ export const bookOrders = inngest.createFunction(
           ordersData: bookOrders.fulfillOrdersData,
           len: 100000,
           courier: "tcs"
+        })
+      })
+      const result = await fulfillRes.json()
+      console.log("Fulfill Orders Response: ", result);
+    })
+
+    return { event };
+  });
+
+
+
+// _____________________ LEOPARDS
+export const bookOrdersLEOPARDS = inngest.createFunction(
+  { id: "leopards-book-orders" },
+  { event: "test/leopards.orders" },
+
+  async ({ event, step }) => {
+    // const ordersFullfillmentIDs: string[] = []; // Specify the type of the array as string[]
+    // Using Step.run to log the progress of the function
+    const bookOrders = await step.run("leopards-book-orders", async () => {
+
+      const bookOrder = await bookLeopardsOrders(event.data)
+      console.log("timeTaken :", bookOrder.timeTaken)
+      return bookOrder
+    })
+
+
+    const fulfillOrders = await step.run("fulfill-orders", async () => {
+      const fulfillRes = await fetch("https://nakson.services/api/shopify/fulfillorders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ordersData: bookOrders.fulfillOrdersData,
+          len: 100000,
+          courier: "leopards"
         })
       })
       const result = await fulfillRes.json()
