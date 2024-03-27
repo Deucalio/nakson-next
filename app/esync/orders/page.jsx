@@ -15,6 +15,10 @@ import Stack from "@mui/material/Stack";
 import { getUser } from "../actions/getUser";
 import Nav from "../components/Nav";
 import { last } from "pdf-lib";
+
+function capitalizeFirstLetter(str) {
+  return str.replace(/\b\w/g, (match) => match.toUpperCase());
+}
 function Loading() {
   // You can add any UI inside Loading, including a Skeleton.
   // Animate spin using TailwindCSS classes.
@@ -74,12 +78,19 @@ export default function Home() {
     data = data.map((order, index) => {
       if (order.platform === "shopify") {
         if (order.customer === null) {
-          order.customer = { ...order.customer, first_name: "", last_name: "" };
+          order.customer = {
+            ...order.customer,
+            first_name: null,
+            last_name: null,
+          };
         } else if (order.customer) {
-          if (order.customer.first_name === null) {
-            order.customer.first_name = "";
-          } else if (order.customer.last_name === null) {
-            order.customer.last_name = "";
+          if (order.customer.first_name && order.customer.last_name) {
+            order.customer.first_name = capitalizeFirstLetter(
+              order.customer.first_name
+            );
+            order.customer.last_name = capitalizeFirstLetter(
+              order.customer.last_name
+            );
           }
         }
       }
@@ -453,7 +464,13 @@ export default function Home() {
                     </li>
 
                     <li className="pointer-events-none col-span-2 bg-opacity-30 py-2 text-center ">
-                      {order.customer !== null
+                      {order.customer.first_name && order.customer.last_name
+                        ? order.customer.first_name +
+                          " " +
+                          order.customer.last_name
+                        : "Unknown"}
+
+                      {/* {order.customer !== null
                         ? order.customer.first_name?.charAt(0).toUpperCase() +
                             order.customer.first_name?.slice(1) &&
                           order.customer.last_name?.charAt(0).toUpperCase() +
@@ -469,7 +486,7 @@ export default function Home() {
                            order.customer.last_name?.slice(1)
                          }`
                           : "Unknown"
-                        : "No Customer Provided"}
+                        : "No Customer Provided"} */}
                     </li>
 
                     <li className="pointer-events-none bg-opacity-30 py-2 text-center ">

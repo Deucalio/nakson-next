@@ -212,6 +212,13 @@ export default function BookedOrdersModal({
       console.log("Slip Data: ", slipData);
       setDbID(null);
       setSlipData([]);
+
+      // Remove the orders from the selected orders
+      let newOrders = editedOrders.filter(
+        (order) =>
+          !slipData.find((slip) => slip.booked_packet_order_name === order.name)
+      );
+      setEditedOrders(newOrders);
     }
   }, [slipData]);
 
@@ -466,7 +473,10 @@ export default function BookedOrdersModal({
     }
 
     let ordersToBeBooked = editedOrders.filter(
-      (order) => order.correct_city !== undefined
+      (order) =>
+        order.correct_city !== undefined &&
+        order.customer.first_name !== null &&
+        order.customer.last_name !== null
     );
 
     // get Server URL
@@ -679,8 +689,12 @@ export default function BookedOrdersModal({
         >
           Read to be Booked:{" "}
           {
-            editedOrders.filter((order) => order.correct_city !== undefined)
-              .length
+            editedOrders.filter(
+              (order) =>
+                order.correct_city !== undefined &&
+                order.customer.first_name !== null &&
+                order.customer.last_name !== null
+            ).length
           }
         </p>
 
@@ -782,16 +796,35 @@ export default function BookedOrdersModal({
                       className="pointer-events-none"
                     />
                   </svg>
-                  <p>{order.sr_number}</p>
+                  <p>{index + 1}</p>
                 </li>
                 <li className="flex items-center justify-center transition-all">
                   {order.name}
                 </li>
                 <li className="col-span-2 flex items-center justify-center transition-all">
-                  {order.customer.first_name.charAt(0).toUpperCase() +
-                    order.customer.first_name.slice(1)}{" "}
-                  {order.customer.last_name.charAt(0).toUpperCase() +
-                    order.customer.last_name.slice(1)}
+                  {order.customer.first_name && order.customer.last_name ? (
+                    order.customer.first_name + " " + order.customer.last_name
+                  ) : (
+                    <span className="text-red-800 ">Unknown</span>
+                  )}
+
+                  {/* {order.customer !== null
+                    ? order.customer.first_name?.charAt(0).toUpperCase() +
+                        order.customer.first_name?.slice(1) &&
+                      order.customer.last_name?.charAt(0).toUpperCase() +
+                        order.customer.last_name?.slice(1)
+                      ? `${
+                          order.customer.first_name?.charAt(0).toUpperCase() +
+                          order.customer.first_name?.slice(1)
+                        } 
+                         ${
+                           order.customer.last_name?.charAt(0).toUpperCase() +
+                           order.customer.last_name?.slice(1)
+                         }`
+                      : <span className="text-red-900 font-bold">
+                        Unknown
+                      </span>
+                    : "No Customer Provided"} */}
                 </li>
                 <li className="flex items-center justify-center transition-all text-sm">
                   {order.shipping_address?.phone
@@ -1088,7 +1121,7 @@ export default function BookedOrdersModal({
       </div>
       {isDisable && (
         <Notification
-          timer={20}
+          timer={15}
           showNotification={"Orders are being Booked..."}
           setShowNotification={setShowNotification}
           label={"Success"}
@@ -1098,7 +1131,7 @@ export default function BookedOrdersModal({
       {functionInProcess && (
         <Notification
           timer={10}
-          showNotification={"Generating Slip..."}
+          showNotification={"Downloading Slip..."}
           setShowNotification={setShowNotification}
           label={"Success"}
         />
