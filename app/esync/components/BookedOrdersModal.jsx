@@ -211,12 +211,11 @@ export default function BookedOrdersModal({
       downloadSlip(slipData, courier, dbid);
       console.log("Slip Data: ", slipData);
       setDbID(null);
+      setSlipData([]);
     }
   }, [slipData]);
 
   const fetchSlipData = async () => {
-    const serverRes = await axios.get("/api/server-url");
-    const { serverURL } = serverRes.data;
     const response = await axios.get(
       `https://esync-backend.vercel.app/${dbID[1]}/get-temp-data/${dbID[0]}`
     );
