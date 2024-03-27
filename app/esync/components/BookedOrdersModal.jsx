@@ -249,7 +249,6 @@ export default function BookedOrdersModal({
         // Run your desired function here
         console.log("Fetching Slip Data");
         const fetchedSlipData = await fetchSlipData();
-        console.log("fetchedSlipData", fetchedSlipData);
         if (!fetchedSlipData) {
           console.log("No Data Found, Trying again after 10 seconds...");
           return;
@@ -329,7 +328,6 @@ export default function BookedOrdersModal({
 
   // For bookOptions
   useEffect(() => {
-    console.log("orders: ", editedOrders);
     if (bookOptions.courier_type === "" && editedOrders.length > 0) {
       const blankOrders = editedOrders.map((order) => {
         return {
@@ -381,7 +379,6 @@ export default function BookedOrdersModal({
 
       const correctCities = [];
       newOrders.filter((order) => correctCities.push(order.correct_city));
-      console.log("New Orders: ", newOrders);
 
       setEditedOrders(newOrders);
     }
@@ -454,6 +451,8 @@ export default function BookedOrdersModal({
 
     setTimeout(() => {
       ul.classList.add("hidden");
+      const newOrders = editedOrders.filter((order) => order.id !== id);
+      setEditedOrders(newOrders);
     }, 200);
   };
 
@@ -687,7 +686,7 @@ export default function BookedOrdersModal({
             showEditModal ? ["blur-xl", "pointer-events-none"].join(" ") : ""
           } px-8 text-lg transition-all duration-700 font-semibold text-slate-400`}
         >
-          Read to be Booked:{" "}
+          Ready to be Booked:{" "}
           {
             editedOrders.filter(
               (order) =>
@@ -798,15 +797,22 @@ export default function BookedOrdersModal({
                   </svg>
                   <p>{index + 1}</p>
                 </li>
-                <li className="flex items-center justify-center transition-all">
+                <li
+                  className={`flex items-center justify-center transition-all
+                ${
+                  bookOptions.courier_type &&  order.correct_city === undefined ||
+                  order.customer.first_name === null ||
+                  order.customer.last_name === null
+                    ? "text-red-900 font-bold"
+                    : ""
+                }`}
+                >
                   {order.name}
                 </li>
                 <li className="col-span-2 flex items-center justify-center transition-all">
-                  {order.customer.first_name && order.customer.last_name ? (
-                    order.customer.first_name + " " + order.customer.last_name
-                  ) : (
-                    <span className="text-red-800 ">Unknown</span>
-                  )}
+                  {order.customer.first_name && order.customer.last_name
+                    ? order.customer.first_name + " " + order.customer.last_name
+                    : "Unknown"}
 
                   {/* {order.customer !== null
                     ? order.customer.first_name?.charAt(0).toUpperCase() +
@@ -880,7 +886,6 @@ export default function BookedOrdersModal({
                             return ord;
                           }
                         });
-                        console.log("Changed Orders: ", newOrders);
                         setEditedOrders(newOrders);
                       }}
                       value={
